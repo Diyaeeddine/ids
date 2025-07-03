@@ -16,6 +16,8 @@ class Demande extends Model
         'titre',
         'etape',
         'champs',
+        'type_economique',
+        
     ];
 
     protected $casts = [

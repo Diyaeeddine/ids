@@ -89,9 +89,9 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::get('plaisance/demandes', [PlaisanceController::class, 'userDemandes'])->name('plaisance.demandes');
 
     Route::get('/plaisance/alerts', [PlaisanceController::class, 'getAlerts'])->name('plaisance.alerts');
-    Route::get('plaisance/demande/afficher/{id}', [DemandeController::class, 'show'])->name('plaisance.demandes.voir');
-    Route::get('plaisance/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('plaisance.demandes.showRemplir');
-    Route::post('plaisance/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('plaisance.demandes.remplir');
+    Route::get('plaisance/demande/afficher/{id}', [PlaisanceController::class, 'show'])->name('plaisance.demandes.voir');
+    Route::get('plaisance/demande/remplir/{id}', [PlaisanceController::class, 'showRemplir'])->name('plaisance.demandes.showRemplir');
+    Route::post('plaisance/demande/remplir/{id}', [PlaisanceController::class, 'remplir'])->name('plaisance.demandes.remplir');
     
     // File Downloads
     Route::get('/telecharger/{filename}', function ($filename) {
@@ -121,10 +121,20 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
 
 });
+Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
+
+        Route::get('plaisance/dashboard', [PlaisanceController::class, 'plaisanceDashboard'])->name('plaisance.dashboard');
+    Route::get('plaisance/demandes', [PlaisanceController::class, 'userDemandes'])->name('plaisance.demandes');
+
+
+});
 
 Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
 
-    Route::get('tresorier/dashboard', [TresorierController::class, 'TresorierDashboard'])->name('tresorier.dashboard');
+    Route::get('tresorier/dashboard', [TresorierController::class, 'tresorierDashboard'])->name('tresorier.dashboard');
+    Route::get('tresorier/demandes', [TresorierController::class, 'userDemandes'])->name('tresorier.demandes');
+    Route::get('tresorier/OP', [TresorierController::class, 'OP'])->name('tresorier.op');
+    Route::get('tresorier/OV', [TresorierController::class, 'OV'])->name('tresorier.ov');
 
 
 });
@@ -218,10 +228,32 @@ Route::get('/demande/{id}/remplir', [DemandeController::class, 'remplir'])
     ->middleware(['auth', 'verified', 'role:plaisance'])
     ->name('demande.remplir');
 
+
+
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/dashboard', function () {
+            $user = auth()->user();
+    
+            if ($user->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->hasRole('plaisance')) {
+                return redirect()->route('plaisance.dashboard');
+            } elseif ($user->hasRole('tresorier')) {
+                return redirect()->route('tresorier.dashboard');
+            } elseif ($user->hasRole('user')) {
+                return redirect()->route('user.dashboard');
+            }
+    
+            // Fallback - you can customize this
+            return redirect()->route('user.dashboard');
+        })->name('dashboard');
+    });
+    
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
 |--------------------------------------------------------------------------
 */
+
 
 require __DIR__.'/auth.php';

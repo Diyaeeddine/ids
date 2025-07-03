@@ -32,23 +32,35 @@
             <div class="p-6 text-gray-900 dark:text-gray-100">
                 <h1 class="text-lg font-medium mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">{{ __('Créer une demande') }}</h1>
                 
-                {{-- Success message --}}
                 @if (session('success'))
+
                     <div class="bg-green-50 dark:bg-green-900/50 text-green-800 dark:text-green-300 p-4 mb-6 rounded-md">
                         {{ session('success') }}
                     </div>
                 @endif
-
-                {{-- Table Budgétaire Modal Trigger --}}
-                <div class="mb-4">
-                    <button type="button" id="tableBudgetaireBtn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-                        Table Budgétaire
-                    </button>
-                </div>
-
-                {{-- Form --}}
                 <form action="{{ route('demande.store-demande') }}" method="POST" class="space-y-6 relative">
                     @csrf
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-4"> 
+                    <div class="mb-4">
+                        <button type="button" id="tableBudgetaireBtn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                            Table Budgétaire
+                        </button>
+                    </div>
+
+                    <div class="w-full md:w-64">
+                        <label for="type_economique" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Nature économique :
+                        </label>
+                        <select name="type_economique" id="type_economique"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <option value="">-- Sélectionner la nature --</option>
+                            <option value="produit">Produit</option>
+                            <option value="charge">Charge</option>
+                        </select>
+                    </div>
+                </div>
+
+
 
                     {{-- Selected Imputation --}}
                     @if(session('selected_imputation'))
@@ -86,10 +98,10 @@
                                    class="block w-full bg-blue-600 text-white text-bold py-4  text-center hover:bg-blue-700 transition">
                                     Sélectionner une ligne depuis une table budgétaire
                                 </a>
-                                <a href="{{ route('demande.choose-table-for-entry') }}" 
+                                {{-- <a href="{{ route('demande.choose-table-for-entry') }}" 
                                     class="block w-full bg-blue-600 text-white text-bold py-4  text-center hover:bg-blue-700 transition">
                                     Ajouter une nouvelle ligne dans une table budgétaire
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
                     </div>

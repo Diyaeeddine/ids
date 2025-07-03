@@ -78,7 +78,7 @@
     <div class="invoice-container">
         <div class="content">
             <div class="header">
-                <div><img src="{{ asset('build/assets/images/logo-marina-dark1.png') }}" alt="Logo" class="logo"></div>
+                <div><img src="{{ asset('build/assets/images/marina-logo-black.png') }}" alt="Logo" class="logo"></div>
                 <div class="customer-info">{{ optional($facture->contrat?->demandeur)->nom ?? 'N/A' }}</div>
             </div>
             <h1 class="invoice-title">Facture {{ $facture->numero_facture }}</h1>

@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>Login - Marina Bouregreg</title>
     <style>
@@ -24,8 +23,7 @@
         background-repeat: no-repeat;
     }
 
-        /* Animated Background Scene */
-        /* .marina-background {
+        .marina-background {
             position: fixed;
             top: 0;
             left: 0;
@@ -33,12 +31,12 @@
             height: 100vh;
             z-index: -1;
             background: linear-gradient(180deg, 
-                #f5e6d3 0%, 
+rgb(176, 214, 242) 0%, 
                 #e8d4b8 30%, 
-                #d4c4a8 50%, 
+rgb(230, 192, 127) 50%, 
                 #9bb5d1 70%, 
                 #7ea8cc 100%);
-        } */
+        }
 
 
         /* Clouds */
@@ -465,17 +463,32 @@
 
         .marina-logo {
     display: block;
-    margin: 0 auto 1.5rem auto; /* center + bottom spacing */
+    margin: 0 auto 1.5rem auto;
     width: 150px;
     max-width: 80%;
     height: auto;
 }
 
+        .password-wrapper {
+        position: relative;
+    }
+    .toggle-password-icon {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    .dark .toggle-password-icon {
+        color: #6b7280;
+    }
+
         
     </style>
 </head>
 <body>
-    {{-- <div class="marina-background">
+    <div class="marina-background">
         <div class="cloud cloud1"></div>
         <div class="cloud cloud2"></div>
         <div class="cloud cloud3"></div>
@@ -503,12 +516,12 @@
             <div class="mast"></div>
             <div class="boat-hull"></div>
         </div>
-    </div> --}}
+    </div>
 
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <img src="{{ asset('build/assets/images/logo-marina-dark1.png') }}" 
+                <img src="{{ asset('build/assets/images/marina-logo-black.png') }}" 
      class="marina-logo mx-auto mb-6 w-32 sm:w-40 md:w-48 lg:w-56 h-auto" 
      alt="Marina Logo"/>
 
@@ -542,12 +555,11 @@
 
                 <div class="form-group">
                     <label for="password" class="form-label">{{ __('Password') }}</label>
-                    <input id="password"
-                           class="form-input"
-                           type="password"
-                           name="password"
-                           required 
-                           autocomplete="current-password" />
+                    <input id="password" class="form-input" type="password" name="password" required autocomplete="current-password"/>
+
+                           <span id="togglePassword" class="toggle-password-icon">
+                        <i class="fas fa-eye"></i>
+                    </span>
                     @error('password')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -574,5 +586,26 @@
             </form>
         </div>
     </div>
+    
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const eyeIcon = togglePassword.querySelector('i');
+
+        togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            if (type === 'password') {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        });
+    });
+</script>
 </html>

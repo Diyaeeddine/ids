@@ -24,7 +24,8 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            if ($user->hasRole('user') || $user->hasRole('plaisance')) {
+            // Pour tous les rôles (user, plaisance, tresorier)
+            if ($user->hasRole('user') || $user->hasRole('plaisance') || $user->hasRole('tresorier')) {
                 $notifications = Notification::select(
                         'notifications.id',
                         'notifications.titre',
@@ -60,7 +61,8 @@ class AppServiceProvider extends ServiceProvider
 
                 $view->with('demandes', $notifications);
             }
-            
+
+            // Pour les admins
             if ($user->hasRole('admin')) {
                 $adminNotifications = Notification::select(
                         'notifications.id',
@@ -88,7 +90,7 @@ class AppServiceProvider extends ServiceProvider
                             'demande_id' => $notif->demande_id,
                             'contrat_id' => $notif->contrat_id,
                             'user_id' => $notif->user_id,
-                            'user_affecte_id' => $notif->user_affecte_id, 
+                            'user_affecte_id' => $notif->user_affecte_id,
                             'original_user_id' => $notif->original_user_id ?? $notif->user_id,
                             'is_read' => $notif->is_read,
                             'showCommentaire' => false
@@ -100,13 +102,3 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 }
-
-
-
-
-
-
-
-
-
-

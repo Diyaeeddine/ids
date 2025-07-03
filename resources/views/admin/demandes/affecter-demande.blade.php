@@ -90,6 +90,13 @@
                                         <span class="block font-medium">Date de demande :</span>
                                         {{ \Carbon\Carbon::parse($selectedDemande->created_at)->format('d/m/Y H:i') }}
                                     </div>
+                                    <div class="w-full sm:w-1/2 mb-3">
+                                        <span class="block font-medium text-gray-700 mb-2">Type économique de la demande :</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                            {{ $selectedDemande->type_economique == 'produit' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800' }}">
+                                            {{ $selectedDemande->type_economique }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -102,11 +109,11 @@
                                         Affectation des champs
                                     </h3>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <!-- Sélection utilisateur -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                      
                                         <div>
                                             <label for="user_id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Affecter à l'utilisateur :
+                                                Le service : :
                                             </label>
                                             <select name="user_id" id="user_id" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" required>
                                                 <option value="">-- Sélectionner un utilisateur --</option>
@@ -116,28 +123,19 @@
                                             </select>
                                         </div>
                                     
-                                        <!-- Sélection type de formulaire -->
                                         <div>
                                             <label for="type_form" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Sélectionner le type de la formulaire :
+                                                le type de demande :
                                             </label>
-                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" >
+                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
                                                 <option value="">-- Sélectionner le type --</option>
                                                 <option value="contrat">Contrat</option>
                                                 <option value="facture">Facture</option>
                                                 <option value="op">Ordre de paiement</option>
-                                                <option value="ov">Ordre de virement</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label for="service" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Sélectionner le service :
-                                            </label>
-                                            <select name="service" id="service" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" >
-                                                <option value="">-- Sélectionner le service --</option>
-                                                <option value="plaisance">Service plaisance</option>
-                                                <option value="tresorier">Service tresorier</option>
-                                                <option value="comptable">Service comptable</option>
+                                                <option value="ov">Bon de commande</option>
+                                                <option value="prestation">Prestation de services</option>
+                                                <option value="marche">Marché</option>
+
                                             </select>
                                         </div>
                                     </div>

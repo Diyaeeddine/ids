@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('demandes', function (Blueprint $table) {
             $table->id(); 
             $table->string('titre')->nullable(false);
+            $table->string('type_economique')->nullable(false);
+            // $table->string('type_form')->nullable(true);
             $table->json('champs')->nullable();
             $table->timestamps();
         });

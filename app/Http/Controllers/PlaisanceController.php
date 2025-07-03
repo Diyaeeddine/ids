@@ -86,6 +86,97 @@ class PlaisanceController extends Controller
     return view('plaisance.demandes', compact('mesdemandes', 'nouvellesDemandes', 'demandesEnRetard'));
 }
 
+public function showRemplir($id)
+{
+    $user = Auth::user();
+    $demande = Demande::findOrFail($id);
+
+    $champsAffectes = collect($demande->champs ?? [])
+        ->filter(function ($champData) use ($user) {
+            return is_array($champData)
+                && isset($champData['user_id'])
+                && $champData['user_id'] == $user->id;
+        });
+
+    return view('plaisance.remplirDemande', [
+        'user' => $user,
+        'demande' => $demande,
+        'champs' => $champsAffectes,
+    ]);
+}
+
+
+    public function remplir(Request $request, $id)
+    {
+    $user = Auth::user();
+    $demande = Demande::findOrFail($id);
+    $userId = $user->id;
+
+    $values = $request->input('values', []);
+
+    if ($request->hasFile('files')) {
+        $request->validate([
+            'files.*' => 'file|max:10240', 
+        ]);
+    }
+
+    $champs = $demande->champs ?? [];
+
+    foreach ($values as $key => $value) {
+        if (isset($champs[$key]) && is_array($champs[$key]) && ((string)($champs[$key]['user_id'] ?? '') === (string)$userId)) {
+            $champs[$key]['value'] = $value;
+        }
+        
+    }
+    $demande->champs = $champs;
+    $demande->save();
+    if ($request->hasFile('files')) {
+        foreach ($request->file('files') as $file) {
+            $originalName = $file->getClientOriginalName();
+            $fileName = time() . '_' . $userId . '_' . $originalName;
+            $filePath = $file->storeAs('demandes', $fileName, 'public');
+
+            DB::table('demande_files')->insert([
+                'demande_id' => $demande->id,
+                'user_id' => $userId,
+                'file_name' => $originalName,
+                'file_path' => $filePath,
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    $userChamps = array_filter($champs, function ($champ) use ($userId) {
+        return is_array($champ) && isset($champ['user_id']) && $champ['user_id'] === $userId;
+    });
+    $allFilled = collect($userChamps)->every(fn($champ) => !is_null($champ['value']) && trim($champ['value']) !== '');
+
+    if ($allFilled) {
+        $user->demandes()->updateExistingPivot($demande->id, [
+            'is_filled' => true,
+            // 'isyourturn' => false,
+            'duree' => $request->input('temps_ecoule'),
+            'etape'=>'en_attente_validation',
+        ]);
+
+    } else {
+        $user->demandes()->updateExistingPivot($demande->id, [
+            'is_filled' => false,
+        ]);
+    }
+    Notification::create([
+        'user_id' => 1,
+        'demande_id' => $id,
+        'titre' => 'vous avez des champs a reviser',
+        'is_read' => false,
+    ]);
+
+    return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès.');
+}
+
 
 
 }

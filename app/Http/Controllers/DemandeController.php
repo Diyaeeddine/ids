@@ -42,10 +42,12 @@ class DemandeController extends Controller
 
      public function store(Request $request)
      {
+        // dd($request->all());
          $request->validate([
              'titre' => 'required|string|max:255',
              'fields' => 'nullable|array',
              'fields.*.key' => 'required|string|max:255',
+             'type_economique' => 'required|string',
          ]);
          $champs = [];
          foreach ($request->input('fields', []) as $field) {
@@ -54,6 +56,7 @@ class DemandeController extends Controller
      
          $demande = Demande::create([
              'titre' => $request->input('titre'),
+             'type_economique' => $request->input('type_economique'),
              'champs' => $champs,
          ]);
      
@@ -119,10 +122,13 @@ class DemandeController extends Controller
     {
         $demandes = Demande::latest()->get();
         $selectedDemande = $id ? Demande::findOrFail($id) : null;
-        $users = User::role('user')->get();
+    
+        // Correction ici
+        $users = User::role(['user', 'tresorier', 'plaisance', 'comptable', 'admin juridique'])->get();
     
         return view('admin.demandes.affecter-demande', compact('demandes', 'users', 'selectedDemande'));
     }
+    
     
 
 
@@ -151,6 +157,7 @@ public function demandePage($id = null)
 
 public function affecterChamps(Request $request, $demandeId)
 {
+    // dd($request->all());
     $request->validate([
         'user_id' => 'required|exists:users,id',
         'champs_selected' => 'required|array|min:1',
@@ -158,6 +165,7 @@ public function affecterChamps(Request $request, $demandeId)
     ]);
 
     $userId = $request->input('user_id');
+    $type_form = $request->input('type_form');
     $selectedChampKeys = $request->input('champs_selected', []);
     $demande = Demande::findOrFail($demandeId);
 
@@ -194,11 +202,13 @@ public function affecterChamps(Request $request, $demandeId)
         $champs[$key] = [
             'value' => $champs[$key]['value'] ?? null,
             'user_id' => $userId,
+            'type_form' => $type_form,
         ];
     }
 
     $demande->champs = $champs;
     $demande->updated_at = now();
+    // $demande->type_form=$type_form;
     $demande->save();
 
     if ($nextSort === 1) {
