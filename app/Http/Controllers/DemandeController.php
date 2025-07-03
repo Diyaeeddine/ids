@@ -515,28 +515,30 @@ public function refuser(Request $request, $demande_id, $user_id)
         'motif_refus' => 'required|string|max:1000',
     ]);
 
+    $commentaire = $request->input('motif_refus');
+
     $demande_user = DemandeUser::where('demande_id', $demande_id)
         ->where('user_id', $user_id)
         ->first();
 
-    if ($demande_user) {
-        $demande_user->update([
-            'etape' => 'modifications_requises',
-        ]);
-
-        Notification::create([
-            'user_id' => $user_id,
-            'demande_id' => $demande_id,
-            'titre' => $request->input('motif_refus'),
-            'is_read' => false,
-        ]);
-
-        return redirect()->route('admin.demandes.decision')
-            ->with('info', 'Demande refusée avec un message envoyé à l\'utilisateur.');
+    if (!$demande_user) {
+        return redirect()->back()->with('error', 'Affectation introuvable.');
     }
+    $demande_user->update(['etape' => 'modifications_requises']);
 
-    return redirect()->back()->with('error', 'Affectation introuvable.');
+    $demande_titre = $demande_user->demande->titre ?? 'demande';
+
+    Notification::create([
+        'user_id' => $user_id,
+        'original_user_id' => $user_id,
+        'demande_id' => $demande_id,
+        'titre' => "Votre demande {$demande_titre} a été refusée",
+        'commentaire' => $commentaire,
+        'is_read' => false,
+    ]);
+
+    return redirect()->route('admin.demandes.decision')
+        ->with('success', 'Demande refusée avec un message envoyé à l\'utilisateur.');
 }
-
 
 }

@@ -125,19 +125,39 @@
                     {{-- Accept / Refuse Buttons --}}
                     <div
                         class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <form method="POST" action="{{ route('admin.demandes.refuser', [$demandeUser->demande->id, $demandeUser->user->id]) }}" class="inline">
-                            @csrf
-                            <textarea name="motif_refus" rows="3" class="mt-2 w-full border-gray-300 rounded-md shadow-sm" placeholder="Indiquez les modifications demandées..." required></textarea>
-                            <button type="submit"
-                                onclick="return confirm('{{ __('Êtes-vous sûr de vouloir refuser cette demande ?') }}')"
-                                class="inline-flex items-center px-6 py-3 bg-red-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none focus:border-red-900 focus:ring focus:ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                {{ __('Refuser la demande') }}
-                            </button>
-                        </form>
+                        <form method="POST" action="{{ route('admin.demandes.refuser', [$demandeUser->demande->id, $demandeUser->user->id]) }}"
+                            class="inline w-full"
+                            onsubmit="return confirm('Êtes-vous sûr de vouloir refuser cette demande ?')">
+                          @csrf
+                      
+                          <div class="mb-4 w-full"> <!-- Assurez-vous que ce parent utilise w-full -->
+                              <label for="motif_refus
+                              " class="block text-sm font-medium text-gray-700 mb-2">
+                                  Motif du refus (obligatoire)
+                              </label>
+                              <textarea
+                                  name="motif_refus"
+                                  id="motif_refus"
+                                  rows="4"
+                                  class="mt-1 block w-full max-w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="Veuillez indiquer les modifications demandées ou le motif du refus..."
+                                  required
+                                  minlength="10"
+                                  maxlength="1000">{{ old('motif_refus') }}</textarea>
+                      
+                              @error('motif_refus')
+                                  <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                              @enderror
+                          </div>
+                      
+                          <button type="submit"
+                                  class="inline-flex items-center px-6 py-3 bg-red-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none focus:border-red-900 focus:ring focus:ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
+                              {{ __('Refuser la demande') }}
+                          </button>
+                      </form>
                         <form method="POST" action="{{ route('admin.demandes.accepter', [$demandeUser->demande->id, $demandeUser->user->id]) }}"
                             class="inline">
                             @csrf

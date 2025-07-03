@@ -21,39 +21,77 @@ class AppServiceProvider extends ServiceProvider
             $user = Auth::user();
 
             if (!$user) {
-                return; // pas connecté → rien à injecter
+                return;
             }
 
             if ($user->hasRole('user') || $user->hasRole('plaisance')) {
-                $notifications = Notification::where('user_id', $user->id)
-                    ->where('is_read', false)
-                    ->orderBy('created_at', 'desc')
+                $notifications = Notification::select(
+                        'notifications.id',
+                        'notifications.titre',
+                        'notifications.commentaire',
+                        'notifications.is_read',
+                        'notifications.created_at',
+                        'notifications.demande_id',
+                        'notifications.contrat_id',
+                        'notifications.user_id',
+                        'notifications.original_user_id',
+                        'demande_user.user_id as user_affecte_id'
+                    )
+                    ->leftJoin('demande_user', 'notifications.demande_id', '=', 'demande_user.demande_id')
+                    ->where('notifications.user_id', $user->id)
+                    ->where('notifications.is_read', false)
+                    ->orderBy('notifications.created_at', 'desc')
                     ->get()
                     ->map(function ($notif) {
                         return [
                             'id' => $notif->id,
                             'titre' => $notif->titre,
+                            'commentaire' => $notif->commentaire ?? 'Aucun commentaire disponible.',
                             'temps' => $notif->created_at->diffForHumans(),
                             'demande_id' => $notif->demande_id,
                             'contrat_id' => $notif->contrat_id,
+                            'user_id' => $notif->user_id,
+                            'user_affecte_id' => $notif->user_affecte_id,
+                            'original_user_id' => $notif->original_user_id ?? $notif->user_id,
+                            'is_read' => $notif->is_read,
+                            'showCommentaire' => false
                         ];
                     });
 
                 $view->with('demandes', $notifications);
             }
-
+            
             if ($user->hasRole('admin')) {
-                $adminNotifications = Notification::where('user_id', $user->id)
-                    ->where('is_read', false)
-                    ->orderBy('created_at', 'desc')
+                $adminNotifications = Notification::select(
+                        'notifications.id',
+                        'notifications.titre',
+                        'notifications.commentaire',
+                        'notifications.is_read',
+                        'notifications.created_at',
+                        'notifications.demande_id',
+                        'notifications.contrat_id',
+                        'notifications.user_id',
+                        'notifications.original_user_id',
+                        'demande_user.user_id as user_affecte_id'
+                    )
+                    ->leftJoin('demande_user', 'notifications.demande_id', '=', 'demande_user.demande_id')
+                    ->where('notifications.user_id', $user->id)
+                    ->where('notifications.is_read', false)
+                    ->orderBy('notifications.created_at', 'desc')
                     ->get()
                     ->map(function ($notif) {
                         return [
                             'id' => $notif->id,
                             'titre' => $notif->titre,
+                            'commentaire' => $notif->commentaire ?? 'Aucun commentaire disponible.',
                             'temps' => $notif->created_at->diffForHumans(),
                             'demande_id' => $notif->demande_id,
                             'contrat_id' => $notif->contrat_id,
+                            'user_id' => $notif->user_id,
+                            'user_affecte_id' => $notif->user_affecte_id, 
+                            'original_user_id' => $notif->original_user_id ?? $notif->user_id,
+                            'is_read' => $notif->is_read,
+                            'showCommentaire' => false
                         ];
                     });
 
@@ -62,3 +100,13 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 }
+
+
+
+
+
+
+
+
+
+

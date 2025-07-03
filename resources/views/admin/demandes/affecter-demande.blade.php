@@ -121,7 +121,7 @@
                                             <label for="type_form" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Sélectionner le type de la formulaire :
                                             </label>
-                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" >
                                                 <option value="">-- Sélectionner le type --</option>
                                                 <option value="contrat">Contrat</option>
                                                 <option value="facture">Facture</option>
@@ -133,7 +133,7 @@
                                             <label for="service" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Sélectionner le service :
                                             </label>
-                                            <select name="service" id="service" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                            <select name="service" id="service" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" >
                                                 <option value="">-- Sélectionner le service --</option>
                                                 <option value="plaisance">Service plaisance</option>
                                                 <option value="tresorier">Service tresorier</option>
