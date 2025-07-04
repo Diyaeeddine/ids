@@ -400,7 +400,7 @@
           window.location.href = adminUrl;
         } else {
           // Redirection vers la vue utilisateur
-          const userUrl = `/user/demande/remplir/${notification.demande_id}`;
+          const userUrl = `/plaisance/demande/remplir/${notification.demande_id}`;
           console.log('Navigating to user URL:', userUrl);
           window.location.href = userUrl;
         }

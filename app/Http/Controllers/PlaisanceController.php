@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\DemandeUser;
+use App\Models\Demande;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;  
 use Illuminate\Validation\Rules\Password;  

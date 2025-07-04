@@ -113,7 +113,7 @@
                                       
                                         <div>
                                             <label for="user_id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Le service : :
+                                                Le service :
                                             </label>
                                             <select name="user_id" id="user_id" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" required>
                                                 <option value="">-- Sélectionner un utilisateur --</option>
