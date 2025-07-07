@@ -1,183 +1,159 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\DemandeUser;
 use App\Models\Demande;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;  
-use Illuminate\Validation\Rules\Password;  
-use Illuminate\Auth\Events\Registered;  
+use App\Models\DemandeUser;
+use App\Models\Notification;
+use Illuminate\Support\Facades\DB;
+
 class PlaisanceController extends Controller
 {
-    public function plaisanceDashboard(Request $request)
+    /**
+     * Display the dashboard for the "Plaisance" role with filtered stats.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function plaisancedashboard(Request $request)
     {
         $user = $request->user();
 
+        // Fetch contracts and invoices created ONLY by this user
         $contrats = $user->contrats()->latest()->get();
         $factures = $user->factures()->latest()->get();
 
-        $contractCount = $contrats->count();
-        $invoiceCount = $factures->count();
-        $unpaidInvoicesCount = $factures->where('statut', 'non payée')->count();
-        $totalOwed = $factures->where('statut', 'non payée')->sum('total_ttc');
-
-        $recentContrats = $contrats->take(5);
-
+        // Calculate statistics based on the filtered data
         $data = [
-            'contractCount' => $contractCount,
-            'invoiceCount' => $invoiceCount,
-            'unpaidInvoicesCount' => $unpaidInvoicesCount,
-            'totalOwed' => $totalOwed,
-            'recentContrats' => $recentContrats,
+            'contractCount'       => $contrats->count(),
+            'invoiceCount'        => $factures->count(),
+            'unpaidInvoicesCount' => $factures->where('statut', 'non payée')->count(),
+            'totalOwed'           => $factures->where('statut', 'non payée')->sum('total_ttc'),
+            'recentContrats'      => $contrats->take(5),
+            'title'               => 'Tableau de bord Plaisance'
         ];
 
         return view('plaisance.dashboard', $data);
     }
-    public function userDemandes()
-{
-    $user = Auth::user();
-    
-    $mesdemandes = DemandeUser::with(['demande', 'user'])
-        ->where('user_id', $user->id)
-        ->where(function ($q) {
-            $q->where('isyourturn', true)
-              ->orWhere('is_filled', true);
-        })
-        ->latest('updated_at')
-        ->paginate(10);
 
-        foreach ($mesdemandes as $demande) {
-            $updated_at = $demande->updated_at;
-            $now = now();
-    
-            $diffInMinutes = round($updated_at->diffInMinutes($now));
-    
-            if ($diffInMinutes < 60) {
-                $demande->temps_ecoule = $diffInMinutes . ' min';
-                $demande->temps_ecoule_minutes = $diffInMinutes;
-            } elseif ($diffInMinutes < 1440) {
-                $hours = floor($diffInMinutes / 60);
-                $minutes = $diffInMinutes % 60;
-                $demande->temps_ecoule = $hours . 'h ' . $minutes . 'min';
-                $demande->temps_ecoule_minutes = $diffInMinutes;
-            } else {
-                $days = floor($diffInMinutes / 1440);
-                $hours = floor(($diffInMinutes % 1440) / 60);
-                $demande->temps_ecoule = $days . 'j ' . $hours . 'h';
-                $demande->temps_ecoule_minutes = $diffInMinutes;
-            }
-        }
-    $nouvellesDemandes = DemandeUser::with('demande')
-        ->where('user_id', $user->id)
-        ->where('is_filled', false)
-        ->where('IsYourTurn', true)
-        ->where('updated_at', '>', now()->subMinutes(60))
-        ->get();
+    /**
+     * Display a list of "demandes" assigned to the authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function userDemandes(Request $request)
+    {
+        $user = $request->user();
+        
+        // Fetch all relevant "demandes" for this user in one query
+        $mesdemandes = DemandeUser::with('demande')
+            ->where('user_id', $user->id)
+            ->where(fn($q) => $q->where('isyourturn', true)->orWhere('is_filled', true))
+            ->latest('updated_at')
+            ->paginate(10);
 
-    $demandesEnRetard = DemandeUser::with('demande')
-        ->where('user_id', $user->id)
-        ->where('is_filled', false)
-        ->where('IsYourTurn', true)
-        ->where('updated_at', '<=', now()->subMinutes(60))
-        ->get();
-
-    return view('plaisance.demandes', compact('mesdemandes', 'nouvellesDemandes', 'demandesEnRetard'));
-}
-
-public function showRemplir($id)
-{
-    $user = Auth::user();
-    $demande = Demande::findOrFail($id);
-
-    $champsAffectes = collect($demande->champs ?? [])
-        ->filter(function ($champData) use ($user) {
-            return is_array($champData)
-                && isset($champData['user_id'])
-                && $champData['user_id'] == $user->id;
+        // Process each "demande" to calculate elapsed time
+        $mesdemandes->each(function ($demande) {
+            $demande->temps_ecoule = $demande->updated_at->diffForHumans(now(), [
+                'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE,
+                'parts' => 2,
+            ]);
         });
 
-    return view('plaisance.remplirDemande', [
-        'user' => $user,
-        'demande' => $demande,
-        'champs' => $champsAffectes,
-    ]);
-}
+        // Filter the collection to get new and late "demandes" without extra database queries
+        $actionableDemandes = $mesdemandes->where('is_filled', false)->where('isyourturn', true);
+        $nouvellesDemandes = $actionableDemandes->where('updated_at', '>', now()->subHour());
+        $demandesEnRetard = $actionableDemandes->where('updated_at', '<=', now()->subHour());
 
+        return view('plaisance.demandes', compact('mesdemandes', 'nouvellesDemandes', 'demandesEnRetard'));
+    }
 
+    /**
+     * Show the form for the user to fill their assigned fields for a "demande".
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id The ID of the Demande.
+     * @return \Illuminate\View\View
+     */
+    public function showRemplir(Request $request, $id)
+    {
+        $user = $request->user();
+        $demande = Demande::findOrFail($id);
+
+        // Filter the "champs" array to get only the fields assigned to the current user.
+        $champsAffectes = collect($demande->champs ?? [])
+            ->filter(fn($champData) => is_array($champData) && isset($champData['user_id']) && $champData['user_id'] == $user->id);
+
+        return view('plaisance.remplirDemande', [
+            'demande' => $demande,
+            'champs' => $champsAffectes,
+            'title' => "Remplir la Demande #{$demande->id}"
+        ]);
+    }
+
+    /**
+     * Handle the form submission for filling a "demande".
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id The ID of the Demande.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function remplir(Request $request, $id)
     {
-    $user = Auth::user();
-    $demande = Demande::findOrFail($id);
-    $userId = $user->id;
+        $user = $request->user();
+        $demande = Demande::findOrFail($id);
+        
+        // Security check: Ensure this user is actually assigned to this demande
+        if (!$demande->users()->where('user_id', $user->id)->exists()) {
+            return redirect()->route('plaisance.demandes')->with('error', 'Vous n\'êtes pas autorisé à modifier cette demande.');
+        }
 
-    $values = $request->input('values', []);
+        $champs = $demande->champs ?? [];
+        $values = $request->input('values', []);
 
-    if ($request->hasFile('files')) {
-        $request->validate([
-            'files.*' => 'file|max:10240', 
-        ]);
-    }
-
-    $champs = $demande->champs ?? [];
-
-    foreach ($values as $key => $value) {
-        if (isset($champs[$key]) && is_array($champs[$key]) && ((string)($champs[$key]['user_id'] ?? '') === (string)$userId)) {
-            $champs[$key]['value'] = $value;
+        // Update values for assigned fields
+        foreach ($values as $key => $value) {
+            if (isset($champs[$key]) && is_array($champs[$key]) && ((string)($champs[$key]['user_id'] ?? '') === (string)$user->id)) {
+                $champs[$key]['value'] = $value;
+            }
         }
         
-    }
-    $demande->champs = $champs;
-    $demande->save();
-    if ($request->hasFile('files')) {
-        foreach ($request->file('files') as $file) {
-            $originalName = $file->getClientOriginalName();
-            $fileName = time() . '_' . $userId . '_' . $originalName;
-            $filePath = $file->storeAs('demandes', $fileName, 'public');
-
-            DB::table('demande_files')->insert([
-                'demande_id' => $demande->id,
-                'user_id' => $userId,
-                'file_name' => $originalName,
-                'file_path' => $filePath,
-                'file_size' => $file->getSize(),
-                'mime_type' => $file->getMimeType(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // Handle file uploads
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $key => $file) {
+                if (isset($champs[$key]) && is_array($champs[$key]) && ((string)($champs[$key]['user_id'] ?? '') === (string)$user->id)) {
+                    $fileName = time() . '_' . $user->id . '_' . $file->getClientOriginalName();
+                    $filePath = $file->storeAs('demandes', $fileName, 'public');
+                    $champs[$key]['value'] = $filePath; // Save the file path as the value
+                }
+            }
         }
-    }
 
-    $userChamps = array_filter($champs, function ($champ) use ($userId) {
-        return is_array($champ) && isset($champ['user_id']) && $champ['user_id'] === $userId;
-    });
-    $allFilled = collect($userChamps)->every(fn($champ) => !is_null($champ['value']) && trim($champ['value']) !== '');
+        $demande->champs = $champs;
+        $demande->save();
+        
+        // Check if all fields assigned to THIS user are now filled
+        $userChamps = array_filter($champs, fn($champ) => is_array($champ) && ($champ['user_id'] ?? null) === $user->id);
+        $allFilled = collect($userChamps)->every(fn($champ) => !empty(trim($champ['value'] ?? '')));
 
-    if ($allFilled) {
-        $user->demandes()->updateExistingPivot($demande->id, [
-            'is_filled' => true,
-            // 'isyourturn' => false,
+        // Update the pivot table with the new status
+        $demande->users()->updateExistingPivot($user->id, [
+            'is_filled' => $allFilled,
+            'etape' => $allFilled ? 'en_attente_validation' : 'en_cours',
             'duree' => $request->input('temps_ecoule'),
-            'etape'=>'en_attente_validation',
         ]);
 
-    } else {
-        $user->demandes()->updateExistingPivot($demande->id, [
-            'is_filled' => false,
+        // Notify the Admin that a user has submitted their part of the form
+        Notification::create([
+            'user_id' => 1, // Assumes Admin user_id is 1
+            'demande_id' => $id,
+            'titre' => "L'utilisateur {$user->name} a rempli sa partie de la demande #{$id}.",
+            'is_read' => false,
         ]);
+
+        return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès pour validation.');
     }
-    Notification::create([
-        'user_id' => 1,
-        'demande_id' => $id,
-        'titre' => 'vous avez des champs a reviser',
-        'is_read' => false,
-    ]);
-
-    return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès.');
-}
-
-
-
 }

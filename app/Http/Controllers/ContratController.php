@@ -3,39 +3,58 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Demandeur;
-use App\Models\Proprietaire;
-use App\Models\Navire;
-use App\Models\Gardien;
 use App\Models\Contrat;
+use App\Models\Demandeur;
+use App\Models\Gardien;
+use App\Models\Navire;
 use App\Models\Notification;
+use App\Models\Proprietaire;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\ContratSigne;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Storage;
-use App\Models\User;
-
+// We will use the Snappy facade for high-quality PDFs
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 class ContratController extends Controller
 {
+    /**
+     * Display a list of contracts.
+     * Shows all contracts to an admin, but only personal contracts to a plaisance user.
+     */
     public function index(Request $request)
     {
-        // Get the currently logged-in user from the Request object.
         $user = $request->user();
 
-        // Fetch all contracts for this user, including related boat and requester info.
-        $contrats = $user->contrats()->with('navire', 'demandeur')->latest()->get();
+        // Check the user's role to determine which contracts to show
+        if ($user->hasRole('admin')) {
+            $contrats = Contrat::with(['user', 'demandeur', 'navire'])->latest()->paginate(15);
+            // Admin gets a different view with all contracts
+            return view('admin.contrats.index', [
+                'contrats' => $contrats,
+                'title' => 'Tous les Contrats'
+            ]);
+        }
 
-        // Pass the contracts data to the view.
-        return view('user.contrats.contrats', ['contrats' => $contrats]);
+        // For 'plaisance' or other users, only show their own contracts
+        $contrats = $user->contrats()->with('navire', 'demandeur')->latest()->get();
+        
+        return view('plaisance.contrats.contrats', [
+            'contrats' => $contrats,
+            'title' => 'Mes Contrats'
+        ]);
     }
-    public function create()
+
+    /**
+     * Show the form for creating a new contract.
+     */
+    public function create(Request $request)
     {
-        return view('user.contrats.create');
+        // Return the correct view based on the user's role
+        $view = $request->user()->hasRole('admin') ? 'admin.contrats.create' : 'plaisance.contrats.create';
+        
+        return view($view, ['title' => 'Créer un Contrat']);
     }
+
 
     public function store(Request $request)
     {
@@ -45,210 +64,109 @@ class ContratController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('error', 'Erreur de validation');
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $contrat = DB::transaction(function () use ($request) {
+            $currentUser = $request->user();
+
             $demandeur = Demandeur::create([
                 'nom' => $request->nom_demandeur,
-                'cin_pass' => $request->cin_pass_demandeur,
+                'cin' => $request->cin_pass_demandeur,
                 'tel' => $request->tel_demandeur,
                 'adresse' => $request->adresse_demandeur,
                 'email' => $request->email_demandeur,
             ]);
 
-            $proprietaire = Proprietaire::create([
-                'type' => $request->filled('nom_societe') ? 'morale' : 'physique',
-                'nom' => $request->nom_proprietaire ?? $request->nom_societe,
-                'tel' => $request->tel_proprietaire,
-                'nom_societe' => $request->nom_societe,
-                'ice' => $request->ice,
-                'nationalite' => $request->nationalite_proprietaire,
-                'cin' => $request->cin_pass_proprietaire,
-                'validite_cin' => $request->validite_cin,
-                'caution_solidaire' => $request->caution_solidaire,
-                'passeport' => $request->cin_pass_proprietaire,
-            ]);
-
-            $navire = Navire::create([
-                'nom' => $request->nom_navire,
-                'type' => $request->type_navire,
-                'port' => $request->port,
-                'numero_immatriculation' => $request->numero_immatriculation,
-                'pavillon' => $request->pavillon,
-                'longueur' => $request->longueur,
-                'largeur' => $request->largeur,
-                'tirant_eau' => $request->tirant_eau,
-                'tirant_air' => $request->tirant_air,
-                'jauge_brute' => $request->jauge_brute,
-                'annee_construction' => $request->annee_construction,
-                'marque_moteur' => $request->marque_moteur,
-                'type_moteur' => $request->type_moteur,
-                'numero_serie_moteur' => $request->numero_serie_moteur,
-                'puissance_moteur' => $request->puissance_moteur,
-            ]);
-
-            $gardien = Gardien::create([
-                'nom' => $request->nom_gardien,
-                'cin_pass' => $request->cin_pass_gardien,
-                'tel' => $request->num_tele_gardien,
-            ]);
-
-            $mouvements = [];
-
-            if ($request->type_contrat === 'randonnee') {
-                $mouvements = [
-                    'num_titre_com' => $request->num_titre_com,
-                    'equipage' => $request->equipage,
-                    'passagers' => $request->passagers,
-                    'total_personnes' => $request->total_personnes,
-                    'majoration_stationnement' => $request->majoration_stationnement,
-                ];
-            } elseif ($request->type_contrat === 'accostage') {
-                $mouvements = [
-                    'num_abonn' => $request->num_abonn,
-                    'ponton' => $request->ponton,
-                    'num_poste' => $request->num_poste,
-                    'autres_prestations' => $request->autres_prestations ?? [],
-                    'com_assurance' => $request->com_assurance,
-                    'num_police' => $request->num_police,
-                    'echeance' => $request->echeance,
-                ];
-            }
-
-            $contrat = Contrat::create([
-                'user_id' => Auth::id(),
-                'demandeur_id' => $demandeur->id,
-                'proprietaire_id' => $proprietaire->id,
-                'navire_id' => $navire->id,
-                'gardien_id' => $gardien->id,
-                'type' => $request->type_contrat,
-                'mouvements' => json_encode($mouvements),
-                'date_debut' => $request->date_debut,
-                'date_fin' => $request->date_fin,
-                'signe_par' => $request->signe_par,
-                'accepte_le' => $request->accepte_le,
-                'lieu_signature' => $request->lieu_signature,
-                'date_signature' => $request->date_signature,
-            ]);
-
-            // Notifier les admins
-            foreach (User::role('admin')->get() as $admin) {
-                Notification::create([
-                    'user_id' => $admin->id,
-                    'contrat_id' => $contrat->id,
-                    'titre' => 'Nouveau contrat créé par ' . Auth::user()->name,
-                    'is_read' => false,
+            $proprietaire = null;
+            if ($request->filled('nom_proprietaire') || $request->filled('nom_societe')) {
+                $proprietaire = Proprietaire::create([
+                    'type' => $request->filled('nom_societe') ? 'morale' : 'physique',
+                    'nom' => $request->nom_proprietaire ?? $request->nom_societe,
+                    'tel' => $request->tel_proprietaire,
+                    'nom_societe' => $request->nom_societe,
+                    'ice' => $request->ice,
+                    'nationalite' => $request->nationalite_proprietaire,
+                    'cin_pass_phy' => $request->cin_pass_proprietaire_phy,
+                    'cin_pass_mor' => $request->cin_pass_proprietaire_mor,
+                    'validite_cin' => $request->validite_cin,
+                    'caution_solidaire' => $request->caution_solidaire,
                 ]);
             }
 
-            return $contrat;
+            $navire = Navire::create([
+                'nom' => $request->nom_navire, 'type' => $request->type_navire, 'port' => $request->port,
+                'numero_immatriculation' => $request->numero_immatriculation, 'pavillon' => $request->pavillon,
+                'longueur' => $request->longueur, 'largeur' => $request->largeur, 'tirant_eau' => $request->tirant_eau,
+                'tirant_air' => $request->tirant_air, 'jauge_brute' => $request->jauge_brute,
+                'annee_construction' => $request->annee_construction, 'marque_moteur' => $request->marque_moteur,
+                'type_moteur' => $request->type_moteur, 'numero_serie_moteur' => $request->numero_serie_moteur,
+                'puissance_moteur' => $request->puissance_moteur,
+            ]);
+
+            $gardien = null;
+            if ($request->filled('nom_gardien')) {
+                $gardien = Gardien::create([
+                    'nom' => $request->nom_gardien, 'cin' => $request->cin_pass_gardien, 'tel' => $request->num_tele_gardien,
+                ]);
+            }
+
+            $mouvements = [];
+            if ($request->type_contrat === 'randonnee') {
+                $mouvements = ['num_titre_com' => $request->num_titre_com, 'equipage' => $request->equipage, 'passagers' => $request->passagers, 'total_personnes' => $request->total_personnes, 'majoration_stationnement' => $request->majoration_stationnement];
+            } elseif ($request->type_contrat === 'accostage') {
+                $mouvements = ['num_abonn' => $request->num_abonn, 'ponton' => $request->ponton, 'num_poste' => $request->num_poste, 'autres_prestations' => $request->autres_prestations ?? [], 'com_assurance' => $request->com_assurance, 'num_police' => $request->num_police, 'echeance' => $request->echeance];
+            }
+
+            $newContrat = Contrat::create([
+                'user_id' => $currentUser->id, 'demandeur_id' => $demandeur->id, 'proprietaire_id' => $proprietaire?->id,
+                'navire_id' => $navire->id, 'gardien_id' => $gardien?->id, 'type' => $request->type_contrat,
+                'mouvements' => json_encode($mouvements), 'date_debut' => $request->date_debut, 'date_fin' => $request->date_fin,
+                'signe_par' => $request->signe_par, 'accepte_le' => $request->accepte_le,
+                'lieu_signature' => $request->lieu_signature, 'date_signature' => $request->date_signature,
+            ]);
+
+            // Notify Admins
+            $admins = User::role('admin')->get();
+            foreach ($admins as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id, 'contrat_id' => $newContrat->id,
+                    'titre' => 'Nouveau contrat créé par ' . $currentUser->name, 'is_read' => false,
+                ]);
+            }
+            return $newContrat;
         });
 
-            // return redirect()->route('contrats.genererPDF', [
-            //     'id' => $contrat->id,
-            //     'type' => $request->type_contrat
-            // ]);
-            return redirect()->route('factures.create', ['contrat' => $contrat->id])
-            ->with('download_contract', [
-                'id' => $contrat->id,
-                'type' => $contrat->type
-            ]);
+        // Redirect to the correct route based on the user's role
+        $routeName = $request->user()->hasRole('admin') ? 'admin.factures.create' : 'plaisance.factures.create';
+        
+        return redirect()->route($routeName, ['contrat' => $contrat->id])
+                         ->with('status', 'Contrat créé avec succès !');
     }
 
-    public function genererPDF($id, $type)
+    /**
+     * Generate and download a PDF for a specific, existing contract.
+     */
+    public function downloadPDF(Request $request, Contrat $contrat)
     {
-        $contrat = Contrat::with(['user', 'demandeur', 'proprietaire', 'navire', 'gardien'])->findOrFail($id);
+        // Security Check: Allow admin to see any contract, but plaisance can only see their own.
+        if (!$request->user()->hasRole('admin') && $contrat->user_id !== $request->user()->id) {
+            abort(403, 'Action non autorisée.');
+        }
+
+        $contrat->load(['user', 'demandeur', 'proprietaire', 'navire', 'gardien']);
         $contrat->mouvements = json_decode($contrat->mouvements, true);
-        $view = $type === 'accostage' ? 'user.contrats.accostage' : 'user.contrats.randonnee';
+        
+        // Use the same template for all roles for consistency
+        $view = 'plaisance.contrats' . $contrat->type; 
 
-        return view($view, compact('contrat', 'type'));
+        if (!view()->exists($view)) {
+             abort(404, "Le template de contrat pour '{$contrat->type}' n'a pas été trouvé.");
+        }
+
+        $pdf = PDF::loadView($view, ['contrat' => $contrat]);
+        $filename = "contrat_{$contrat->type}_{$contrat->id}.pdf";
+        
+        return $pdf->download($filename);
     }
-
-
-
-public function indexAdmin()
-{
-    $contrats = Contrat::with(['demandeur', 'proprietaire', 'navire', 'contratSigne'])->latest()->paginate(10);
-    return view('admin.contrats.index', compact('contrats'));
-}
-
-
-// public function imprimer($id)
-// {
-//     $contrat = Contrat::with(['navire', 'demandeur', 'proprietaire', 'gardien'])->findOrFail($id);
-//     $mouvements = [];
-//     if (!empty($contrat->mouvements)) {
-//         try {
-//             $decoded = json_decode($contrat->mouvements, true);
-//             $mouvements = is_array($decoded) ? $decoded : [];
-//         } catch (\Exception $e) {
-//             $mouvements = [];
-//         }
-//     }
-
-//     $type = $contrat->type === 'accostage' ? 'accostage' : 'randonnee';
-//     $view = "user.contrats.{$type}";
-
-//     return view($view, [
-//         'contrat' => $contrat,
-//         'type' => $type,
-//         'mouvements' => $mouvements
-//     ]);
-// }
-
-public function importerContrat(Request $request, $id)
-{
-    $request->validate([
-        'contrat_signe' => 'required|mimes:pdf|max:10240'
-    ]);
-
-    $contrat = Contrat::findOrFail($id);
-
-    $path = $request->file('contrat_signe')->store("contrats_signes/{$id}", 'public');
-
-    // ✅ Mettre à jour le contrat
-    $contrat->update([
-        'est_signe_importe' => true,
-        'contrat_signe_path' => $path
-    ]);
-
-    // ✅ Sauvegarder dans table contrat_signes
-    ContratSigne::create([
-        'contrat_id' => $contrat->id,
-        'fichier_path' => $path,
-        'imported_at' => now()
-    ]);
-
-    return back()->with('success', 'Contrat signé importé avec succès.');
-}
-
-public function voirContratSigne($contratId)
-{
-    $contrat = Contrat::findOrFail($contratId);
-
-    $chemin = storage_path('app/public/' . $contrat->contrat_signe_path);
-
-    if (!file_exists($chemin)) {
-        abort(404, 'Fichier non trouvé.');
-    }
-
-    return response()->file($chemin);
-}
-
-public function marquerImprime($id)
-{
-    $contrat = \App\Models\Contrat::findOrFail($id);
-    $contrat->est_imprime = true;
-    $contrat->save();
-
-    return response()->json(['status' => 'ok']);
-}
-
-
-
-
 }

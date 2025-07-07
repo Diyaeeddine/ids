@@ -140,8 +140,7 @@
           <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('Accueil') }}</x-nav-link>
             <x-nav-link :href="route('user.demandes')" :active="request()->routeIs('user.demandes') || request()->routeIs('user.demandes.showRemplir') || request()->routeIs('user.demandes.voir')">{{ __('Mes demandes') }}</x-nav-link>
-            <x-nav-link :href="route('user.contrats')" :active="request()->routeIs('user.contrats') || request()->routeIs('contrats.create')">{{ __('Contrats') }}</x-nav-link>
-            <x-nav-link :href="route('factures.index')" :active="request()->routeIs('user.factures') || request()->routeIs('factures.index') || request()->routeIs('factures.create') || request()->routeIs('factures.show')">{{ __('Factures') }}</x-nav-link>
+            
           </div>
         @endrole
         @role('tresorier')
@@ -159,20 +158,7 @@
             {{ __('Ordre de virement') }}
           </x-nav-link>
         </div>
-        <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-          {{-- <x-nav-link
-          :href="route('user.contrats')"
-          :active="request()->routeIs('user.contrats') || request()->routeIs('contrats.create')"
-        >
-          {{ __('Contrats') }}
-        </x-nav-link>
-         <x-nav-link
-        :href="route('factures.index')"
-        :active="request()->routeIs('user.factures') || request()->routeIs('factures.index') || request()->routeIs('factures.create') || request()->routeIs('factures.show')"
-        >
-          {{ __('Factures') }}
-        </x-nav-link> --}}
-        </div>
+        
       @endrole
 
       </div>

@@ -191,29 +191,12 @@ public function getAlerts()
 }
 
 public function userDashboard(Request $request)
-    {
-        $user = $request->user();
-
-        $contrats = $user->contrats()->latest()->get();
-        $factures = $user->factures()->latest()->get();
-
-        $contractCount = $contrats->count();
-        $invoiceCount = $factures->count();
-        $unpaidInvoicesCount = $factures->where('statut', 'non payée')->count();
-        $totalOwed = $factures->where('statut', 'non payée')->sum('total_ttc');
-
-        $recentContrats = $contrats->take(5);
-
-        $data = [
-            'contractCount' => $contractCount,
-            'invoiceCount' => $invoiceCount,
-            'unpaidInvoicesCount' => $unpaidInvoicesCount,
-            'totalOwed' => $totalOwed,
-            'recentContrats' => $recentContrats,
-        ];
-
-        return view('user.dashboard', $data);
-    }
+{
+    // The normal user dashboard is simple and does not need to fetch contract or facture data.
+    return view('user.dashboard', [
+        'title' => 'Mon Tableau de bord'
+    ]);
+}
 
 
     

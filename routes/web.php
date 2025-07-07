@@ -66,22 +66,12 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
         
         return response()->download($path);
     })->name('telecharger.fichier');
-    
-    // User Contrats
-    Route::get('user/contrats', [ContratController::class, 'index'])->name('user.contrats');
-    Route::get('user/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
-    Route::post('user/contrats', [ContratController::class, 'store'])->name('contrat.store');
-    Route::view('user/contrats/contrat-radonnee', 'user.contrats.randonnee')->name('user.contrats.contrat_radonnee');
-    Route::view('user/contrats/contrat-accostage', 'user.contrats.accostage')->name('user.contrats.contrat_accostage');
-    Route::get('/contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
-    
-    // User Factures
-    Route::get('/factures', [FactureController::class, 'index'])->name('factures.index');
-    Route::get('/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
-    Route::get('/contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('factures.create');
-    Route::post('/contrats/{contrat}/facture', [FactureController::class, 'store'])->name('factures.store');
-    Route::delete('/factures/{facture}', [FactureController::class, 'destroy'])->name('factures.destroy');
 });
+
+
+
+
+
 
 Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
@@ -93,7 +83,6 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::get('plaisance/demande/remplir/{id}', [PlaisanceController::class, 'showRemplir'])->name('plaisance.demandes.showRemplir');
     Route::post('plaisance/demande/remplir/{id}', [PlaisanceController::class, 'remplir'])->name('plaisance.demandes.remplir');
     
-    // File Downloads
     Route::get('/telecharger/{filename}', function ($filename) {
         $path = storage_path('app/public/demandes/' . $filename);
         
@@ -104,7 +93,7 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
         return response()->download($path);
     })->name('telecharger.fichier');
     
-    // User Contrats
+    // plaisance Contrats
     Route::get('plaisance/contrats', [ContratController::class, 'index'])->name('plaisance.contrats');
     Route::get('plaisance/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
     Route::post('plaisance/contrats', [ContratController::class, 'store'])->name('contrat.store');
@@ -112,19 +101,12 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::view('plaisance/contrats/contrat-accostage', 'plaisance.contrats.accostage')->name('plaisance.contrats.contrat_accostage');
     Route::get('/contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
     
-    // User Factures
+    // plaisance Factures
     Route::get('plaisance/factures', [FactureController::class, 'index'])->name('plaisance.factures.index');
-    Route::get('plaisance/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('plaisance.factures.show');
+    Route::get('plaisance/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
     Route::get('plaisance/contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('plaisance.factures.create');
-    Route::post('plaisance/contrats/{contrat}/facture', [FactureController::class, 'store'])->name('plaisance.factures.store');
-    Route::delete('plaisance/factures/{facture}', [FactureController::class, 'destroy'])->name('plaisance.factures.destroy');
-
-
-});
-Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
-
-        Route::get('plaisance/dashboard', [PlaisanceController::class, 'plaisanceDashboard'])->name('plaisance.dashboard');
-    Route::get('plaisance/demandes', [PlaisanceController::class, 'userDemandes'])->name('plaisance.demandes');
+    Route::post('plaisance/contrats/{contrat}/facture', [FactureController::class, 'store'])->name('factures.store');
+    Route::delete('plaisance/factures/{facture}', [FactureController::class, 'destroy'])->name('factures.destroy');
 
 
 });

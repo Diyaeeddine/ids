@@ -472,18 +472,7 @@
                         </div>         
                       
                     </div>
-                        <!-- Boutons de soumission -->
-                        <div class="mt-8 flex justify-end space-x-4">
-                            
-                            <a href="{{route('user.contrats')}}" type="button" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
-                                <i class="fas fa-times mr-2"></i>
-                                Annuler
-                            </a>
-                            <button type="submit" disabled class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" id="btnsubmit">
-                                <i class="fas fa-paper-plane mr-2"></i>
-                                Créer le contrat
-                            </button>
-                        </div>
+                        
                     </form>
                     </div>
                 </div>

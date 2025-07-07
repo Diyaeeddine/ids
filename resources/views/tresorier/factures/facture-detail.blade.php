@@ -22,7 +22,7 @@
             @endif
 
             <div id="invoiceToPrint">
-                @include('user.factures._invoice_template')
+                @include('plaisance.factures._invoice_template')
             </div>
 
         </div>

@@ -137,7 +137,7 @@
                                                 <option value="marche">Marché</option>
 
                                             </select>
-                                        </div>
+                                        </div>  
                                     </div>
                                     
                                 </div>
