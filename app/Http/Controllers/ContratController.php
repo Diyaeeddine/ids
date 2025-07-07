@@ -152,7 +152,7 @@ class ContratController extends Controller
             //     'id' => $contrat->id,
             //     'type' => $request->type_contrat
             // ]);
-            return redirect()->route('factures.create', ['contrat' => $contrat->id])
+            return redirect()->route('plaisance.factures.create', ['contrat' => $contrat->id])
             ->with('download_contract', [
                 'id' => $contrat->id,
                 'type' => $contrat->type

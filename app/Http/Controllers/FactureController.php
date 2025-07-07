@@ -23,7 +23,7 @@ class FactureController extends Controller
     $user = $request->user();
     $factures = $user->factures()->with('contrat.navire')->latest()->get();
 
-    return view('user.factures.index', [
+    return view('plaisance.factures.index', [
         'factures' => $factures,
         'title' => 'Mes Factures' 
     ]);
@@ -39,7 +39,7 @@ class FactureController extends Controller
         $latestInvoice = Facture::whereYear('created_at', date('Y'))->whereMonth('created_at', date('m'))->latest('id')->first();
         $nextInvoiceNumber = $latestInvoice ? (int)substr($latestInvoice->numero_facture, -4) + 1 : 1;
         $invoiceNumber = 'FAC/' . date('Y/m') . '/' . str_pad($nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
-        return view('user.factures.create', ['contrat' => $contrat, 'invoiceNumber' => $invoiceNumber]);
+        return view('plaisance.factures.create', ['contrat' => $contrat, 'invoiceNumber' => $invoiceNumber]);
     }
 
     /**
@@ -73,7 +73,7 @@ class FactureController extends Controller
             return $facture;
         });
 
-        return redirect()->route('factures.show', $facture)
+        return redirect()->route('plaisance.factures.show', $facture)
                          ->with('status', 'Facture créée avec succès !');
     }
 

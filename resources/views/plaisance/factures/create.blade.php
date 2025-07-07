@@ -11,7 +11,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
 
-                    <form action="{{ route('factures.store', ['contrat' => $contrat->id]) }}" method="POST" class="space-y-8">
+                    <form action="{{ route('plaisance.factures.store', ['contrat' => $contrat->id]) }}" method="POST" class="space-y-8">
                         @csrf
                         
                         @if ($errors->any())
