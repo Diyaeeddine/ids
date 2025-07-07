@@ -475,7 +475,7 @@
                         <!-- Boutons de soumission -->
                         <div class="mt-8 flex justify-end space-x-4">
                             
-                            <a href="{{route('user.contrats')}}" type="button" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
+                            <a href="{{route('plaisance.contrats')}}" type="button" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
                                 <i class="fas fa-times mr-2"></i>
                                 Annuler
                             </a>

@@ -1,8 +1,4 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap" rel="stylesheet">
-@php
-    use App\Enums\UserRole;
-@endphp
-
 <style>
 @keyframes ring {
   0% { transform: rotate(0deg); }
@@ -96,7 +92,6 @@
           </a>
         </div>
 
-        <!-- Navigation Admin et User -->
         @role('admin')
           <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('admin.dashboard')">{{ __('Accueil') }}</x-nav-link>
@@ -153,30 +148,18 @@
             {{ __('Demandes') }}
           </x-nav-link>
           <x-nav-link :href="route('tresorier.op')" :active="request()->routeIs('op.demandes')">
-            {{ __('Ordre de paiment') }}
+            {{ __('Ordre de paiement') }}
           </x-nav-link>
           <x-nav-link :href="route('tresorier.ov')" :active="request()->routeIs('ov.demandes')">
             {{ __('Ordre de virement') }}
           </x-nav-link>
         </div>
         <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-          {{-- <x-nav-link
-          :href="route('user.contrats')"
-          :active="request()->routeIs('user.contrats') || request()->routeIs('contrats.create')"
-        >
-          {{ __('Contrats') }}
-        </x-nav-link>
-         <x-nav-link
-        :href="route('factures.index')"
-        :active="request()->routeIs('user.factures') || request()->routeIs('factures.index') || request()->routeIs('factures.create') || request()->routeIs('factures.show')"
-        >
-          {{ __('Factures') }}
-        </x-nav-link> --}}
+
         </div>
       @endrole
 
       </div>
-<!-- Partie droite -->
 <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4 relative"
      x-data='notificationBell(@json(auth()->user()->hasRole("admin") ? ($adminNotifications ?? []) : ($demandes ?? [])))'
      @click.away="closeDropdown()">
@@ -242,12 +225,16 @@
                       </div>
                       <div class="flex justify-end mt-4 space-x-2">
                         <button @click="toggleCommentaire(index)" class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200">Fermer</button>
-                        <button @click="window.location.href = '/user/demande/remplir/' + notif.demande_id" class="comment-button-pulse px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-md hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center">
-                          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-                          </svg>
-                          Modifier ma demande
-                        </button>
+                        <button 
+                        @click="navigateToDetail(notif)" 
+                        class="comment-button-pulse px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-md hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center"
+                      >
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                        </svg>
+                        Modifier ma demande
+                      </button>
+                      
                       </div>
                     </div>
                   </div>
@@ -262,7 +249,6 @@
         @endif
 
 
-        <!-- Settings Dropdown -->
         <div class="hidden sm:flex sm:items-center sm:ms-6">
           <x-dropdown align="right" width="48">
             <x-slot name="trigger">
@@ -276,9 +262,9 @@
               </button>
             </x-slot>
             <x-slot name="content">
-              @if(Auth::User()->role === UserRole::Admin)
+              @role('admin')
                 <x-dropdown-link :href="route('profile.edit')">{{ __('Profile') }}</x-dropdown-link>
-              @endif
+              @endrole
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Déconnexion') }}</x-dropdown-link>
@@ -287,7 +273,6 @@
           </x-dropdown>
         </div>
 
-        <!-- Hamburger -->
         <div class="-me-2 flex items-center sm:hidden">
           <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -337,15 +322,13 @@
 
         const notificationId = notification.id;
 
-        // Mise à jour locale
         this.notifications[index].read = true;
         this.unreadCount = this.notifications.filter(n => !n.read).length;
 
         setTimeout(() => {
-          this.notifications.splice(index, 1);  // Supprime la notification après l'avoir lue
+          this.notifications.splice(index, 1);  
         }, 500);
 
-        // Envoi AJAX
         fetch(`/notifications/mark-as-read/${notificationId}`, {
           method: 'POST',
           headers: {
@@ -380,31 +363,31 @@
       },
 
       navigateToDetail(notification) {
-        if (!notification.demande_id) {
-          console.error('demande_id manquant dans la notification');
-          return;
-        }
-        const userId = notification.user_affecte_id || notification.original_user_id || notification.user_id;
-        if (!userId) {
-          console.error('Aucun user_id disponible pour la navigation');
-          return;
-        }
+  if (!notification.demande_id) {
+    console.error('demande_id manquant dans la notification');
+    return;
+  }
 
-        const currentUrl = window.location.href;
-        const isAdmin = currentUrl.includes('/admin/') || currentUrl.includes('admin');
+  const userId = notification.user_affecte_id || notification.original_user_id || notification.user_id;
+  if (!userId) {
+    console.error('Aucun user_id disponible pour la navigation');
+    return;
+  }
 
-        if (isAdmin) {
-          // Redirection vers la vue admin
-          const adminUrl = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
-          console.log('Navigating to admin URL:', adminUrl);
-          window.location.href = adminUrl;
-        } else {
-          // Redirection vers la vue utilisateur
-          const userUrl = `/plaisance/demande/remplir/${notification.demande_id}`;
-          console.log('Navigating to user URL:', userUrl);
-          window.location.href = userUrl;
-        }
-      }
-    };
+  const userRole = "{{ auth()->user()->getRoleNames()->first() }}";
+
+  let url = '';
+  if (userRole === 'admin') {
+    url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
+  } else if (userRole === 'plaisance') {
+    url = `/plaisance/demande/remplir/${notification.demande_id}`;
+  } else {
+    url = `/user/demande/remplir/${notification.demande_id}`;
+  }
+
+  window.location.href = url;
+}
+
+}
   }
 </script>

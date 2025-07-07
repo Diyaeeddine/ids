@@ -109,7 +109,7 @@
                                         Affectation des champs
                                     </h3>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                       
                                         <div>
                                             <label for="user_id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -132,14 +132,25 @@
                                                 <option value="contrat">Contrat</option>
                                                 <option value="facture">Facture</option>
                                                 <option value="op">Ordre de paiement</option>
-                                                <option value="ov">Bon de commande</option>
+                                                <option value="ov">Ordre de virement</option>
+                                                <option value="bon_commande">Bon de commande</option>
+                                                <option value="recu_p">Recu de paiement</option>
                                                 <option value="prestation">Prestation de services</option>
                                                 <option value="marche">Marché</option>
 
                                             </select>
+                                        </div>                                        <div>
+                                            <label for="template" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                le type de template :
+                                            </label>
+                                            <select name="template" id="template" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
+                                                <option value="">-- Sélectionner le tempalte --</option>
+                                                <option value="accostage">Accostage</option>
+                                                <option value="randonnee">Randonnee</option>
+
+                                            </select>
                                         </div>
                                     </div>
-                                    
                                 </div>
 
                                 <!-- Tableau des champs -->

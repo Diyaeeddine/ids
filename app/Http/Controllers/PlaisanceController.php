@@ -178,6 +178,25 @@ public function showRemplir($id)
     return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès.');
 }
 
+public function getAlerts()
+{
+    $userId = Auth::id();
+    $now = now();
+    $nouvellesDemandes = DemandeUser::where('user_id', $userId)
+        ->where('is_filled', false)
+        // ->where('IsYourTurn', true)
+        ->where('updated_at', '>', $now->copy()->subMinutes(60))
+        ->count();
+    $demandesEnRetard = DemandeUser::where('user_id', $userId)
+        ->where('is_filled', false)
+        // ->where('IsYourTurn', true)
+        ->where('updated_at', '<=', $now->copy()->subMinutes(60))
+        ->count();
+    return response()->json([
+        'nouvelles' => $nouvellesDemandes,
+        'retard' => $demandesEnRetard,
+    ]);
+}
 
 
 }

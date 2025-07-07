@@ -21,4 +21,13 @@ class TresorierController extends Controller
         return view('tresorier.ov');
 
     }
+    public function createOP(){
+        return view('tresorier.create-OP');
+
+    }
+    public function createOV(){
+        return view('tresorier.create-OV');
+
+    }
+    
 }

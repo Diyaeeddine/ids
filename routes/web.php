@@ -123,8 +123,39 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 });
 Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
-        Route::get('plaisance/dashboard', [PlaisanceController::class, 'plaisanceDashboard'])->name('plaisance.dashboard');
+    Route::get('plaisance/dashboard', [PlaisanceController::class, 'plaisanceDashboard'])->name('plaisance.dashboard');
     Route::get('plaisance/demandes', [PlaisanceController::class, 'userDemandes'])->name('plaisance.demandes');
+    Route::get('/plaisance/alerts', [PlaisanceController::class, 'getAlerts'])->name('plaisance.alerts');
+    Route::get('plaisance/demande/afficher/{id}', [DemandeController::class, 'show'])->name('plaisance.demandes.voir');
+    Route::get('plaisance/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('plaisance.demandes.showRemplir');
+    Route::post('plaisance/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('plaisance.demandes.remplir');
+    
+    // File Downloads
+    Route::get('/telecharger/{filename}', function ($filename) {
+        $path = storage_path('app/public/demandes/' . $filename);
+        
+        if (!file_exists($path)) {
+            abort(404);
+        }
+        
+        return response()->download($path);
+    })->name('telecharger.fichier');
+    
+    // User Contrats
+    Route::get('plaisance/contrats', [ContratController::class, 'index'])->name('plaisance.contrats');
+    Route::get('plaisance/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
+    Route::post('plaisance/contrats', [ContratController::class, 'store'])->name('contrat.store');
+    Route::view('plaisance/contrats/contrat-radonnee', 'plaisance.contrats.randonnee')->name('plaisance.contrats.contrat_radonnee');
+    Route::view('plaisance/contrats/contrat-accostage', 'plaisance.contrats.accostage')->name('plaisance.contrats.contrat_accostage');
+    Route::get('/contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
+    
+    // User Factures
+    Route::get('/factures', [FactureController::class, 'index'])->name('factures.index');
+    Route::get('/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
+    Route::get('/contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('factures.create');
+    Route::post('/contrats/{contrat}/facture', [FactureController::class, 'store'])->name('factures.store');
+    Route::delete('/factures/{facture}', [FactureController::class, 'destroy'])->name('factures.destroy');
+
 
 
 });
@@ -134,6 +165,8 @@ Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
     Route::get('tresorier/dashboard', [TresorierController::class, 'tresorierDashboard'])->name('tresorier.dashboard');
     Route::get('tresorier/demandes', [TresorierController::class, 'userDemandes'])->name('tresorier.demandes');
     Route::get('tresorier/OP', [TresorierController::class, 'OP'])->name('tresorier.op');
+    Route::get('tresorier/create-OP', [TresorierController::class, 'createOP'])->name('tresorier.create-OP');
+    Route::get('tresorier/create-OV', [TresorierController::class, 'createOV'])->name('tresorier.create-OV');
     Route::get('tresorier/OV', [TresorierController::class, 'OV'])->name('tresorier.ov');
 
 

@@ -99,7 +99,7 @@ class DemandeController extends Controller
              ->where('user_id', $user->id)
              ->orderBy('created_at', 'desc')
              ->get();
-         return view('user.voirDemande', compact('user', 'demande', 'champs', 'fichiers'));
+         return view('plaisance.voirDemande', compact('user', 'demande', 'champs', 'fichiers'));
     }
 
     public function edit(Demande $demande)
@@ -285,7 +285,7 @@ public function showRemplir($id)
                 && $champData['user_id'] == $user->id;
         });
 
-    return view('user.remplirDemande', [
+    return view('plaisance.remplirDemande', [
         'user' => $user,
         'demande' => $demande,
         'champs' => $champsAffectes,
@@ -361,7 +361,7 @@ public function showRemplir($id)
         'is_read' => false,
     ]);
 
-    return redirect()->route('user.demandes')->with('success', 'Formulaire soumis avec succès.');
+    return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès.');
 }
 
 

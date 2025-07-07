@@ -18,7 +18,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
 
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{route('user.demandes.remplir',$demande->id)}}" method="POST" enctype="multipart/form-data">
+                    <form action="{{route('plaisance.demandes.remplir',$demande->id)}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
