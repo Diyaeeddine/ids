@@ -42,7 +42,6 @@ class DemandeController extends Controller
 
      public function store(Request $request)
      {
-        // dd($request->all());
          $request->validate([
              'titre' => 'required|string|max:255',
              'fields' => 'nullable|array',
@@ -123,7 +122,6 @@ class DemandeController extends Controller
         $demandes = Demande::latest()->get();
         $selectedDemande = $id ? Demande::findOrFail($id) : null;
     
-        // Correction ici
         $users = User::role(['user', 'tresorier', 'plaisance', 'comptable', 'admin juridique'])->get();
     
         return view('admin.demandes.affecter-demande', compact('demandes', 'users', 'selectedDemande'));
@@ -228,50 +226,6 @@ public function affecterChamps(Request $request, $demandeId)
 
     return redirect()->route('demandes.affecter', $demandeId)->with('success', $message);
 }
-
-// public function updateUserDemandeStatus($demandeId, $userId)
-// {
-//     $demande = Demande::findOrFail($demandeId);
-//     $user = User::findOrFail($userId);
-
-//     $demande->users()->updateExistingPivot($userId, [
-//         'is_filled' => true,   
-//         'isyourturn' => 0,    
-//     ]);
-
-//     $nextUser = DB::table('demande_user')
-//         ->where('demande_id', $demandeId)
-//         ->where('sort', '>', DB::table('demande_user')->where('user_id', $userId)->value('sort'))
-//         ->orderBy('sort')
-//         ->first();
-
-//     if ($nextUser) {
-//         DB::table('demande_user')
-//             ->where('demande_id', $demandeId)
-//             ->where('user_id', $nextUser->user_id)
-//             ->update(['isyourturn' => 1]);
-
-//         Notification::create([
-//             'user_id' => $nextUser->user_id,  
-//             'demande_id' => $demandeId,
-//             'titre' => 'Nouvelle demande à remplir',
-//             'is_read' => false, 
-//         ]);
-//     }
-
-//     $notification = Notification::where('demande_id', $demandeId)
-//         ->where('user_id', $userId) 
-//         ->first();
-
-//     if ($notification) {
-//         $notification->update([
-//             'is_read' => true,
-//             'read_at' => now(), 
-//         ]);
-//     }
-
-//     return response()->json(['success' => true]);
-// }
 
 public function showRemplir($id)
 {

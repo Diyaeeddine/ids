@@ -49,14 +49,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
     
-    // User Demandes
     Route::get('/user/demandes', [UserController::class, 'userDemandes'])->name('user.demandes');
     Route::get('/user/alerts', [UserController::class, 'getAlerts'])->name('user.alerts');
     Route::get('user/demande/afficher/{id}', [DemandeController::class, 'show'])->name('user.demandes.voir');
     Route::get('user/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('user.demandes.showRemplir');
     Route::post('user/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('user.demandes.remplir');
     
-    // File Downloads
     Route::get('/telecharger/{filename}', function ($filename) {
         $path = storage_path('app/public/demandes/' . $filename);
         
@@ -67,7 +65,6 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
         return response()->download($path);
     })->name('telecharger.fichier');
     
-    // User Contrats
     Route::get('user/contrats', [ContratController::class, 'index'])->name('user.contrats');
     Route::get('user/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
     Route::post('user/contrats', [ContratController::class, 'store'])->name('contrat.store');
@@ -75,7 +72,6 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::view('user/contrats/contrat-accostage', 'user.contrats.accostage')->name('user.contrats.contrat_accostage');
     Route::get('/contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
     
-    // User Factures
     Route::get('/factures', [FactureController::class, 'index'])->name('factures.index');
     Route::get('/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
     Route::get('/contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('factures.create');
@@ -85,17 +81,14 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
-    // Dashboard & Alertes
     Route::get('plaisance/dashboard', [PlaisanceController::class, 'plaisanceDashboard'])->name('plaisance.dashboard');
     Route::get('plaisance/demandes', [PlaisanceController::class, 'userDemandes'])->name('plaisance.demandes');
     Route::get('/plaisance/alerts', [PlaisanceController::class, 'getAlerts'])->name('plaisance.alerts');
 
-    // Détails et Remplissage de Demandes
     Route::get('plaisance/demande/afficher/{id}', [DemandeController::class, 'show'])->name('plaisance.demandes.voir');
     Route::get('plaisance/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('plaisance.demandes.showRemplir');
     Route::post('plaisance/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('plaisance.demandes.remplir');
 
-    // Téléchargement de fichiers
     Route::get('/telecharger/{filename}', function ($filename) {
         $path = storage_path('app/public/demandes/' . $filename);
 
@@ -106,7 +99,6 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
         return response()->download($path);
     })->name('telecharger.fichier');
 
-    // Contrats
     Route::get('plaisance/contrats', [ContratController::class, 'index'])->name('plaisance.contrats');
     Route::get('plaisance/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
     Route::post('plaisance/contrats/store', [ContratController::class, 'store'])->name('contrat.store');
@@ -114,18 +106,12 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::view('plaisance/contrats/contrat-accostage', 'plaisance.contrats.accostage')->name('plaisance.contrats.contrat_accostage');
     Route::get('/contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
 
-    // Factures liées aux contrats
     Route::get('plaisance/factures', [FactureController::class, 'index'])->name('plaisance.factures.index');
     Route::get('plaisance/factures/view/{facture}', [FactureController::class, 'showPublic'])->name('plaisance.factures.show');
     Route::get('plaisance/contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('plaisance.factures.create');
     Route::post('plaisance/contrats/{contrat}/facture', [FactureController::class, 'store'])->name('plaisance.factures.store');
     Route::delete('plaisance/factures/{facture}', [FactureController::class, 'destroy'])->name('plaisance.factures.destroy');
 }); 
-
-// Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
-
-    
-// });
 
 Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
 
@@ -150,14 +136,12 @@ Route::view('admin/dashboard', 'admin.dashboard')
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     
-    // Admin Contrats
     Route::get('/admin/contrats', [ContratController::class, 'indexAdmin'])->name('admin.contrats.index');
     Route::post('/admin/contrats/{id}/importer', [ContratController::class, 'importerContrat'])->name('admin.contrats.importer');
     Route::get('/admin/contrats/{id}/{type}/imprimer', [ContratController::class, 'genererPDF'])->name('admin.contrats.imprimer');
     Route::get('admin/contrats/signes/{contrat}', [ContratController::class, 'voirContratSigne'])->name('admin.contrats.signe.voir');
     Route::post('/admin/contrats/{id}/marquer-imprime', [ContratController::class, 'marquerImprime'])->name('admin.contrats.marquerImprime');
     
-    // Admin Demandes
     Route::get('admin/demandes', [DemandeController::class, 'index'])->name('admin.demandes');
     Route::get('admin/demandes/add-demande', [DemandeController::class, 'create'])->name('demande.add-demande');
     Route::post('admin/demandes/add-demande', [DemandeController::class, 'store'])->name('demande.store-demande');
@@ -165,14 +149,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/demandes/afficher-champs', [DemandeController::class, 'showChamps'])->name('admin.demandes.showChamps');
     Route::post('/admin/demandes/{id}/{user}/accepter', [DemandeController::class, 'accepter'])->name('admin.demandes.accepter');
     Route::post('/admin/demandes/{id}/{user}/refuser', [DemandeController::class, 'refuser'])->name('admin.demandes.refuser');
-    // Route::post('/admin/demandes/{id}/refuser', [DemandeController::class, 'refuser'])->name('admin.demandes.refuser');
     Route::get('/admin/demandes/afficher/{demande}/{user}', [DemandeController::class, 'afficher'])->name('demandes.afficher-demande');
     Route::get('/admin/demandes/affecter/{id?}', [DemandeController::class, 'affecterPage'])->name('demandes.affecter');
     Route::post('/admin/demandes/affecter/{id}', [DemandeController::class, 'affecterUsers'])->name('demandes.affecterUsers');
     Route::post('/admin/demandes/affecter/{id}', [DemandeController::class, 'affecterChamps'])->name('demande.affecterChamps');
     Route::get('/admin/demandes/{id?}', [DemandeController::class, 'demandePage'])->name('demande');
     
-    // Demande Budget Operations
     Route::get('/demande/select-budget-table', [DemandeController::class, 'selectBudgetTable'])->name('demande.select-budget-table');
     Route::post('/demande/add-imputation', [DemandeController::class, 'addImputationToForm'])->name('demande.add-imputation-to-form');
     Route::get('/demande/choose-table-for-entry', [DemandeController::class, 'chooseBudgetTableForEntry'])->name('demande.choose-table-for-entry');
@@ -181,12 +163,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/admin/demandes/save-entry-and-return', [DemandeController::class, 'saveEntryAndReturn'])->name('demande.save-entry-and-return');
     Route::get('/admin/demandes/budget-table/{tableId}/add-entry', [DemandeController::class, 'showAddEntryForm'])->name('demande.add-entry-form');
     
-    // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // User Management
     Route::get('admin/profiles', [UserController::class, 'index'])->name('acce.index');
     Route::get('admin/profile/add-profile', [UserController::class, 'createProfile'])->name('profile.add-profile');
     Route::post('admin/profile/add-profile', [UserController::class, 'store'])->name('storeProfile');
@@ -194,13 +174,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::put('profiles/update/{id}', [UserController::class, 'update'])->name('acce.update');
     Route::delete('profiles/delete/{id}', [UserController::class, 'destroy'])->name('acce.delete');
     
-    // PDF and File Management
     Route::get('demande/{id}/pdf', [PDFController::class, 'generatePDF'])->name('demande.pdf');
     Route::get('demandes/{demande}/users/{user}/uploads', [PDFController::class, 'downloadPdf'])->name('admin.uploads.download');
     Route::get('/admin/demandes/{demande}/user/{user}/uploads', [PDFController::class, 'showUserUploads'])->name('admin.demande.user.uploads');
     Route::get('demandes/{demande}/user/{user}/fichiers/{fichier}/download', [PDFController::class, 'download'])->name('admin.download.file');
     
-    // Budget Tables Management
     Route::prefix('admin')->group(function () {
         Route::get('/budgetaires/create', [BudgetTableController::class, 'create'])->name('budget-tables.create');
         Route::post('/budgetaires', [BudgetTableController::class, 'store'])->name('budget-tables.store');
@@ -243,8 +221,6 @@ Route::get('/demande/{id}/remplir', [DemandeController::class, 'remplir'])
             } elseif ($user->hasRole('user')) {
                 return redirect()->route('user.dashboard');
             }
-    
-            // Fallback - you can customize this
             return redirect()->route('user.dashboard');
         })->name('dashboard');
     });

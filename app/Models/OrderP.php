@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderP extends Model
 {
-    protected $table = 'order_p'; // ou le nom exact de ta table
+    protected $table = 'order_p'; 
 
     protected $fillable = [
         'entite_ordonnatrice',

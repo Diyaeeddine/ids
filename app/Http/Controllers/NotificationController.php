@@ -9,7 +9,6 @@ use App\Models\Demande;
 
 class NotificationController extends Controller
 {
-    // Récupérer notifications non lues de l'utilisateur
     public function getUnreadNotifications()
     {
         $user = Auth::user();
@@ -24,7 +23,7 @@ class NotificationController extends Controller
                     'titre' => $notif->titre,
                     'temps' => $notif->created_at->diffForHumans(),
                     'demande_id' => $notif->demande_id,
-                    'contrat_id' => $notif->contrat_id, // ✅ Ajout pour les contrats
+                    'contrat_id' => $notif->contrat_id, 
                 ];
             });
 
@@ -35,7 +34,6 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Marquer une notification comme lue
 public function markAsRead($id)
 {
     if (!auth()->check()) {
@@ -57,9 +55,6 @@ public function markAsRead($id)
 }
 
 
-
-    // Générer notifications à partir des demandes non encore notifiées
-// Logic already handled inside the generateNotifications function
 public function generateNotifications()
 {
     $user = Auth::user();
@@ -72,7 +67,6 @@ public function generateNotifications()
     })->get();
 
     foreach ($demandes as $demande) {
-        // Retrieve users for the demande
         $users = $demande->users()->orderByPivot('sort')->get();
 
         foreach ($users as $currentUser) {

@@ -126,7 +126,6 @@
     </div>
 
     <script>
-        // Auto-remplir le montant quand une facture est sélectionnée
         document.getElementById('invoice_id').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const amount = selectedOption.getAttribute('data-amount');

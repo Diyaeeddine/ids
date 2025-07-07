@@ -11,7 +11,7 @@ class CreateContratsSignesTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger('contrat_id');
-            $table->string('fichier_path'); // chemin du fichier signé
+            $table->string('fichier_path'); 
             $table->timestamp('imported_at')->nullable();
 
             $table->timestamps();

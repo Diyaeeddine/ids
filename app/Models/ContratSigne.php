@@ -8,7 +8,7 @@ class ContratSigne extends Model
 {
     protected $fillable = ['contrat_id', 'fichier_path', 'imported_at'];
 
-    protected $table = 'contrats_signes'; // ✅ Très important
+    protected $table = 'contrats_signes'; 
         public $timestamps = true;
 
     public function contrat()

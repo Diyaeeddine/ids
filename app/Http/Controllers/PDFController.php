@@ -69,7 +69,6 @@ class PDFController extends Controller
     }
     public function download($demande, $user, $fichier)
 {
-    // On récupère l'enregistrement de la table demande_files
     $file = DB::table('demande_files')
         ->where('id', $fichier)
         ->where('demande_id', $demande)

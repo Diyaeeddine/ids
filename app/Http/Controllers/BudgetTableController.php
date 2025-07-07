@@ -137,7 +137,6 @@ public function edit($id)
             }
         }
 
-        // Delete removed entries
         BudgetEntry::where('budget_table_id', $id)->whereNotIn('id', $existingIds)->delete();
 
         return redirect()->route('budget-tables.index')->with('success', 'Table mise à jour avec succès.');

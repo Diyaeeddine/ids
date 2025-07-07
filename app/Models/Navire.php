@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Navire extends Model
 {
-    protected $table = 'navires'; // Assure-toi que le nom de la table est correct
+    protected $table = 'navires'; 
 
     protected $fillable = [
         'nom',

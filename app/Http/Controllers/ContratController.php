@@ -23,13 +23,10 @@ class ContratController extends Controller
 {
     public function index(Request $request)
     {
-        // Get the currently logged-in user from the Request object.
         $user = $request->user();
 
-        // Fetch all contracts for this user, including related boat and requester info.
         $contrats = $user->contrats()->with('navire', 'demandeur')->latest()->get();
 
-        // Pass the contracts data to the view.
         return view('user.contrats.contrats', ['contrats' => $contrats]);
     }
     public function create()
@@ -135,7 +132,6 @@ class ContratController extends Controller
                 'date_signature' => $request->date_signature,
             ]);
 
-            // Notifier les admins
             foreach (User::role('admin')->get() as $admin) {
                 Notification::create([
                     'user_id' => $admin->id,
@@ -148,10 +144,6 @@ class ContratController extends Controller
             return $contrat;
         });
 
-            // return redirect()->route('contrats.genererPDF', [
-            //     'id' => $contrat->id,
-            //     'type' => $request->type_contrat
-            // ]);
             return redirect()->route('plaisance.factures.create', ['contrat' => $contrat->id])
             ->with('download_contract', [
                 'id' => $contrat->id,
@@ -176,30 +168,6 @@ public function indexAdmin()
     return view('admin.contrats.index', compact('contrats'));
 }
 
-
-// public function imprimer($id)
-// {
-//     $contrat = Contrat::with(['navire', 'demandeur', 'proprietaire', 'gardien'])->findOrFail($id);
-//     $mouvements = [];
-//     if (!empty($contrat->mouvements)) {
-//         try {
-//             $decoded = json_decode($contrat->mouvements, true);
-//             $mouvements = is_array($decoded) ? $decoded : [];
-//         } catch (\Exception $e) {
-//             $mouvements = [];
-//         }
-//     }
-
-//     $type = $contrat->type === 'accostage' ? 'accostage' : 'randonnee';
-//     $view = "user.contrats.{$type}";
-
-//     return view($view, [
-//         'contrat' => $contrat,
-//         'type' => $type,
-//         'mouvements' => $mouvements
-//     ]);
-// }
-
 public function importerContrat(Request $request, $id)
 {
     $request->validate([
@@ -210,13 +178,11 @@ public function importerContrat(Request $request, $id)
 
     $path = $request->file('contrat_signe')->store("contrats_signes/{$id}", 'public');
 
-    // ✅ Mettre à jour le contrat
     $contrat->update([
         'est_signe_importe' => true,
         'contrat_signe_path' => $path
     ]);
 
-    // ✅ Sauvegarder dans table contrat_signes
     ContratSigne::create([
         'contrat_id' => $contrat->id,
         'fichier_path' => $path,

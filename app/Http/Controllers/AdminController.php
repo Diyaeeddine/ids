@@ -3,11 +3,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-// use App\Enums\UserRole;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;  
-use Illuminate\Validation\Rules\Password;  // Importer la classe Password
-use Illuminate\Auth\Events\Registered;  // Importer la classe Registered
+use Illuminate\Validation\Rules\Password;  
+use Illuminate\Auth\Events\Registered;  
 
 class AdminController extends Controller
 {

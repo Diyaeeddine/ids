@@ -682,7 +682,7 @@ the boat;
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            window.close(); // Fermer automatiquement
+            window.close();
         });
     };
     fetch("{{ route('admin.contrats.marquerImprime', $contrat->id) }}", {

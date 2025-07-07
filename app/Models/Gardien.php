@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Gardien extends Model
 {
-    protected $table = 'gardiens'; // Nom de la table
+    protected $table = 'gardiens'; 
 
     protected $fillable = [
         'nom',
@@ -14,7 +14,7 @@ class Gardien extends Model
         'tel',
     ];
 
-    // Relations (exemple : un gardien peut avoir plusieurs contrats)
+    
     public function contrats()
     {
         return $this->hasMany(Contrat::class);

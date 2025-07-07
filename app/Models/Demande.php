@@ -21,7 +21,7 @@ class Demande extends Model
     ];
 
     protected $casts = [
-        'champs' => 'array', // Pour que Laravel caste automatiquement en tableau associatif
+        'champs' => 'array', 
     ];
 
     /**
