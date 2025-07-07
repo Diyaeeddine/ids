@@ -51,7 +51,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Méthode de paiement -->
                             <div>
                                 <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-2">
                                     Méthode de paiement <span class="text-red-500">*</span>
@@ -78,7 +77,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Date d'échéance -->
                             <div>
                                 <label for="due_date" class="block text-sm font-medium text-gray-700 mb-2">
                                     Date d'échéance <span class="text-red-500">*</span>

@@ -14,13 +14,13 @@
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Bold.ttf') format('truetype');
-  font-weight: 700; /* Use proper weight for bold */
+  font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
-  font-weight: 300; /* Use proper weight for bold */
+  font-weight: 300; 
   font-style: normal;
 } 
 @page {
@@ -299,7 +299,6 @@ a{
       </table>
 
       <table style="border-collapse: collapse; width: 100%; text-align: center;">
-          <!-- Titre -->
           <tr>
             <th colspan="7" style="border: 1px solid #000; font-weight: bold; text-align: left; padding:1px 0px 1px 5px;">
               Informations sur le navire / <em>Ship's informations</em>
@@ -357,7 +356,6 @@ a{
 
           </tr>
         
-          <!-- Moteur -->
           <tr>
             <th rowspan="2">Moteur<br><em>Engine</em></th>
             <th>Marque :<br><em>Mark</em></th>
@@ -372,7 +370,6 @@ a{
             <td colspan="2">{{ $contrat->navire->puissance_moteur }}</td>
           </tr>
         
-          <!-- Mouvements -->
           <tr>
               <th colspan="2" rowspan="3" style="text-align: left;">
                 Autres prestations : <br><em> Other services <br>(*) </em>

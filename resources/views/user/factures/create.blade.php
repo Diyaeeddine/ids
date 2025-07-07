@@ -59,7 +59,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- Rows are added here by JavaScript --}}
                                     </tbody>
                                 </table>
                             </div>

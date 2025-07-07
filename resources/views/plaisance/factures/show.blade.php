@@ -9,7 +9,6 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8">
-                    {{-- Success Message --}}
                     @if (session('status'))
                         <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
                             {{ session('status') }}
@@ -18,7 +17,6 @@
 
                     <div class="flex justify-between items-center">
                         <h3 class="text-2xl font-bold text-gray-800">Facture #{{ $facture->numero_facture }}</h3>
-                        {{-- THIS IS THE NEW DOWNLOAD BUTTON --}}
                         <a href="{{ route('factures.downloadPDF', $facture) }}" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
                             <i class="fas fa-download mr-2"></i>
                             Télécharger en PDF

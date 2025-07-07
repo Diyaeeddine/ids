@@ -51,18 +51,15 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($mesdemandes as $demande)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                            {{-- Titre de la demande --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 <div class="font-medium">{{ $demande->demande->titre ?? 'N/A' }}</div>
                                             </td>
 
-                                            {{-- Date de création --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <div>{{ $demande->demande->created_at->format('d/m/Y') }}</div>
                                                 <div class="text-xs">{{ $demande->demande->created_at->format('H:i') }}</div>
                                             </td>
 
-                                            {{-- Durée ou temps écoulé --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <div class="flex items-center">
                                                     @if(!empty($demande->duree))
@@ -103,10 +100,8 @@
                                                 </div>
                                             </td>
 
-                                            {{-- Actions --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex gap-4 w-full">
-                                                    {{-- Voir --}}
                                                     <a href="{{ route('plaisance.demandes.voir', $demande->demande_id) }}" 
                                                     class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors duration-150">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +111,6 @@
                                                         Voir
                                                     </a>
 
-                                                    {{-- Remplir --}}
                                                     <a href="{{ route('plaisance.demandes.showRemplir', ['id' => $demande->demande_id]) }}?temps_ecoule={{ $demande->temps_ecoule }}"
                                                     class="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors duration-150">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

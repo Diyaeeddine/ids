@@ -2,10 +2,10 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Left side - empty or logo -->
-                <div></div>
-                
-                <!-- Right side - Login as User button -->
+                {{-- <div>
+
+                </div>
+                 --}}
                 <div>
                     <a href="{{ route('admin.login') }}" 
                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
@@ -35,7 +35,6 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
             <x-text-input 
@@ -49,7 +48,6 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
         <div class="block mt-4">
             <div class="flex justify-between items-center">
                 <label for="remember_me" class="inline-flex items-center">

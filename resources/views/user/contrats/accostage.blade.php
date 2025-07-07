@@ -14,13 +14,13 @@
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Bold.ttf') format('truetype');
-  font-weight: 700; /* Use proper weight for bold */
+  font-weight: 700; 
   font-style: normal;
 }
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
-  font-weight: 300; /* Use proper weight for bold */
+  font-weight: 300; 
   font-style: normal;
 } 
 @page {
@@ -221,7 +221,6 @@ a{
   page-break-inside: avoid;
 }
   </style>
-  {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> --}}
 
 </head>
 <body>
@@ -682,7 +681,7 @@ the boat;
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            window.close(); // Fermer automatiquement
+            window.close(); 
         });
     };
     fetch("{{ route('admin.contrats.marquerImprime', $contrat->id) }}", {

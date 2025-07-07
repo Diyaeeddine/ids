@@ -1,4 +1,3 @@
-<!-- Container pour toutes les notifications -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-4 pointer-events-none">
     @if(isset($nouvellesDemandes) && $nouvellesDemandes->count() > 0  &&  isset($mesdemandes) && $mesdemandes->count() > 0 )
     <div id="toast-new"
@@ -21,7 +20,6 @@
         </button>
     </div>
 @endif
-    <!-- Toast pour demandes en retard -->
     @if(isset($demandesEnRetard) && $demandesEnRetard->count() > 0 &&  isset($mesdemandes) &&  $mesdemandes->count() > 0)
     <div id="toast-late"
          class="hidden pointer-events-auto flex items-center w-full max-w-xs p-4 text-red-700 bg-red-100 rounded-lg shadow-md dark:text-red-400 dark:bg-red-900 transform transition-all duration-300 ease-in-out"

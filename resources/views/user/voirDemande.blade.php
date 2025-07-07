@@ -23,10 +23,8 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
-            <!-- Section Champs -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-xl border border-gray-200 dark:border-gray-700">
                 
-                <!-- Header Champs -->
                 <div class="bg-gray-50 dark:bg-gray-700 px-8 py-6 border-b border-gray-200 dark:border-gray-600">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center">
@@ -95,10 +93,7 @@
                                                 </svg>
                                             </div>
                                             <div class="text-sm">
-                                                {{-- Si tu as une date de création par champ, il faut la récupérer ici. 
-                                                     Sinon, soit tu supprimes cette partie, soit tu affiches la date de la demande --}}
-                                                {{-- Par exemple, afficher la date de création de la demande: --}}
-                                                <div class="font-medium text-gray-900 dark:text-gray-100">{{ $demande->created_at->format('d/m/Y') }}</div>
+                                              <div class="font-medium text-gray-900 dark:text-gray-100">{{ $demande->created_at->format('d/m/Y') }}</div>
                                                 <div class="text-gray-500 dark:text-gray-400 text-xs">{{ $demande->created_at->format('H:i') }}</div>
                                             </div>
                                         </div>
@@ -123,11 +118,9 @@
                 </div>
             </div>
 
-            <!-- Section Fichiers -->
             @if(count($fichiers) > 0)
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-xl border border-gray-200 dark:border-gray-700">
                 
-                <!-- Header Fichiers -->
                 <div class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 px-8 py-6 border-b border-emerald-200 dark:border-emerald-700">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-lg flex items-center justify-center">

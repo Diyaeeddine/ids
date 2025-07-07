@@ -1,4 +1,3 @@
-{{-- This is the code for: resources/views/user/factures/_invoice_template.blade.php --}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,7 +10,6 @@
         body { font-family: 'Poppins', sans-serif; background-color: white; line-height: 1.5; color: #333; }
         .invoice-container { max-width: 800px; margin: 0 auto; background-color: white; padding: 40px; position: relative; overflow: hidden; }
         
-        /* --- PROFESSIONAL WATERMARK STYLE --- */
         .invoice-container::before {
             content: '';
             position: absolute;
@@ -29,7 +27,6 @@
             transform: rotate(-15deg);
         }
 
-        /* Text watermark as backup */
         .invoice-container::after {
             content: 'MARINA DE BOUREGREG';
             position: absolute;
@@ -45,7 +42,6 @@
             letter-spacing: 0.3em;
             font-family: 'Poppins', sans-serif;
         }
-        /* --- END OF WATERMARK STYLE --- */
 
         .content { position: relative; z-index: 1; }
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
@@ -133,7 +129,6 @@
 
                 <div class="qr-code" style="width: 30%; text-align: right;">
                     @isset($qrCode)
-                        {{-- The {!! !!} syntax renders the raw SVG code for the image --}}
                         {!! $qrCode !!}
                     @endisset
                 </div>
