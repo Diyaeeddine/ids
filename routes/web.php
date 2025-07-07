@@ -129,15 +129,22 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
 });
 
-Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
+// Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
 
+//     Route::get('tresorier/dashboard', [TresorierController::class, 'tresorierDashboard'])->name('tresorier.dashboard');
+//     Route::get('tresorier/demandes', [TresorierController::class, 'userDemandes'])->name('tresorier.demandes');
+//     Route::get('/tresorier/demandes/{type}', [TresorierController::class, 'userDemandesbyType'])->name('tresorier.demandes.bytype');
+//     Route::get('tresorier/OP', [TresorierController::class, 'OP'])->name('tresorier.op');
+//     Route::get('tresorier/OV', [TresorierController::class, 'OV'])->name('tresorier.ov');
+
+
+// });
     Route::get('tresorier/dashboard', [TresorierController::class, 'tresorierDashboard'])->name('tresorier.dashboard');
     Route::get('tresorier/demandes', [TresorierController::class, 'userDemandes'])->name('tresorier.demandes');
+    Route::get('tresorier/demandes/search', [TresorierController::class, 'userDemandesSearch'])->name('tresorier.demandes.search');
+
     Route::get('tresorier/OP', [TresorierController::class, 'OP'])->name('tresorier.op');
     Route::get('tresorier/OV', [TresorierController::class, 'OV'])->name('tresorier.ov');
-
-
-});
 /*
 |--------------------------------------------------------------------------
 | Admin Dashboard Routes
