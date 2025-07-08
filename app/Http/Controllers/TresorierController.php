@@ -323,46 +323,114 @@ class TresorierController extends Controller
         }
 
     public function ovUpdate(Request $request, $id)
-    {
-        try {
-            // Validate the request
-            $validatedData = $request->validate([
-                'date_virement' => 'required|date',
-                'compte_debiteur' => 'required|string|max:255',
-                'montant' => 'required|numeric|min:0',
-                'beneficiaire_nom' => 'required|string|max:255',
-                'beneficiaire_rib' => 'required|string|max:255',
-                'beneficiaire_banque' => 'required|string|max:255',
-                'beneficiaire_agence' => 'required|string|max:255',
-                'objet' => 'required|string|max:500'
-            ]);
+        {
+            try {
+                // Validate the request
+                $validatedData = $request->validate([
+                    'date_virement' => 'required|date',
+                    'montant' => 'required|numeric|min:0',
+                    'compte_debiteur' => 'required|string|max:255',
+                    'beneficiaire_nom' => 'required|string|max:255',
+                    'beneficiaire_rib' => 'required|string|max:255',
+                    'beneficiaire_banque' => 'required|string|max:255',
+                    'beneficiaire_agence' => 'required|string|max:255',
+                    'objet' => 'required|string',
+                ]);
 
-            // Update the operation in database
-            // Example: Operation::where('id', $id)->update($validatedData);
+                // Find and update the record
+                $ordre = OrderV::findOrFail($id); // Adjust model name as needed
+                $ordre->update($validatedData);
+
+                // Return JSON response for AJAX requests
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Ordre de virement mis à jour avec succès',
+                        'data' => $ordre
+                    ]);
+                }
+
+                // Redirect for regular form submissions
+                return redirect()->route('tresorier.ov')->with('success', 'Ordre de virement mis à jour avec succès');
+
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Erreur de validation',
+                        'errors' => $e->errors()
+                    ], 422);
+                }
+                return back()->withErrors($e->errors())->withInput();
+
+            } catch (\Exception $e) {
+                \Log::error('Error updating ordre virement: ' . $e->getMessage());
+                
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Erreur lors de la mise à jour: ' . $e->getMessage()
+                    ], 500);
+                }
+                return back()->with('error', 'Erreur lors de la mise à jour')->withInput();
+            }
+        }
+
+    public function ovDelete(Request $request, $id)
+{
+    try {
+        // Debug: Log the incoming request
+       
+
+        // Check if record exists first
+        $ordre = \App\Models\OrderV::find($id);
+        
+        if (!$ordre) {
+            \Log::error('OrderV not found for deletion', ['id' => $id]);
             
-            // Mock update - replace with your actual update logic
-            // For now, just return success
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ordre de virement avec l'ID {$id} introuvable"
+                ], 404);
+            }
             
+            return back()->with('error', 'Ordre de virement introuvable');
+        }
+        $ordre->delete();
+        
+        \Log::info('OrderV deleted successfully');
+
+        // Return JSON response for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Opération mise à jour avec succès',
-                'data' => array_merge(['id_op' => $id], $validatedData)
+                'message' => 'Ordre de virement supprimé avec succès',
+                'deleted_id' => $id
             ]);
+        }
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->route('tresorier.ov')->with('success', 'Ordre de virement supprimé avec succès');
+
+    } catch (\Exception $e) {
+        \Log::error('Error deleting OrderV', [
+            'id' => $id,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur de validation',
-                'errors' => $e->errors()
-            ], 422);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la mise à jour: ' . $e->getMessage()
+                'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
             ], 500);
         }
+        
+        return back()->with('error', 'Erreur lors de la suppression');
     }
+}
+
+
 
     }
 

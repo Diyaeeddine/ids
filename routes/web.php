@@ -150,8 +150,9 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::get('tresorier/OV/{id}', [TresorierController::class, 'ovShow'])->name('tresorier.ov.show');
     
     Route::post('tresorier/OV/store', [TresorierController::class, 'ovStore'])->name('tresorier.ov.store');
-    Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
-    // Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
+    Route::put('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
+    Route::delete('tresorier/OV/delete/{id}', [TresorierController::class, 'ovDelete'])->name('tresorier.ov.delete');
+
 
 /*
 |--------------------------------------------------------------------------

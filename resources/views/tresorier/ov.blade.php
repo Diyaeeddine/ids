@@ -204,6 +204,7 @@
             
             <form id="editForm" class="space-y-4">
                 @csrf
+                @method('PUT')
                 <input type="hidden" id="edit_id_op" name="id_op">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,10 +267,10 @@
                 
                 <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600">
                     <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500 transition-colors duration-200">
-                        {{ __('Annuler') }}
+                        Annuler
                     </button>
                     <button type="button" id="saveBtn" onclick="saveOperation()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                        <span>{{ __('Enregistrer') }}</span>
+                        <span>Enregistrer</span>
                     </button>
                 </div>
             </form>
@@ -598,19 +599,179 @@ function editOperation(id) {
       alert("Erreur lors du chargement des données: " + error.message)
     })
 }
-
 function deleteOperation(id) {
-  if (confirm("Êtes-vous sûr de vouloir supprimer cette opération ?")) {
-    console.log("Deleting operation:", id)
-    // Implement delete functionality here
-    alert("Fonction de suppression à implémenter")
+
+  if (!id || id === "") {
+    alert("Erreur: ID de l'opération manquant")
+    return
   }
+
+  // Create and show custom confirmation modal
+  const modal = document.createElement("div")
+  modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative">
+    <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
+      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+      Confirmer la suppression
+    </h3>
+    <p class="text-gray-600 dark:text-gray-400 text-center mb-6">
+      Êtes-vous sûr de vouloir supprimer cette opération ?<br>
+      <strong>Cette action est irréversible.</strong>
+    </p>
+    <div class="flex justify-center space-x-3">
+      <button type="button" id="cancelDelete" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500 transition-colors duration-200">
+        Annuler
+      </button>
+      <button type="button" id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
+        Supprimer
+      </button>
+    </div>
+  </div>
+  `
+
+  document.body.appendChild(modal)
+
+  // Handle cancel
+  modal.querySelector("#cancelDelete").addEventListener("click", () => {
+    document.body.removeChild(modal)
+  })
+
+  // Handle confirm
+  modal.querySelector("#confirmDelete").addEventListener("click", () => {
+    document.body.removeChild(modal)
+    performDelete(id)
+  })
+
+  // Close on backdrop click
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      document.body.removeChild(modal)
+    }
+  })
 }
+
+function performDelete(id) {
+  const csrfToken =
+    document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") ||
+    document.querySelector('input[name="_token"]')?.value
+
+  if (!csrfToken) {
+    console.error("CSRF token not found!")
+    alert("Erreur: Token de sécurité manquant")
+    return
+  }
+
+  const deleteUrl = `/tresorier/OV/delete/${id}`
+  console.log("Delete URL:", deleteUrl)
+
+  fetch(deleteUrl, {
+    method: "DELETE",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN": csrfToken,
+    },
+  })
+    .then(async (response) => {
+      const text = await response.text()
+      console.log("Response status:", response.status)
+      console.log("Raw response text:", text)
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${text}`)
+      }
+
+      return JSON.parse(text)
+    })
+    .then((data) => {
+      console.log("Delete response:", data)
+      if (data.success) {
+        // Show success message
+        showSuccessMessage("Opération supprimée avec succès")
+
+        // Remove the row from the table
+        const deleteBtn = document.querySelector(`button[onclick*="deleteOperation(${id})"]`)
+        const row = deleteBtn?.closest("tr")
+        if (row) {
+          row.style.transition = "opacity 0.3s ease"
+          row.style.opacity = "0"
+          setTimeout(() => {
+            row.remove()
+
+            // Check if table is empty
+            const tbody = document.querySelector("tbody")
+            if (tbody && tbody.children.length === 0) {
+              location.reload()
+            }
+          }, 300)
+        } else {
+          location.reload()
+        }
+      } else {
+        throw new Error(data.message || "Erreur lors de la suppression")
+      }
+    })
+    .catch((error) => {
+      console.error("Failed to delete operation:", error)
+      showErrorMessage("Erreur lors de la suppression: " + error.message)
+    })
+}
+
+// Helper functions for better UX
+function showSuccessMessage(message) {
+  const toast = document.createElement("div")
+  toast.className =
+    "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300"
+  toast.textContent = message
+  document.body.appendChild(toast)
+
+  setTimeout(() => {
+    toast.classList.remove("translate-x-full")
+  }, 100)
+
+  setTimeout(() => {
+    toast.classList.add("translate-x-full")
+    setTimeout(() => {
+      document.body.removeChild(toast)
+    }, 300)
+  }, 3000)
+}
+
+function showErrorMessage(message) {
+  const toast = document.createElement("div")
+  toast.className =
+    "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300"
+  toast.textContent = message
+  document.body.appendChild(toast)
+
+  setTimeout(() => {
+    toast.classList.remove("translate-x-full")
+  }, 100)
+
+  setTimeout(() => {
+    toast.classList.add("translate-x-full")
+    setTimeout(() => {
+      document.body.removeChild(toast)
+    }, 300)
+  }, 3000)
+}
+
+
 
 function saveOperation() {
   const form = document.getElementById("editForm")
   const saveBtn = document.getElementById("saveBtn")
   const id = document.getElementById("edit_id_op").value
+  const closeEditModal = () => {
+    // Implementation of closeEditModal
+    console.log("Edit modal closed")
+  }
 
   if (!form.checkValidity()) {
     form.reportValidity()
@@ -622,13 +783,25 @@ function saveOperation() {
   const span = saveBtn.querySelector("span")
   if (span) span.textContent = "Enregistrement..."
 
+  // Create form data and add _method for Laravel PUT request
   const formData = new FormData(form)
+  formData.append("_method", "PUT")
+
+  // Get CSRF token
+  const csrfToken =
+    document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") ||
+    document.querySelector('input[name="_token"]')?.value
+
+  if (csrfToken) {
+    formData.append("_token", csrfToken)
+  }
+
   fetch(`/tresorier/OV/update/${id}`, {
-    method: "POST",
+    method: "POST", // Use POST with _method=PUT for Laravel
     headers: {
       "X-Requested-With": "XMLHttpRequest",
       Accept: "application/json",
-      "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+      // Don't set Content-Type header when using FormData
     },
     body: formData,
   })
@@ -650,7 +823,7 @@ function saveOperation() {
     .then((data) => {
       console.log("Update response:", data)
       if (data.success) {
-        alert("Opération mise à jour avec succès")
+        // alert("Opération mise à jour avec succès")
         closeEditModal()
         // Optionally refresh the page or update the table row
         location.reload()
@@ -669,11 +842,16 @@ function saveOperation() {
     })
 }
 
+
 function populateViewForm(data) {
   document.getElementById("view_id_op").value = data.id_op || ""
-  document.getElementById("view_date_virement").value = data.date_virement || ""
-  document.getElementById("view_compte_debiteur").value = data.compte_debiteur || ""
-  document.getElementById("view_montant").value = data.montant || ""
+
+    const rawDate = data.date_virement;
+    const formattedDate = rawDate ? new Date(rawDate).toISOString().split("T")[0] : "";
+    document.getElementById("view_date_virement").value = formattedDate;
+
+    document.getElementById("view_compte_debiteur").value = data.compte_debiteur || ""
+    document.getElementById("view_montant").value = data.montant || ""
   document.getElementById("view_beneficiaire_nom").value = data.beneficiaire_nom || ""
   document.getElementById("view_beneficiaire_rib").value = data.beneficiaire_rib || ""
   document.getElementById("view_beneficiaire_banque").value = data.beneficiaire_banque || ""
@@ -682,8 +860,31 @@ function populateViewForm(data) {
 }
 
 function populateEditForm(data) {
-  document.getElementById("edit_id_op").value = data.id_op || ""
-  document.getElementById("edit_date_virement").value = data.date_virement || ""
+  console.log("Populating edit form with data:", data)
+
+  // IMPORTANT: Use data.id (primary key) NOT data.id_op for updates
+  const idField = document.getElementById("edit_id_op")
+  if (idField && data.id) {
+    idField.value = data.id // Use data.id (11) not data.id_op (105)
+    console.log("Set edit ID to:", data.id)
+  } else {
+    console.error("ID field not found or data.id is missing", {
+      idField: !!idField,
+      dataId: data.id,
+      fullData: data,
+    })
+  }
+
+  // Set the id_op field separately for display/reference (not for update URL)
+  const idOpDisplayField = document.getElementById("edit_id_op_display")
+  if (idOpDisplayField && data.id_op) {
+    idOpDisplayField.value = data.id_op
+  }
+
+  const rawDate = data.date_virement
+  const formattedDate = rawDate ? new Date(rawDate).toISOString().split("T")[0] : ""
+  document.getElementById("edit_date_virement").value = formattedDate
+
   document.getElementById("edit_compte_debiteur").value = data.compte_debiteur || ""
   document.getElementById("edit_montant").value = data.montant || ""
   document.getElementById("edit_beneficiaire_nom").value = data.beneficiaire_nom || ""
@@ -692,7 +893,6 @@ function populateEditForm(data) {
   document.getElementById("edit_beneficiaire_agence").value = data.beneficiaire_agence || ""
   document.getElementById("edit_objet").value = data.objet || ""
 }
-
 // ========================================
 // DOM CONTENT LOADED - SEARCH FUNCTIONALITY
 // ========================================
