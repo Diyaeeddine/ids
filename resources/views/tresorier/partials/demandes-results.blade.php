@@ -1,4 +1,11 @@
 {{-- Results Section --}}
+
+@php
+    $searchUser = $searchUser ?? null;
+    $dateSubmission = $dateSubmission ?? null;
+    $typeEconomique = $typeEconomique ?? null;
+@endphp
+
 @if($demandes_acc->isEmpty())
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-12 text-center">

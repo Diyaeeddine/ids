@@ -144,7 +144,15 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
     Route::get('tresorier/demandes/search', [TresorierController::class, 'userDemandesSearch'])->name('tresorier.demandes.search');
 
     Route::get('tresorier/OP', [TresorierController::class, 'OP'])->name('tresorier.op');
+
+
     Route::get('tresorier/OV', [TresorierController::class, 'OV'])->name('tresorier.ov');
+    Route::get('tresorier/OV/{id}', [TresorierController::class, 'ovShow'])->name('tresorier.ov.show');
+    
+    Route::post('tresorier/OV/store', [TresorierController::class, 'ovStore'])->name('tresorier.ov.store');
+    Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
+    // Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
+
 /*
 |--------------------------------------------------------------------------
 | Admin Dashboard Routes
