@@ -5,32 +5,18 @@
             <i class="fas fa-file-contract text-primary-600 mr-3"></i>
             {{ __('Créer un contrat') }}   
         </h2>
-        {{-- <a href="{{ route('test.pdf') }}" target="_blank" class="btn btn-primary">
-            Download Test PDF
-        </a> --}}
-        
+
     </x-slot>
     <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       integrity="sha512-RXf+QSDCUQs6FSqoD5GkHa***"
       crossorigin="anonymous" referrerpolicy="no-referrer" />
-    {{-- <div>
-        <a href="{{ route('contrats.genererPDF', ['type' => 'randonnee', 'id' => 1]) }}">
-            CONTRAT contrat_randonnee (Test ID 1)
-        </a>
-        <a href="{{ route('contrats.genererPDF', ['type' => 'accostage', 'id' => 3]) }}">
-            CONTRAT contrat_Accostage (Test ID 1)
-        </a>
-
-    </div>
-  --}}
     
     <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     
-                    <!-- Success Message -->
                     <div id="success-message" class="pr-6 hidden mb-6 p-4 bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-400 rounded-r-lg">
                         <i class="fas fa-check-circle mr-2"></i>
                         Contrat créé avec succès !
@@ -38,20 +24,33 @@
     
                     <form class="space-y-8" action="{{ route('contrat.store') }}" method="POST">
                         @csrf
-                        <!-- Type de contrat -->
                         <div class="border-l-4 pr-6 border-blue-500 pl-6 py-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-r-lg">
-                            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
-                                <i class="fa-solid fa-file-contract text-blue-500"></i>
-                                <span>Type de contrat</span>
-                            </h3><div>
-                            <select name="type_contrat" id="type_contrat"
-                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
-                                required onchange="typeContrat()">
-                                <option value="0" selected>-- Selectionner le type de contrat --</option>
-                                <option value="randonnee">Contrat Randonnee</option>
-                                <option value="accostage">Contrat Accostage</option>
-                            </select>
+{{-- 
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-contract text-blue-500"></i>
+                            <span>Type de de demande</span>
+                        </h3><div>
+                        <select name="type_form" id="type_form"
+                            class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
+                            required onchange="typeContrat()">
+                            <option value="0" selected>-- Selectionner le type de contrat --</option>
+                            <option value="produit">Produit</option>
+                            <option value="charge">Charge</option>     
+                        </select> --}}
+                        </div> 
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-contract text-blue-500"></i>
+                            <span>Type de contrat</span>
+                        </h3><div>
+                        <select name="type_contrat" id="type_contrat"
+                            class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
+                            required onchange="typeContrat()">
+                            <option value="0" selected>-- Selectionner le type de contrat --</option>
+                            <option value="randonnee">Contrat Randonnee</option>
+                            <option value="accostage">Contrat Accostage</option>
+                        </select> 
                         </div>
+
                         <div class="randonnee-section mt-1 mb-1 hidden">
                             <label for="num_titre_com">N° titre commercial</label>
                             <input type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" name="num_titre_com" placeholder="N° titre commercial">
@@ -62,7 +61,6 @@
                         </div>
                         </div>
                         
-                        <!-- Section Demandeur -->
                         <div class="border-l-4 pr-6 border-blue-500 pl-6 py-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-user text-blue-600 mr-3"></i>
@@ -96,7 +94,6 @@
                             </div>
                         </div>
     
-                        <!-- Section Propriétaire -->
                         <div class="border-l-4 border-green-500 pr-6 pl-6 py-4 bg-green-50/50 dark:bg-green-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-building text-green-600 mr-3"></i>
@@ -173,7 +170,6 @@
                             </div>
                         </div>
     
-                        <!-- Section Navire -->
                         <div class="border-l-4 pr-6 border-purple-500 pl-6 py-4 bg-purple-50/50 dark:bg-purple-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-ship text-purple-600 mr-3"></i>
@@ -236,7 +232,6 @@
                             </div>
                         </div>
     
-                        <!-- Section Moteur -->
                         <div class="border-l-4 pr-6 border-orange-500 pl-6 py-4 bg-orange-50/50 dark:bg-orange-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-cog text-orange-600 mr-3"></i>
@@ -262,7 +257,6 @@
                             </div>
                         </div>
     
-                        <!-- Section Autres prestations (Accostage) -->
                         <div class="accostage-section hidden pr-6 border-l-4 border-slate-600 dark:border-slate-400 pl-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fa-solid fa-check-double text-slate-600 dark:text-slate-400 mr-3"></i>
@@ -307,7 +301,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Mouvements (Randonnée) -->
                         <div class="randonnee-section hidden pr-6 border-l-4 border-teal-500 dark:border-teal-400 pl-6 py-4 bg-teal-50/50 dark:bg-teal-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-route text-teal-600 dark:text-teal-400 mr-3"></i>
@@ -352,7 +345,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Emplacement (Accostage) -->
                         <div class="accostage-section hidden pr-6 border-l-4 border-red-500 dark:border-red-400 pl-6 py-4 bg-red-50/50 dark:bg-red-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fa-solid fa-location-dot text-red-600 dark:text-red-400 mr-3"></i>
@@ -370,7 +362,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Équipage (Randonnée) -->
                         <div class="randonnee-section hidden pr-6 border-l-4 border-red-500 dark:border-red-400 pl-6 py-4 bg-red-50/50 dark:bg-red-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-users text-red-600 dark:text-red-400 mr-3"></i>
@@ -392,7 +383,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Dates -->
                         <div class="border-l-4 pr-6 border-indigo-500 dark:border-indigo-400 pl-6 py-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-calendar-alt text-indigo-600 dark:text-indigo-400 mr-3"></i>
@@ -410,7 +400,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Gardien -->
                         <div class="border-l-4 pr-6 border-yellow-500 dark:border-yellow-400 pl-6 py-4 bg-yellow-50/50 dark:bg-yellow-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-shield-alt text-yellow-600 dark:text-yellow-400 mr-3"></i>
@@ -437,7 +426,6 @@
                             </div>
                         </div>
 
-                        <!-- Section Validation -->
                         <div class="border-l-4 border-pink-500 dark:border-pink-400 pl-6 py-4 bg-pink-50/50 dark:bg-pink-900/20 rounded-r-lg">
                             <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
                                 <i class="fas fa-pen-fancy text-pink-600 dark:text-pink-400 mr-3"></i>
@@ -459,7 +447,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Acceptation par -->
 
                         <div class=" pr-6 border-l-4 border-green-600 dark:border-green-400 pl-6 py-4 bg-green-50/50 dark:bg-green-900/20 rounded-r-lg">
                             <div class="space-y-4">
@@ -470,12 +457,10 @@
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Accepté le</label>
                             <input type="date" name="accepte_le" placeholder="Date d'acceptation" class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200">    
                         </div>         
-                      
-                    </div>
-                        <!-- Boutons de soumission -->
+                      </div>
                         <div class="mt-8 flex justify-end space-x-4">
                             
-                            <a href="{{route('user.contrats')}}" type="button" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
+                            <a href="{{route('plaisance.contrats')}}" type="button" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
                                 <i class="fas fa-times mr-2"></i>
                                 Annuler
                             </a>

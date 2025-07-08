@@ -19,6 +19,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="space-y-6">
 
+                {{-- This loop checks if there are any contracts. If not, it shows the "empty" message. --}}
                 @forelse($contrats as $contrat)
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
@@ -28,6 +29,7 @@
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
                                             Contrat #{{ $contrat->id }}
                                         </h3>
+                                        {{-- Badge for contract type --}}
                                         @if($contrat->type === 'accostage')
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 Accostage

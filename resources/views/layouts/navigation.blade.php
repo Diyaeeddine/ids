@@ -112,14 +112,14 @@
             </x-nav-link>
           </div>
           <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-            <x-nav-link :href="route('plaisance.demandes')" :active="request()->routeIs('plaisance.demandes') || request()->routeIs('plaisance.demandes.showRemplir') || request()->routeIs('plaisance.demandes.voir')">
+            <x-nav-link :href="route('plaisance.demandes')" :active="request()->routeIs('plaisance.demandes') || request()->routeIs('plaisance.demandes.showRemplir') || request()->routeIs('plaisance.demandes.voir') || request()->routeIs('plaisance.demandes.showDocuments')">
               {{ __('Mes demandes') }}
             </x-nav-link>
           </div>
           <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
             <x-nav-link
             :href="route('plaisance.contrats')"
-            :active="request()->routeIs('plaisance.contrats') || request()->routeIs('contrats.create')"
+            :active="request()->routeIs('plaisance.contrats') || request()->routeIs('plaisance.contrats.create')"
           >
             {{ __('Contrats') }}
           </x-nav-link>
@@ -362,32 +362,32 @@
         return notification.commentaire && notification.commentaire.trim() !== '' && notification.commentaire !== 'Aucun commentaire disponible.';
       },
 
-      navigateToDetail(notification) {
-  if (!notification.demande_id) {
-    console.error('demande_id manquant dans la notification');
-    return;
+        navigateToDetail(notification) {
+    if (!notification.demande_id) {
+      console.error('demande_id manquant dans la notification');
+      return;
+    }
+
+    const userId = notification.user_affecte_id || notification.original_user_id || notification.user_id;
+    if (!userId) {
+      console.error('Aucun user_id disponible pour la navigation');
+      return;
+    }
+
+    const userRole = "{{ auth()->user()->getRoleNames()->first() }}";
+
+    let url = '';
+    if (userRole === 'admin') {
+      url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
+    } else if (userRole === 'plaisance') {
+      url = `/plaisance/demande/remplir/${notification.demande_id}`;
+    } else {
+      url = `/user/demande/remplir/${notification.demande_id}`;
+    }
+
+    window.location.href = url;
   }
 
-  const userId = notification.user_affecte_id || notification.original_user_id || notification.user_id;
-  if (!userId) {
-    console.error('Aucun user_id disponible pour la navigation');
-    return;
   }
-
-  const userRole = "{{ auth()->user()->getRoleNames()->first() }}";
-
-  let url = '';
-  if (userRole === 'admin') {
-    url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
-  } else if (userRole === 'plaisance') {
-    url = `/plaisance/demande/remplir/${notification.demande_id}`;
-  } else {
-    url = `/user/demande/remplir/${notification.demande_id}`;
-  }
-
-  window.location.href = url;
-}
-
-}
   }
 </script>

@@ -8,7 +8,7 @@
                 <i class="fas fa-file-contract text-gray-500 mr-2"></i>
                 {{ __('Mes Contrats') }}
             </h2>
-            <a href="{{ route('contrats.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition duration-200">
+            <a href="{{ route('plaisance.contrats.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition duration-200">
                 <i class="fas fa-plus mr-2"></i>
                 Nouveau Contrat
             </a>

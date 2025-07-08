@@ -38,18 +38,18 @@ class RoleSeeder extends Seeder
         if ($admin_juridique) {
             $admin_juridique->assignRole('admin juridique');
         }
-        $user1 = User::find(6);
-        if ($user1) {
-            $user1->assignRole('user');
-        }
-        $user1 = User::find(7);
-        if ($user1) {
-            $user1->assignRole('user');
-        }
-        $user1 = User::find(8);
-        if ($user1) {
-            $user1->assignRole('user');
-        }
+        // $user1 = User::find(6);
+        // if ($user1) {
+        //     $user1->assignRole('user');
+        // }
+        // $user2 = User::find(7);
+        // if ($user2) {
+        //     $user2->assignRole('user');
+        // }
+        // $user3 = User::find(8);
+        // if ($user3) {
+        //     $user3->assignRole('user');
+        // }
 
 
     }

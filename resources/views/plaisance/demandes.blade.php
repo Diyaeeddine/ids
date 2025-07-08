@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <x-slot name="header">
         {{-- {{$user = Auth::user()}} --}}
@@ -18,7 +17,7 @@
         </div>
     </x-slot>
     @include('partials.toasts')
-    
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('success'))
@@ -27,7 +26,7 @@
             </div>
             @endif
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                
+
                 <div class="p-6">
                     @if($mesdemandes->count() > 0)
                         <div class="overflow-x-auto">
@@ -54,7 +53,6 @@
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 <div class="font-medium">{{ $demande->demande->titre ?? 'N/A' }}</div>
                                             </td>
-
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <div>{{ $demande->demande->created_at->format('d/m/Y') }}</div>
                                                 <div class="text-xs">{{ $demande->demande->created_at->format('H:i') }}</div>
@@ -102,7 +100,7 @@
 
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex gap-4 w-full">
-                                                    <a href="{{ route('plaisance.demandes.voir', $demande->demande_id) }}" 
+                                                    <a href="{{ route('plaisance.demandes.voir', $demande->demande_id) }}"
                                                     class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors duration-150">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -118,6 +116,15 @@
                                                         </svg>
                                                         Remplir
                                                     </a>
+
+                                            <a href="{{ route('plaisance.demandes.showDocuments', ['id' => $demande->demande_id]) }}"
+                                            class="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors duration-150">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                Documents
+                                            </a>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -138,5 +145,5 @@
             </div>
         </div>
     </div>
-    
+
 </x-app-layout>

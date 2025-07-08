@@ -249,6 +249,7 @@ public function showRemplir($id)
 
     public function remplir(Request $request, $id)
     {
+        // dd($request->all());
     $user = Auth::user();
     $demande = Demande::findOrFail($id);
     $userId = $user->id;
@@ -504,5 +505,54 @@ public function refuser(Request $request, $demande_id, $user_id)
     return redirect()->route('admin.demandes.decision')
         ->with('success', 'Demande refusée avec un message envoyé à l\'utilisateur.');
 }
+
+public function generateDocument($demandeId)
+{
+    $demande = Demande::findOrFail($demandeId);
+    $type_economique = $demande->type_economique;
+
+    $demandeUser = DemandeUser::where('demande_id', $demandeId)
+        ->where('etape', 'acceptee')
+        ->first();
+
+    if (!$demandeUser) {
+        return response()->json(['message' => 'Demande non acceptée.'], 400);
+    }
+
+    if ($type_economique == 'produit') {
+        return $this->generateContract($demande);
+    } elseif ($type_economique == 'charge') {
+        return $this->generateOrderOrService($demande);
+    }
+}
+
+private function generateContract(Demande $demande)
+{
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml(view('plaisance.contract', ['demande' => $demande]));
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $pdf = $dompdf->output();
+
+    $filePath = 'public/demandes/' . $demande->id . '-contrat.pdf';
+    file_put_contents(storage_path($filePath), $pdf);
+
+    return $filePath; 
+}
+
+private function generateOrderOrService(Demande $demande)
+{
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml(view('plaisance.order', ['demande' => $demande])); 
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $pdf = $dompdf->output();
+
+    $filePath = 'public/demandes/' . $demande->id . '-bon_de_commande.pdf';
+    file_put_contents(storage_path($filePath), $pdf);
+
+    return $filePath;
+}
+
 
 }

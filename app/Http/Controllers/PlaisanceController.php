@@ -10,6 +10,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;  
 use Illuminate\Validation\Rules\Password;  
 use Illuminate\Auth\Events\Registered;  
+use Illuminate\Support\Facades\DB;
+
 class PlaisanceController extends Controller
 {
     public function plaisanceDashboard(Request $request)
@@ -197,6 +199,23 @@ public function getAlerts()
         'retard' => $demandesEnRetard,
     ]);
 }
+public function showDocuments($id)
+    {
+        $demande = Demande::findOrFail($id);
 
+        $documents = DB::table('demande_files')
+            ->where('demande_id', $id)
+            ->get();
+
+        $fichiersEnvoyes = DB::table('demande_files')
+            ->where('demande_id', $id)
+            ->get();
+
+        $demandeUser = DemandeUser::where('demande_id', $id)
+                                  ->where('etape', 'acceptee')
+                                  ->first();
+
+        return view('plaisance.showDocuments', compact('demande', 'documents', 'demandeUser', 'fichiersEnvoyes'));
+    }
 
 }

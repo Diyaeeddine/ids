@@ -27,11 +27,11 @@ class ContratController extends Controller
 
         $contrats = $user->contrats()->with('navire', 'demandeur')->latest()->get();
 
-        return view('user.contrats.contrats', ['contrats' => $contrats]);
+        return view('plaisance.contrats.contrats', ['contrats' => $contrats]);
     }
     public function create()
     {
-        return view('user.contrats.create');
+        return view('plaisance.contrats.create');
     }
 
     public function store(Request $request)
@@ -155,7 +155,7 @@ class ContratController extends Controller
     {
         $contrat = Contrat::with(['user', 'demandeur', 'proprietaire', 'navire', 'gardien'])->findOrFail($id);
         $contrat->mouvements = json_decode($contrat->mouvements, true);
-        $view = $type === 'accostage' ? 'user.contrats.accostage' : 'user.contrats.randonnee';
+        $view = $type === 'accostage' ? 'plaisance.contrats.accostage' : 'plaisance.contrats.randonnee';
 
         return view($view, compact('contrat', 'type'));
     }

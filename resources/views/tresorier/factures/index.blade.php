@@ -18,10 +18,12 @@
 
             <div class="space-y-6">
                 @forelse($factures as $facture)
+                    {{-- The main div for the card. It is made clickable by the JavaScript below. --}}
                     <div class="js-clickable-card bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 ease-in-out" 
                          data-href="{{ route('factures.show', $facture) }}">
                         <div class="p-6 flex flex-col md:flex-row justify-between md:items-center space-y-4 md:space-y-0">
                             
+                            {{-- Left Side: Invoice Details --}}
                             <div class="flex-grow">
                                 <div class="flex items-center space-x-4">
                                     <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 font-bold px-3 py-1 rounded-md text-sm">
@@ -41,11 +43,13 @@
                                 </div>
                             </div>
 
+                            {{-- Right Side: Amount and Action Buttons --}}
                             <div class="text-left md:text-right flex-shrink-0 flex items-center space-x-4">
                                 <p class="text-xl font-semibold text-gray-900 dark:text-gray-100 w-32 text-right">
                                     {{ number_format($facture->total_ttc, 2, ',', ' ') }} DH 
                                 </p>
                                 
+                                {{-- The Delete Button is now type="button" and uses data attributes --}}
                                 <form id="delete-form-{{ $facture->id }}" method="POST" action="{{ route('factures.destroy', $facture) }}">
                                     @csrf
                                     @method('DELETE')
@@ -54,6 +58,7 @@
                                     </button>
                                 </form>
 
+                                {{-- Visual cue that the card is clickable --}}
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
                         </div>
@@ -94,6 +99,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- MODAL LOGIC ---
             const modal = document.getElementById('delete-confirmation-modal');
             const confirmBtn = document.getElementById('confirm-delete-btn');
             const cancelBtn = document.getElementById('cancel-delete-btn');
@@ -114,7 +120,7 @@
 
             deleteTriggerButtons.forEach(button => {
                 button.addEventListener('click', function (event) {
-                    event.stopPropagation(); 
+                    event.stopPropagation(); // Stop click from bubbling up to the card
                     const formId = this.getAttribute('data-form-id');
                     openModal(formId);
                 });
@@ -133,11 +139,13 @@
                 }
             });
 
+            // --- CLICKABLE CARD LOGIC ---
             const cards = document.querySelectorAll('.js-clickable-card');
             cards.forEach(card => {
                 card.addEventListener('click', function(event) {
+                    // Check if the click was on the delete button or its form
                     if (event.target.closest('.js-delete-btn') || event.target.closest('form')) {
-                        return;
+                        return; // Do nothing if the click was on the delete functionality
                     }
                     const href = this.getAttribute('data-href');
                     if (href) {
