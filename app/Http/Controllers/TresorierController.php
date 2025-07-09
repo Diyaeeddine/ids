@@ -158,4 +158,37 @@ $facture = Facture::with('contrat.demandeur')->find($validated['invoice_id']);
 
         return redirect()->route('tresorier.op')->with('success', 'Le statut de l\'ordre de paiement a été réinitialisé.');
     }
+
+
+    public function destroy($id)
+{
+    $order = OrderP::findOrFail($id);
+    $order->delete();
+
+    return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement supprimé avec succès.');
+}
+
+public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'description' => 'required|string|max:255',
+        'amount' => 'required|numeric|min:0.01',
+        'payment_method' => 'required|string',
+        'due_date' => 'required|date',
+        'notes' => 'nullable|string',
+    ]);
+
+    $order = OrderP::findOrFail($id);
+    $order->update([
+        'description_operation' => $validated['description'],
+        'montant_chiffres' => $validated['amount'],
+        'mode_paiement' => $validated['payment_method'],
+        'date_paiment' => $validated['due_date'],
+        'observations' => $validated['notes'],
+        'updated_at' => now(),
+    ]);
+
+    return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement mis à jour avec succès.');
+}
+
 }

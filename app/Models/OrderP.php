@@ -29,5 +29,6 @@ class OrderP extends Model
         'section_analytique',
         'produit',
         'extension_analytique',
+        'is_accepted',
     ];
 }

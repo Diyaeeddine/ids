@@ -140,6 +140,8 @@ Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
     Route::post('/tresorier/op/{id}/valider', [TresorierController::class, 'validerOP'])->name('ordre-paiement.valider');
     Route::post('/tresorier/op/{id}/valider', [TresorierController::class, 'validerOP'])->name('ordre-paiement.valider');
     Route::post('tresorier/op', [TresorierController::class, 'store'])->name('tresorier.op.store');
+    Route::delete('/ordre-paiement/{id}', [TresorierController::class, 'destroy'])->name('ordre-paiement.destroy');
+    Route::patch('/ordre-paiement/{id}', [TresorierController::class, 'update'])->name('ordre-paiement.update');
 
 
 });

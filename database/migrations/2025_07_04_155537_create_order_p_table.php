@@ -33,6 +33,7 @@ public function up(): void
         $table->string('section_analytique')->nullable();
         $table->string('produit')->nullable();
         $table->string('extension_analytique')->nullable();
+        $table->boolean('is_accepted')->default(false);
         $table->timestamps();
     });
 }
