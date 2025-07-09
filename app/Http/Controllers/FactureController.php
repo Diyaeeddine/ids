@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Contrat;
+use App\Models\DemandeUser;
+use App\Models\User;
+use App\Models\Notification;
 use App\Models\Facture;
 use App\Models\FactureItem;
 use Illuminate\Support\Facades\DB;
@@ -70,6 +73,27 @@ class FactureController extends Controller
                     'prix_unitaire' => $item['prix_unitaire'], 'montant_ht' => $item['quantite'] * $item['prix_unitaire'],
                 ]);
             }
+
+            DemandeUser::where('demande_id', $contrat->demande->id)
+            ->where('user_id', Auth::id())
+            ->update([
+                'is_filled' => true,
+                'IsYourTurn' => false,
+            ]);
+            foreach (User::role('admin')->get() as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'contrat_id' => $contrat->id,
+                    'demande_id' => $contrat->demande->id,
+                    'type' => 'verifier_demande',
+                    'source_user_id' => Auth()->id(),
+                    'titre' => 'Nouveau facture créé par ' . Auth::user()->name,
+                    'is_read' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        
             return $facture;
         });
 
@@ -90,10 +114,10 @@ class FactureController extends Controller
 
     $facture->load('items', 'contrat.navire', 'contrat.demandeur');
     
-    $url = route('factures.showPublic', $facture);
+    $url = route('plaisance.factures.showPublic', $facture);
     $qrCode = QrCode::size(80)->generate($url);
 
-    return view('user.factures.facture-detail', [
+    return view('plaisance.factures.facture-detail', [
         'facture' => $facture,
         'qrCode' => $qrCode,
         'title' => 'Facture ' . $facture->numero_facture 
@@ -123,10 +147,10 @@ class FactureController extends Controller
     {
         $facture->load('items', 'contrat.navire', 'contrat.demandeur');
         
-        $url = route('factures.show', $facture);
+        $url = route('plaisance.factures.show', $facture);
         $qrCode = QrCode::size(80)->generate($url);
 
-        return view('user.factures.facture-detail', [
+        return view('plaisance.factures.facture-detail', [
             'facture' => $facture,
             'qrCode' => $qrCode
         ]);

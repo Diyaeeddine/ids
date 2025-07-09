@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
                         'notifications.demande_id',
                         'notifications.contrat_id',
                         'notifications.user_id',
-                        'notifications.original_user_id',
+                        'notifications.source_user_id',
                         'demande_user.user_id as user_affecte_id'
                     )
                     ->leftJoin('demande_user', 'notifications.demande_id', '=', 'demande_user.demande_id')
@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
                             'contrat_id' => $notif->contrat_id,
                             'user_id' => $notif->user_id,
                             'user_affecte_id' => $notif->user_affecte_id,
-                            'original_user_id' => $notif->original_user_id ?? $notif->user_id,
+                            'source_user_id' => $notif->source_user_id ?? $notif->user_id,
                             'is_read' => $notif->is_read,
                             'showCommentaire' => false
                         ];
@@ -73,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
                         'notifications.demande_id',
                         'notifications.contrat_id',
                         'notifications.user_id',
-                        'notifications.original_user_id',
+                        'notifications.source_user_id',
                         'demande_user.user_id as user_affecte_id'
                     )
                     ->leftJoin('demande_user', 'notifications.demande_id', '=', 'demande_user.demande_id')
@@ -86,12 +86,12 @@ class AppServiceProvider extends ServiceProvider
                             'id' => $notif->id,
                             'titre' => $notif->titre,
                             'commentaire' => $notif->commentaire ?? 'Aucun commentaire disponible.',
-                            'temps' => $notif->created_at->diffForHumans(),
+                            'temps' => $notif->created_at ? $notif->created_at->diffForHumans() : 'Date inconnue',
                             'demande_id' => $notif->demande_id,
                             'contrat_id' => $notif->contrat_id,
                             'user_id' => $notif->user_id,
                             'user_affecte_id' => $notif->user_affecte_id,
-                            'original_user_id' => $notif->original_user_id ?? $notif->user_id,
+                            'source_user_id' => $notif->source_user_id ?? $notif->user_id,
                             'is_read' => $notif->is_read,
                             'showCommentaire' => false
                         ];

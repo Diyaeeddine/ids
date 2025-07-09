@@ -58,7 +58,7 @@
                                 </div>
                                 
                                 <div class="mt-4 sm:mt-0 flex sm:flex-col sm:items-end sm:justify-center space-x-2 sm:space-x-0 sm:space-y-3">
-                                    <a href="{{ route('factures.create', $contrat) }}" class="inline-flex items-center justify-center  bg-green-500 hover:bg-green-600 text-white font-semibold text-xs rounded-md transition" title="Créer une facture">
+                                    <a href="{{ route('plaisance.factures.create', $contrat) }}" class="inline-flex items-center justify-center  bg-green-500 hover:bg-green-600 text-white font-semibold text-xs rounded-md transition" title="Créer une facture">
                                         
                                         <span class=" p-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition duration-200"><i class="fas fa-file-invoice mr-2"></i>Créer Facture</span>
                                     </a>

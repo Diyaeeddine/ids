@@ -14,11 +14,10 @@ class CreateNotificationsTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('contrat_id')->nullable();
             $table->unsignedBigInteger('demande_id')->nullable();
-            $table->unsignedBigInteger('original_user_id')->nullable();
-
-
+            $table->unsignedBigInteger('source_user_id')->nullable();
             $table->string('titre');
             $table->text('commentaire')->nullable();
+            $table->string('type')->nullable(); // Exemple : 'remplir_champs', 'changer_fichier', 'verifier_op'
             $table->boolean('is_read')->default(false);
             $table->timestamp('read_at')->nullable();
             $table->timestamps();

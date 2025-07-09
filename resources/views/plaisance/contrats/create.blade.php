@@ -24,41 +24,41 @@
     
                     <form class="space-y-8" action="{{ route('contrat.store') }}" method="POST">
                         @csrf
+                     
                         <div class="border-l-4 pr-6 border-blue-500 pl-6 py-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-r-lg">
-{{-- 
-                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
-                            <i class="fa-solid fa-file-contract text-blue-500"></i>
-                            <span>Type de de demande</span>
-                        </h3><div>
-                        <select name="type_form" id="type_form"
-                            class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
-                            required onchange="typeContrat()">
-                            <option value="0" selected>-- Selectionner le type de contrat --</option>
-                            <option value="produit">Produit</option>
-                            <option value="charge">Charge</option>     
-                        </select> --}}
-                        </div> 
-                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
-                            <i class="fa-solid fa-file-contract text-blue-500"></i>
-                            <span>Type de contrat</span>
-                        </h3><div>
-                        <select name="type_contrat" id="type_contrat"
-                            class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
-                            required onchange="typeContrat()">
-                            <option value="0" selected>-- Selectionner le type de contrat --</option>
-                            <option value="randonnee">Contrat Randonnee</option>
-                            <option value="accostage">Contrat Accostage</option>
-                        </select> 
-                        </div>
 
-                        <div class="randonnee-section mt-1 mb-1 hidden">
-                            <label for="num_titre_com">N° titre commercial</label>
-                            <input type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" name="num_titre_com" placeholder="N° titre commercial">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-signature text-blue-500"></i>
+                                <span>Type de de demande</span>
+                            </h3>
+
+                            <div class="mb-6">
+                            <select name="type_form" id="type_form"
+                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
+                                required>
+                                <option value="0" selected>-- Selectionner le type de demande --</option>
+                                <option value="produit">Produit</option>
+                                <option value="charge">Charge</option>     
+                            </select>
+                            </div> 
+
                         </div>
-                        <div class="accostage-section mt-1 mb-1 hidden">
-                            <label for="num_abonn">N° d'Abonnement à l'Accostage</label>
-                            <input type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" name="num_abonn" placeholder="N° d'Abonnement à l'Accostage">
-                        </div>
+                        
+                        <div class="border-l-4 pr-6 border-blue-500 pl-6 py-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-r-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center space-x-2">
+                                <i class="fa-solid fa-file-contract text-blue-500"></i>
+                                <span>Type de contrat</span>
+                            </h3>
+                            <div>
+                    
+                            <select name="type_contrat" id="type_contrat"
+                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 transition-all duration-200"
+                                required onchange="typeContrat()">
+                                <option value="0" selected>-- Selectionner le type de contrat --</option>
+                                <option value="randonnee">Contrat Randonnee</option>
+                                <option value="accostage">Contrat Accostage</option>
+                            </select> 
+                            </div>
                         </div>
                         
                         <div class="border-l-4 pr-6 border-blue-500 pl-6 py-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-r-lg">

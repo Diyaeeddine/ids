@@ -12,12 +12,12 @@ class Demande extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable = [ 
         'titre',
         'etape',
+        'contrat_id',
         'champs',
-        'type_economique',
-        
+        'type_economique',        
     ];
 
     protected $casts = [
@@ -69,4 +69,8 @@ class Demande extends Model
     {
         return $this->belongsToMany(BudgetEntry::class, 'budget_entry_demande');
     }
+    public function contrat()
+{
+    return $this->belongsTo(Contrat::class);
+}
 }

@@ -24,38 +24,38 @@ Route::get('register', function () {
 
 
 
-Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
-    Route::get('user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
+// Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+//     Route::get('user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
     
-    Route::get('user/demandes', [UserController::class, 'userDemandes'])->name('user.demandes');
-    Route::get('user/alerts', [UserController::class, 'getAlerts'])->name('user.alerts');
-    Route::get('user/demande/afficher/{id}', [DemandeController::class, 'show'])->name('user.demandes.voir');
-    Route::get('user/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('user.demandes.showRemplir');
-    Route::post('user/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('user.demandes.remplir');
+//     Route::get('user/demandes', [UserController::class, 'userDemandes'])->name('user.demandes');
+//     Route::get('user/alerts', [UserController::class, 'getAlerts'])->name('user.alerts');
+//     Route::get('user/demande/afficher/{id}', [DemandeController::class, 'show'])->name('user.demandes.voir');
+//     Route::get('user/demande/remplir/{id}', [DemandeController::class, 'showRemplir'])->name('user.demandes.showRemplir');
+//     Route::post('user/demande/remplir/{id}', [DemandeController::class, 'remplir'])->name('user.demandes.remplir');
     
-    Route::get('telecharger/{filename}', function ($filename) {
-        $path = storage_path('app/public/demandes/' . $filename);
+//     Route::get('telecharger/{filename}', function ($filename) {
+//         $path = storage_path('app/public/demandes/' . $filename);
         
-        if (!file_exists($path)) {
-            abort(404);
-        }
+//         if (!file_exists($path)) {
+//             abort(404);
+//         }
         
-        return response()->download($path);
-    })->name('telecharger.fichier');
+//         return response()->download($path);
+//     })->name('telecharger.fichier');
     
-    Route::get('user/contrats', [ContratController::class, 'index'])->name('user.contrats');
-    Route::get('user/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
-    Route::post('user/contrats', [ContratController::class, 'store'])->name('contrat.store');
-    Route::view('user/contrats/contrat-radonnee', 'user.contrats.randonnee')->name('user.contrats.contrat_radonnee');
-    Route::view('user/contrats/contrat-accostage', 'user.contrats.accostage')->name('user.contrats.contrat_accostage');
-    Route::get('contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
+//     Route::get('user/contrats', [ContratController::class, 'index'])->name('user.contrats');
+//     Route::get('user/contrats/create', [ContratController::class, 'create'])->name('contrats.create');
+//     Route::post('user/contrats', [ContratController::class, 'store'])->name('contrat.store');
+//     Route::view('user/contrats/contrat-radonnee', 'user.contrats.randonnee')->name('user.contrats.contrat_radonnee');
+//     Route::view('user/contrats/contrat-accostage', 'user.contrats.accostage')->name('user.contrats.contrat_accostage');
+//     Route::get('contrats/generer/{id}/{type}', [ContratController::class, 'genererPDF'])->name('contrats.genererPDF');
     
-    Route::get('factures', [FactureController::class, 'index'])->name('factures.index');
-    Route::get('factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
-    Route::get('contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('factures.create');
-    Route::post('contrats/{contrat}/facture', [FactureController::class, 'store'])->name('factures.store');
-    Route::delete('factures/{facture}', [FactureController::class, 'destroy'])->name('factures.destroy');
-});
+//     Route::get('factures', [FactureController::class, 'index'])->name('factures.index');
+//     Route::get('factures/view/{facture}', [FactureController::class, 'showPublic'])->name('factures.show');
+//     Route::get('contrats/{contrat}/facture/create', [FactureController::class, 'create'])->name('factures.create');
+//     Route::post('contrats/{contrat}/facture', [FactureController::class, 'store'])->name('factures.store');
+//     Route::delete('factures/{facture}', [FactureController::class, 'destroy'])->name('factures.destroy');
+// });
 
 Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
 
@@ -120,7 +120,12 @@ Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
     Route::post('/tresorier/op/{id}/valider', [TresorierController::class, 'validerOP'])->name('ordre-paiement.valider');
     Route::post('/tresorier/op/{id}/valider', [TresorierController::class, 'validerOP'])->name('ordre-paiement.valider');
     Route::post('tresorier/op', [TresorierController::class, 'store'])->name('tresorier.op.store');
-
+    Route::get('tresorier/demandes/search', [TresorierController::class, 'userDemandesSearch'])->name('tresorier.demandes.search');
+    Route::get('tresorier/OV/{id}', [TresorierController::class, 'ovShow'])->name('tresorier.ov.show');
+    Route::post('tresorier/OV/store', [TresorierController::class, 'ovStore'])->name('tresorier.ov.store');
+    Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
+    Route::delete('/ordre-paiement/{id}', [TresorierController::class, 'destroy'])->name('ordre-paiement.destroy');
+    Route::patch('/ordre-paiement/{id}', [TresorierController::class, 'update'])->name('ordre-paiement.update');
 });
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
@@ -144,11 +149,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('admin/demandes/affecter/{id}', [DemandeController::class, 'affecterChamps'])->name('demande.affecterChamps');
     Route::get('admin/demandes/{id?}', [DemandeController::class, 'demandePage'])->name('demande');
     
-    Route::get('demande/select-budget-table', [DemandeController::class, 'selectBudgetTable'])->name('demande.select-budget-table');
-    Route::post('demande/add-imputation', [DemandeController::class, 'addImputationToForm'])->name('demande.add-imputation-to-form');
-    Route::get('demande/choose-table-for-entry', [DemandeController::class, 'chooseBudgetTableForEntry'])->name('demande.choose-table-for-entry');
-    Route::get('demande/add-entry-to-table/{id}', [DemandeController::class, 'showAddEntryForm'])->name('demande.add-entry-to-table');
-    Route::post('demande/save-entry-and-return', [DemandeController::class, 'saveEntryAndReturn'])->name('demande.save-entry-and-return');
+    Route::get('admin/demande/select-budget-table', [DemandeController::class, 'selectBudgetTable'])->name('demande.select-budget-table');
+    Route::post('admin/demande/add-imputation', [DemandeController::class, 'addImputationToForm'])->name('demande.add-imputation-to-form');
+    Route::get('admin/demande/choose-table-for-entry', [DemandeController::class, 'chooseBudgetTableForEntry'])->name('demande.choose-table-for-entry');
+    Route::get('admin/demande/add-entry-to-table/{id}', [DemandeController::class, 'showAddEntryForm'])->name('demande.add-entry-to-table');
+    Route::post('admin/demande/save-entry-and-return', [DemandeController::class, 'saveEntryAndReturn'])->name('demande.save-entry-and-return');
     Route::post('admin/demandes/save-entry-and-return', [DemandeController::class, 'saveEntryAndReturn'])->name('demande.save-entry-and-return');
     Route::get('admin/demandes/budget-table/{tableId}/add-entry', [DemandeController::class, 'showAddEntryForm'])->name('demande.add-entry-form');
     
@@ -169,11 +174,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('demandes/{demande}/user/{user}/fichiers/{fichier}/download', [PDFController::class, 'download'])->name('admin.download.file');
     
     Route::prefix('admin')->group(function () {
-        Route::get('budgetaires/create', [BudgetTableController::class, 'create'])->name('budget-tables.create');
-        Route::post('budgetaires', [BudgetTableController::class, 'store'])->name('budget-tables.store');
+        Route::get('admin/budgetaires/create', [BudgetTableController::class, 'create'])->name('budget-tables.create');
+        Route::post('admin/budgetaires', [BudgetTableController::class, 'store'])->name('budget-tables.store');
         Route::post('admin/budget-tables', [BudgetTableController::class, 'store'])->name('budget-tables.store');
-        Route::get('tables-budgetaires', [BudgetTableController::class, 'index'])->name('budget-tables.index');
-        Route::get('tables-budgetaires/{id}', [BudgetTableController::class, 'show'])->name('budget-tables.show');
+        Route::get('admin/tables-budgetaires', [BudgetTableController::class, 'index'])->name('budget-tables.index');
+        Route::get('admin/tables-budgetaires/{id}', [BudgetTableController::class, 'show'])->name('budget-tables.show');
         Route::get('admin/budget-tables/export/{id}', [BudgetTableController::class, 'exportPdf'])->name('budget-tables.export');
         Route::get('admin/budgetaire/tables-budgetaires', [BudgetTableController::class, 'index'])->name('budget-tables.index');
         Route::get('admin/budgetaire/tables-budgetaires/{id}/edit', [BudgetTableController::class, 'edit'])->name('budget-tables.edit');

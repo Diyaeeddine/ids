@@ -162,7 +162,7 @@
                                             </svg>
                                             Voir
                                         </a>
-                                        <a href="{{ route('imprimer.fichier', ['filename' => $config['filename']]) }}"
+                                        <a href="{{ route('plaisance.imprimer.fichier', ['filename' => $config['filename']]) }}"
                                            target="_blank"
                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,7 +274,7 @@
                             Les documents générés seront disponibles une fois que votre demande sera acceptée.
                         </p>
                     </div>
-                </div>
+                </div>  
             </div>
         @endif
 

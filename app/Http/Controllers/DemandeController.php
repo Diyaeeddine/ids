@@ -86,7 +86,7 @@ class DemandeController extends Controller
      {
          $user = Auth::user();
          $demande = Demande::findOrFail($id);
-        //  $champs = $demande->champs ?? [];
+
          $champs = collect($demande->champs ?? [])
         ->filter(function ($champData) use ($user) {
             return is_array($champData)
@@ -119,7 +119,7 @@ class DemandeController extends Controller
 
     public function affecterPage($id = null)
     {
-        $demandes = Demande::latest()->get();
+        $demandes = Demande::where('contrat_id',null)->latest()->get();
         $selectedDemande = $id ? Demande::findOrFail($id) : null;
     
         $users = User::role(['user', 'tresorier', 'plaisance', 'comptable', 'admin juridique'])->get();
@@ -495,7 +495,7 @@ public function refuser(Request $request, $demande_id, $user_id)
 
     Notification::create([
         'user_id' => $user_id,
-        'original_user_id' => $user_id,
+        'source_user_id' => $user_id,
         'demande_id' => $demande_id,
         'titre' => "Votre demande {$demande_titre} a été refusée",
         'commentaire' => $commentaire,

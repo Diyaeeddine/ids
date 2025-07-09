@@ -32,6 +32,11 @@ class Contrat extends Model
         'date_signature',
         'accepte_le',
     ];
+
+    public function demande()
+{
+    return $this->hasOne(Demande::class);
+}
     public function demandeur()
     {
         return $this->belongsTo(Demandeur::class);

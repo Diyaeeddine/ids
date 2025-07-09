@@ -46,7 +46,7 @@
                                     {{ number_format($facture->total_ttc, 2, ',', ' ') }} DH 
                                 </p>
                                 
-                                <form id="delete-form-{{ $facture->id }}" method="POST" action="{{ route('factures.destroy', $facture) }}">
+                                <form id="delete-form-{{ $facture->id }}" method="POST" action="{{ route('plaisance.factures.destroy', $facture) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button" data-form-id="delete-form-{{ $facture->id }}" class="js-delete-btn text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition" title="Supprimer la facture">

@@ -29,5 +29,11 @@ class OrderP extends Model
         'section_analytique',
         'produit',
         'extension_analytique',
+        'is_accepted',
     ];
+
+    public function orderV()
+{
+    return $this->hasOne(OrderV::class, 'id_op');
+}
 }

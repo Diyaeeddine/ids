@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('is_filled')->default(false);
             $table->string('duree')->nullable(true);
             $table->string('etape')->nullable(true);
-            $table->integer('sort')->autoIncreament();
+            $table->integer('sort')->autoIncreament()->nullable(true)->default(0);
             $table->boolean('IsYourTurn')->default(false);           
             $table->foreign('demande_id')->references('id')->on('demandes')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

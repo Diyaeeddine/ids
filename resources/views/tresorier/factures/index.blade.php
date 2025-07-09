@@ -20,7 +20,7 @@
                 @forelse($factures as $facture)
                     {{-- The main div for the card. It is made clickable by the JavaScript below. --}}
                     <div class="js-clickable-card bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 ease-in-out" 
-                         data-href="{{ route('factures.show', $facture) }}">
+                         data-href="{{ route('plaisance.factures.show', $facture) }}">
                         <div class="p-6 flex flex-col md:flex-row justify-between md:items-center space-y-4 md:space-y-0">
                             
                             {{-- Left Side: Invoice Details --}}
@@ -139,13 +139,11 @@
                 }
             });
 
-            // --- CLICKABLE CARD LOGIC ---
             const cards = document.querySelectorAll('.js-clickable-card');
             cards.forEach(card => {
                 card.addEventListener('click', function(event) {
-                    // Check if the click was on the delete button or its form
-                    if (event.target.closest('.js-delete-btn') || event.target.closest('form')) {
-                        return; // Do nothing if the click was on the delete functionality
+                    if (event.target.closest('.js-delete-btn') || event.target.closest('form')) {   
+                        return; 
                     }
                     const href = this.getAttribute('data-href');
                     if (href) {

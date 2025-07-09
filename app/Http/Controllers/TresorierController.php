@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderP;
+use App\Models\OrderV;
 use Illuminate\Http\Request;
 use App\Models\Demande;
 use App\Models\DemandeUser;
 use App\Models\Facture;
+use App\Models\User;
 use App\Models\FactureItem;
 use App\Models\Contrat;
+use Illuminate\Support\Facades\DB;
+
 
 class TresorierController extends Controller
 {
@@ -48,7 +52,14 @@ class TresorierController extends Controller
 
     public function userDemandes()
     {
-        return view('tresorier.demandes');
+        $demandes_acc = DemandeUser::with(['demande', 'user'])
+        ->where('etape', 'acceptee')
+        ->get();
+    
+        $totalDemandes = DemandeUser::where('etape', 'acceptee')->count();
+        
+        return view('tresorier.demandes', compact('demandes_acc', 'totalDemandes'));
+
     }
 
      public function OP(Request $request)
@@ -75,18 +86,22 @@ class TresorierController extends Controller
 
         return view('tresorier.op', compact('orders'));
     }
-    public function OV()
-    {
-        return view('tresorier.ov');
-    }
+
 
 public function createOP()
 {
 
     $factureIdsUtilisees = OrderP::pluck('id_facture')->toArray();
 
-    $factures = Facture::whereNotIn('id', $factureIdsUtilisees)->get();
-
+    $factures = Facture::whereNotIn('factures.id', $factureIdsUtilisees)
+    ->join('contrats', 'factures.contrat_id', '=', 'contrats.id')
+    ->join('demandes', 'demandes.contrat_id', '=', 'contrats.id')
+    ->join('demande_user', function($join) {
+        $join->on('demande_user.demande_id', '=', 'demandes.id')
+             ->where('demande_user.etape', '=', 'acceptee'); 
+    })
+    ->select('factures.*') 
+    ->get();
     $factureData = [];
 
     foreach ($factures as $facture) {
@@ -112,12 +127,16 @@ public function createOP()
 
     return view('tresorier.create-OP', compact('factureData'));
 }
+public function destroy($id)
+{
+    $order = OrderP::findOrFail($id);
+    $order->delete();
 
-
-public function store(Request $request)
+    return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement supprimé avec succès.');
+}
+public function update(Request $request, $id)
 {
     $validated = $request->validate([
-        'invoice_id' => 'required|integer|exists:factures,id',
         'description' => 'required|string|max:255',
         'amount' => 'required|numeric|min:0.01',
         'payment_method' => 'required|string',
@@ -125,21 +144,63 @@ public function store(Request $request)
         'notes' => 'nullable|string',
     ]);
 
-$facture = Facture::with('contrat.demandeur')->find($validated['invoice_id']);
+    $order = OrderP::findOrFail($id);
+    $order->update([
+        'description_operation' => $validated['description'],
+        'montant_chiffres' => $validated['amount'],
+        'mode_paiement' => $validated['payment_method'],
+        'date_paiment' => $validated['due_date'],
+        'observations' => $validated['notes'],
+        'updated_at' => now(),
+    ]);
 
-\DB::table('order_p')->insert([
-    'id_facture' => $validated['invoice_id'],
-    'reference' => $facture->numero_facture ?? null,
-    'entite_ordonnatrice' => optional($facture->contrat->demandeur)->nom,
-    'description_operation' => $validated['description'],
-    'montant_chiffres' => $validated['amount'],
-    'mode_paiement' => $validated['payment_method'],
-    'date_paiment' => $validated['due_date'],
-    'observations' => $validated['notes'] ?? null,
-    'created_at' => now(),
-    'updated_at' => now(),
-]);
+    return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement mis à jour avec succès.');
+}
 
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'invoice_id' => 'required|integer|exists:factures,id',
+        'description' => 'required|string|max:255',
+        'amount' => 'required|numeric',
+        'payment_method' => 'required|string',
+        'due_date' => 'required|date',
+        'notes' => 'nullable|string',
+    ]);
+
+    $facture = Facture::with('contrat.demandeur', 'contrat.demande')->find($validated['invoice_id']);
+
+    if (!$facture || !$facture->contrat || !$facture->contrat->demande) {
+        return back()->withErrors(['error' => 'Impossible de trouver la demande liée à la facture.']);
+    }
+    
+    DB::table('order_p')->insert([
+        'id_facture' => $validated['invoice_id'],
+        'reference' => $facture->numero_facture,
+        'entite_ordonnatrice' => $facture->contrat->demandeur->nom,
+        'description_operation' => $validated['description'],
+        'montant_chiffres' => $validated['amount'],
+        'mode_paiement' => $validated['payment_method'],
+        'date_paiment' => $validated['due_date'],
+        'observations' => $validated['notes'] ?? null,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    
+    foreach (User::role('admin')->get() as $admin) {
+        DB::table('notifications')->insert([
+            'user_id' => $admin->id,
+            'demande_id' => $facture->contrat->demande->id,
+            'type' => 'remplir_champs',
+            'titre' => 'Nouveau OP à vérifier',
+            'source_user_id' => Auth()->id(),
+            'is_read' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+    
 
     return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement créé avec succès.');
 }
@@ -148,6 +209,8 @@ $facture = Facture::with('contrat.demandeur')->find($validated['invoice_id']);
     {
         return view('tresorier.create-OV');
     }
+
+    
 
     public function reset($id)
     {
@@ -158,4 +221,244 @@ $facture = Facture::with('contrat.demandeur')->find($validated['invoice_id']);
 
         return redirect()->route('tresorier.op')->with('success', 'Le statut de l\'ordre de paiement a été réinitialisé.');
     }
+    public function userDemandesSearch(Request $request)
+{
+    $searchUser = $request->get('search_user');
+    $dateSubmission = $request->get('date_soumission');
+    $typeEconomique = $request->get('filter_etape');
+    
+    $query = DemandeUser::with(['demande', 'user'])
+        ->where('etape', 'acceptee');
+
+    if ($searchUser) {
+        $query->whereHas('user', function($q) use ($searchUser) {
+            $q->where('name', 'LIKE', '%' . $searchUser . '%')
+              ->orWhere('email', 'LIKE', '%' . $searchUser . '%');
+        });
+    }
+
+    if ($dateSubmission) {
+        $query->whereDate('updated_at', $dateSubmission);
+    }
+
+    if ($typeEconomique && $typeEconomique !== 'all') {
+        $query->whereHas('demande', function($q) use ($typeEconomique) {
+            $q->where('type_economique', $typeEconomique);
+        });
+    }
+
+    $query->orderBy('updated_at', 'desc');
+    $demandes_acc = $query->get();
+    $totalDemandes = $demandes_acc->count();
+
+    if ($request->ajax()) {
+        return response()->json([
+            'success' => true,
+            'html' => view('tresorier.partials.demandes-results', compact(
+                'demandes_acc', 
+                'totalDemandes',
+                'searchUser',
+                'dateSubmission', 
+                'typeEconomique'
+            ))->render()
+        ]);
+    }
+
+    return view('tresorier.demandes', compact(
+        'demandes_acc', 
+        'totalDemandes',
+        'searchUser',
+        'dateSubmission', 
+        'typeEconomique'
+    ));
+}
+
+public function OV(Request $request)
+{
+
+
+    $op_ids = [
+                100 => 'Youssef',
+                101 => 'Amine',
+                102 => 'Sara',
+                103 => 'Karim',
+                104 => 'Nora',
+                105 => 'Leila',
+                106 => 'Omar',
+                107 => 'Mona',
+                108 => 'Rachid',
+                109 => 'Samira',
+            ];
+
+    $beneficiaireRib = $request->get('beneficiaire_rib');
+    $factureNumber = $request->get('facture_number');
+    $dateSubmission = $request->get('date');
+
+    $beneficiaireRib = !empty($beneficiaireRib) ? $beneficiaireRib : null;
+    $factureNumber = !empty($factureNumber) ? $factureNumber : null;
+    $dateSubmission = !empty($dateSubmission) ? $dateSubmission : null;
+
+    $hasSearchParams = $beneficiaireRib || $factureNumber || $dateSubmission;
+
+    $query = OrderV::query();
+
+    if ($hasSearchParams) {
+        if ($beneficiaireRib) {
+            if (is_numeric($beneficiaireRib)) {
+                $query->where('beneficiaire_rib', $beneficiaireRib);
+            } else {
+                $query->where('beneficiaire_nom', 'LIKE', '%' . $beneficiaireRib . '%');
+            }
+        }
+
+        if ($factureNumber) {
+            $orderPIds = OrderP::whereNotNull('id_facture')
+                ->pluck('id_facture')
+                ->toArray();
+
+            $factureIds = Facture::whereIn('id', $orderPIds)
+                ->where('numero_facture', 'LIKE', '%' . $factureNumber . '%')
+                ->pluck('id')
+                ->toArray();
+
+            if (!empty($factureIds)) {
+                $query->whereHas('orderP', function ($q) use ($factureIds) {
+                    $q->whereIn('id_facture', $factureIds);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        if ($dateSubmission) {
+            try {
+                $date = \Carbon\Carbon::createFromFormat('Y-m-d', $dateSubmission);
+                $query->whereDate('date_virement', $date->format('Y-m-d'));
+            } catch (\Exception $e) {
+                error_log('Invalid date format provided: ' . $dateSubmission);
+            }
+        }
+    }
+
+    $query->orderBy('created_at', 'desc');
+
+    if ($hasSearchParams) {
+        $ordres = $query->get();
+        $isSearch = true;
+    } else {
+        $ordres = $query->paginate(10);
+        $isSearch = false;
+    }
+
+    $totalOvs = $hasSearchParams ? $ordres->count() : OrderV::count();
+    return view('tresorier.ov', compact(
+        'op_ids',
+        'ordres',
+        'totalOvs',
+        'isSearch',
+        'beneficiaireRib',
+        'factureNumber',
+        'dateSubmission'
+    ));
+    
+}
+
+    public function ovStore(Request $request){
+        $validatedData = $request->validate([
+            // 'id_op' => 'required|integer',
+            'id_op' => 'integer',
+            'date_virement' => 'required|date',
+            'montant' => 'required|numeric',
+            'compte_debiteur' => 'required|string|min:5',
+            'beneficiaire_nom' => 'required|string|min:2',
+            'beneficiaire_rib' => 'required|string|min:10',
+            'beneficiaire_banque' => 'required|string|min:2',
+            'beneficiaire_agence' => 'required|string|min:2',
+            'objet' => 'required|string|min:5'
+        ]);
+
+        try {
+            $virement = OrderV::create([
+                'id_op' => $validatedData['id_op'],
+                'date_virement' => $validatedData['date_virement'],
+                'compte_debiteur' => $validatedData['compte_debiteur'],
+                'montant' => $validatedData['montant'],
+                'beneficiaire_nom' => $validatedData['beneficiaire_nom'],
+                'beneficiaire_rib' => $validatedData['beneficiaire_rib'],
+                'beneficiaire_banque' => $validatedData['beneficiaire_banque'],
+                'beneficiaire_agence' => $validatedData['beneficiaire_agence'],
+                'objet' => $validatedData['objet']
+            ]);
+
+            return redirect()->back()->with('success', 'Demande créée avec succès');
+
+        } catch (ValidationException $e) {
+           
+            return redirect()->back()->with('error', 'Erreurs de validation.');
+
+        } catch (\Exception $e) {
+           
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement.');
+        }
+    }
+
+    public function ovShow($id)
+        {
+            try {
+                $operation = OrderV::findOrFail($id); 
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $operation
+                ]);
+
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune opération trouvée avec cet ID.'
+                ], 404);
+
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération des données: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+
+    public function ovUpdate(Request $request, $id)
+    {
+        try {
+            $validatedData = $request->validate([
+                'date_virement' => 'required|date',
+                'compte_debiteur' => 'required|string|max:255',
+                'montant' => 'required|numeric|min:0',
+                'beneficiaire_nom' => 'required|string|max:255',
+                'beneficiaire_rib' => 'required|string|max:255',
+                'beneficiaire_banque' => 'required|string|max:255',
+                'beneficiaire_agence' => 'required|string|max:255',
+                'objet' => 'required|string|max:500'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Opération mise à jour avec succès',
+                'data' => array_merge(['id_op' => $id], $validatedData)
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

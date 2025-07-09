@@ -65,13 +65,13 @@
                 <div class="lg:col-span-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Actions Rapides</h3>
                     <div class="space-y-3">
-                        <a href="{{ route('contrats.create') }}" class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition">
+                        <a href="{{ route('plaisance.contrats.create') }}" class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition">
                             <i class="fas fa-plus mr-2"></i> Créer un Contrat
                         </a>
-                        <a href="{{ route('user.contrats') }}" class="w-full flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-sm transition">
+                        <a href="{{ route('plaisance.contrats') }}" class="w-full flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-sm transition">
                             <i class="fas fa-list-ul mr-2"></i> Voir les Contrats
                         </a>
-                        <a href="{{ route('factures.index') }}" class="w-full flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-sm transition">
+                        <a href="{{ route('plaisance.factures.index') }}" class="w-full flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-sm transition">
                             <i class="fas fa-list-ul mr-2"></i> Voir les Factures
                         </a>
                     </div>

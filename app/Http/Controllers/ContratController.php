@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Demandeur;
+use App\Models\Demande;
+use App\Models\DemandeUser;
 use App\Models\Proprietaire;
 use App\Models\Navire;
 use App\Models\Gardien;
@@ -36,8 +38,10 @@ class ContratController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'type_contrat' => 'required|in:randonnee,accostage',
+            'type_form' => 'required|in:charge,produit',
             'nom_demandeur' => 'required|string|max:255',
         ]);
 
@@ -47,8 +51,8 @@ class ContratController extends Controller
                 ->withInput()
                 ->with('error', 'Erreur de validation');
         }
-
-        $contrat = DB::transaction(function () use ($request) {
+        
+        $contrat = DB::transaction(function () use ($request) {        
             $demandeur = Demandeur::create([
                 'nom' => $request->nom_demandeur,
                 'cin_pass' => $request->cin_pass_demandeur,
@@ -56,7 +60,7 @@ class ContratController extends Controller
                 'adresse' => $request->adresse_demandeur,
                 'email' => $request->email_demandeur,
             ]);
-
+        
             $proprietaire = Proprietaire::create([
                 'type' => $request->filled('nom_societe') ? 'morale' : 'physique',
                 'nom' => $request->nom_proprietaire ?? $request->nom_societe,
@@ -69,7 +73,7 @@ class ContratController extends Controller
                 'caution_solidaire' => $request->caution_solidaire,
                 'passeport' => $request->cin_pass_proprietaire,
             ]);
-
+        
             $navire = Navire::create([
                 'nom' => $request->nom_navire,
                 'type' => $request->type_navire,
@@ -87,15 +91,15 @@ class ContratController extends Controller
                 'numero_serie_moteur' => $request->numero_serie_moteur,
                 'puissance_moteur' => $request->puissance_moteur,
             ]);
-
+        
             $gardien = Gardien::create([
                 'nom' => $request->nom_gardien,
                 'cin_pass' => $request->cin_pass_gardien,
                 'tel' => $request->num_tele_gardien,
             ]);
-
+        
             $mouvements = [];
-
+        
             if ($request->type_contrat === 'randonnee') {
                 $mouvements = [
                     'num_titre_com' => $request->num_titre_com,
@@ -115,7 +119,7 @@ class ContratController extends Controller
                     'echeance' => $request->echeance,
                 ];
             }
-
+        
             $contrat = Contrat::create([
                 'user_id' => Auth::id(),
                 'demandeur_id' => $demandeur->id,
@@ -131,18 +135,45 @@ class ContratController extends Controller
                 'lieu_signature' => $request->lieu_signature,
                 'date_signature' => $request->date_signature,
             ]);
+            
+            
+            $demande = Demande::create([    
+                'titre' => 'un test titre',
+                'type_economique' => $request->type_form, 
+                'contrat_id'=>$contrat->id,
+                'champs'=>null,
+            ]);
+            $demande_user = DemandeUser::create([
 
+                'demande_id'=>$demande->id,						
+                'user_id' => Auth::id(),
+                'etape'=>'en_attente_validation',
+                'is_filled' => false,
+                'IsYourTurn' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        
             foreach (User::role('admin')->get() as $admin) {
                 Notification::create([
                     'user_id' => $admin->id,
                     'contrat_id' => $contrat->id,
+                    'demande_id' => $demande->id,
+                    'type' => 'verifier_demande',
+                    'source_user_id' => Auth()->id(),
                     'titre' => 'Nouveau contrat créé par ' . Auth::user()->name,
                     'is_read' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
 
+            // dd($contrat);
+
+        
             return $contrat;
         });
+        
 
             return redirect()->route('plaisance.factures.create', ['contrat' => $contrat->id])
             ->with('download_contract', [

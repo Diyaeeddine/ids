@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('demandes', function (Blueprint $table) {
             $table->id(); 
-            $table->string('titre')->nullable(false);
-            $table->string('type_economique')->nullable(false);
-            // $table->string('type_form')->nullable(true);
+            $table->string('titre');
+            $table->string('type_economique');
+            $table->unsignedBigInteger('contrat_id')->nullable();
             $table->json('champs')->nullable();
+            $table->foreign('contrat_id')->references('id')->on('contrats')->onDelete('set null');
             $table->timestamps();
         });
     }
