@@ -159,7 +159,7 @@ class ContratController extends Controller
                     'user_id' => $admin->id,
                     'contrat_id' => $contrat->id,
                     'demande_id' => $demande->id,
-                    'type' => 'verifier_demande',
+                    'type' => 'verifier_demande', // verifier_demande verifier_op refuser_op, op_acceptee demande_refusee remplir_demande demande_acceptee
                     'source_user_id' => Auth()->id(),
                     'titre' => 'Nouveau contrat créé par ' . Auth::user()->name,
                     'is_read' => false,
@@ -167,7 +167,7 @@ class ContratController extends Controller
                     'updated_at' => now(),
                 ]);
             }
-
+            
             // dd($contrat);
 
         

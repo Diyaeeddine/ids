@@ -43,13 +43,16 @@ class PlaisanceController extends Controller
     $user = Auth::user();
     
     $mesdemandes = DemandeUser::with(['demande', 'user'])
-        ->where('user_id', $user->id)
-        ->where(function ($q) {
-            $q->where('isyourturn', true)
-              ->orWhere('is_filled', true);
-        })
-        ->latest('updated_at')
-        ->paginate(10);
+    ->where('user_id', $user->id)
+    ->whereHas('demande', function ($query) {
+        $query->whereNull('contrat_id');
+    })
+    ->where(function ($q) {
+        $q->where('isyourturn', true)
+          ->orWhere('is_filled', true);
+    })
+    ->latest('updated_at')
+    ->paginate(10);
 
         foreach ($mesdemandes as $demande) {
             $updated_at = $demande->updated_at;

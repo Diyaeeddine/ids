@@ -277,18 +277,8 @@ public function OV(Request $request)
 {
 
 
-    $op_ids = [
-                100 => 'Youssef',
-                101 => 'Amine',
-                102 => 'Sara',
-                103 => 'Karim',
-                104 => 'Nora',
-                105 => 'Leila',
-                106 => 'Omar',
-                107 => 'Mona',
-                108 => 'Rachid',
-                109 => 'Samira',
-            ];
+    $num_op = OrderP::select('id')->where('is_accepted',true)->get();
+
 
     $beneficiaireRib = $request->get('beneficiaire_rib');
     $factureNumber = $request->get('facture_number');
@@ -352,7 +342,7 @@ public function OV(Request $request)
 
     $totalOvs = $hasSearchParams ? $ordres->count() : OrderV::count();
     return view('tresorier.ov', compact(
-        'op_ids',
+        'num_op',
         'ordres',
         'totalOvs',
         'isSearch',

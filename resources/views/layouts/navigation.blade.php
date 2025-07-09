@@ -378,6 +378,7 @@
 
       let url = '';
       if (userRole === 'admin') {
+        
         url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
       } else if (userRole === 'plaisance') {
         url = `/plaisance/demande/remplir/${notification.demande_id}`;

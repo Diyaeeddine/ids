@@ -76,9 +76,11 @@ public function generateNotifications()
                 Notification::create([
                     'user_id' => $currentUser->id,
                     'demande_id' => $demande->id,
+                    'type' => 'remplir_demande',
                     'titre' => 'Nouvelle demande à remplir',
                     'is_read' => false,
                 ]);
+               //  verifier_demande verifier_op refuser_op, op_acceptee demande_refusee remplir_demande demande_acceptee
             }
         }
     }

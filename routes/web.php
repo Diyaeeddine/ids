@@ -140,6 +140,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('admin/demandes/add-demande', [DemandeController::class, 'create'])->name('demande.add-demande');
     Route::post('admin/demandes/add-demande', [DemandeController::class, 'store'])->name('demande.store-demande');
     Route::get('admin/demandes/boite-decision', [DemandeController::class, 'showDecision'])->name('admin.demandes.decision');
+    Route::get('admin/demandes/accueil-decision', [DemandeController::class, 'accueilDecision'])->name('admin.demandes.accueil-decision');
     Route::get('admin/demandes/afficher-champs', [DemandeController::class, 'showChamps'])->name('admin.demandes.showChamps');
     Route::post('admin/demandes/{id}/{user}/accepter', [DemandeController::class, 'accepter'])->name('admin.demandes.accepter');
     Route::post('admin/demandes/{id}/{user}/refuser', [DemandeController::class, 'refuser'])->name('admin.demandes.refuser');

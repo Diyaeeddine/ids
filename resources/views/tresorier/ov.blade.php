@@ -19,14 +19,16 @@
                         
             <form action="{{ route('tresorier.ov.store') }}" method="POST" class="space-y-4">
                 @csrf
-                                
+                
                 <div>
                     <label for="id_op" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        N° Ordre Pai<span class="text-red-500">*</span>
+                        N° Ordre Paiement<span class="text-red-500">*</span>
                     </label>
                     <select name="id_op" id="id_op" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        @foreach($op_ids as $id => $label)
-                            <option value="{{ $id }}">{{ $id }}-{{ $label }}</option>
+                        <option value="">-- Selectionner N° Ordre Paiement --</option>
+
+                        @foreach($num_op as $n_op )
+                            <option value="{{ $n_op->id }}">{{ $n_op->id}}</option>
                         @endforeach
                     </select>
                 </div>

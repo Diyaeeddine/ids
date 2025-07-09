@@ -398,6 +398,18 @@ public function showDecision()
     return view('admin.demandes.boite-decision', compact('demandes'));
 }
 
+public function accueilDecision()
+{
+    $demandes = DemandeUser::with(['demande', 'user'])
+        ->where('is_filled', true)
+        ->where('isyourturn', true)
+        ->where('etape', 'en_attente_validation')
+        ->orderByDesc('updated_at')
+        ->get();
+
+    return view('admin.demandes.accueil-decision', compact('demandes'));
+}
+
 public function showChamps(Request $request)
 {
     $query = DemandeUser::with(['demande', 'user'])

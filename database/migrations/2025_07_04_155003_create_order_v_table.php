@@ -12,8 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order_v', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id(); 
+            $table->integer('id_op'); 
+            $table->date('date_virement')->nullable(); 
+            $table->string('compte_debiteur')->nullable(); 
+            $table->decimal('montant', 15, 2);
+            $table->string('beneficiaire_nom'); 
+            $table->string('beneficiaire_rib'); 
+            $table->string('beneficiaire_banque');
+            $table->string('beneficiaire_agence'); 
+            $table->text('objet')->nullable(); 
+            $table->timestamps(); 
         });
     }
 
