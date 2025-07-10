@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture - {{ $demande->titre }}</title>
+    <title>Contrat - {{ $demande->titre }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -75,7 +75,7 @@
         .status-badge {
             display: inline-block;
             padding: 2px 6px;
-            background-color: #28a745;
+            background-color: #17a2b8;
             color: #fff;
             font-size: 8px;
             font-weight: bold;
@@ -133,10 +133,10 @@
             color: #856404;
         }
 
-        .monetary-field {
-            text-align: right;
+        .date-field {
+            background-color: #d1ecf1;
             font-weight: 600;
-            color: #28a745;
+            color: #0c5460;
         }
 
         .checkbox-section {
@@ -160,7 +160,6 @@
         .checkbox.checked {
             background-color: #2c3e50;
         }
-
         .titre-global {
             background-color: #e8f5e8;
 
@@ -175,11 +174,11 @@
             font-size: 14px;
             font-weight: bold;
         }
-
         .signature-section {
             margin-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            background-color: #f8f9fa;
         }
 
         .signature-row {
@@ -193,7 +192,7 @@
             text-align: center;
             border: 1px solid #e0e0e0;
             padding: 8px;
-            background-color: #f8f9fa;
+            background-color: white;
         }
 
         .signature-box .title {
@@ -210,7 +209,7 @@
             margin-bottom: 4px;
         }
 
-        .date-field {
+        .date-field-signature {
             font-size: 8px;
             text-align: center;
             color: #666;
@@ -222,24 +221,24 @@
             clear: both;
         }
 
-        /* Styles spécifiques pour la facture */
-        .facture-info {
-            background-color: #e8f5e8;
-            border-left: 4px solid #28a745;
+        /* Styles spécifiques pour le contrat */
+        .contrat-info {
+            background-color: #e8f2ff;
+            border-left: 4px solid #007bff;
             padding: 10px;
             margin-bottom: 15px;
         }
 
-        .facture-info h2 {
+        .contrat-info h2 {
             margin: 0 0 5px 0;
-            color: #155724;
+            color: #004085;
             font-size: 14px;
         }
 
-        .facture-info p {
+        .contrat-info p {
             margin: 0;
             font-size: 10px;
-            color: #155724;
+            color: #004085;
         }
 
         /* Optimisation pour l'impression */
@@ -290,10 +289,13 @@
 <body>
     <div class="container">
         <div class="titre-global">
-            <h3>Facture</h3>
+            <h3>Contrat</h3>
         </div>
 
-
+        {{--  <div class="contrat-info">
+            <h2>Information Contrat</h2>
+            <p>Ce contrat a été généré le {{ $metadata['date_generation'] ?? now()->format('d/m/Y H:i') }} par {{ $metadata['generated_by'] ?? 'le système' }}.</p>
+        </div>  --}}
 
         <div class="form-section">
             <table class="form-table">
@@ -301,7 +303,7 @@
                     <td class="label">N° Demande</td>
                     <td class="value highlight-field">{{ $demande->id }}</td>
                     <td class="label">Date de Création</td>
-                    <td class="value">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
+                    <td class="value date-field">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Titre</td>
@@ -309,13 +311,13 @@
                 </tr>
                 <tr>
                     <td class="label">Montant (DH)</td>
-                    <td class="value monetary-field">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }}</td>
-                    <td class="label">Date de Facturation</td>
-                    <td class="value">{{ now()->format('d/m/Y') }}</td>
+                    <td class="value">{{ $demande->montant ? number_format($demande->montant, 2, ',', ' ') : 'Non spécifié' }}</td>
+                    <td class="label">Date du Contrat</td>
+                    <td class="value date-field">{{ now()->format('d/m/Y') }}</td>
                 </tr>
                 <tr>
                     <td class="label">Type Économique</td>
-                    <td class="value">{{ ucfirst($demande->type_economique ?? 'Non spécifié') }}</td>
+                    <td class="value ">{{ ucfirst($demande->type_economique ?? 'Non spécifié') }}</td>
                     <td class="label">Statut</td>
                     <td class="value">
                         <span class="status-badge">{{ ucfirst($demande->statut ?? 'En cours') }}</span>
@@ -324,11 +326,11 @@
             </table>
         </div>
 
-        @if(!empty($factureChamps))
+        @if(!empty($contratChamps))
         <div class="form-section">
             <table class="form-table">
                 @php $counter = 0; @endphp
-                @foreach($factureChamps as $key => $champ)
+                @foreach($contratChamps as $key => $champ)
                     @if(isset($champ['value']) && $champ['value'] !== null && $champ['value'] !== '')
                         @if($counter % 2 == 0)
                             <tr>
@@ -338,9 +340,9 @@
                                     @if(is_array($champ['value']))
                                         {{ implode(', ', $champ['value']) }}
                                     @elseif(is_numeric($champ['value']) && (strpos($key, 'montant') !== false || strpos($key, 'prix') !== false || strpos($key, 'cout') !== false))
-                                        <span class="monetary-field">{{ number_format($champ['value'], 2, ',', ' ') }} DH</span>
+                                        {{ number_format($champ['value'], 2, ',', ' ') }} DH
                                     @elseif(preg_match('/\d{4}-\d{2}-\d{2}/', $champ['value']))
-                                        {{ date('d/m/Y', strtotime($champ['value'])) }}
+                                        <span class="date-field">{{ date('d/m/Y', strtotime($champ['value'])) }}</span>
                                     @else
                                         {{ $champ['value'] }}
                                     @endif
@@ -359,24 +361,25 @@
         </div>
         @endif
 
-        <div class="form-section">
-            <table class="form-table">
-                <tr>
-                    <td class="label">Montant HT</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) / 1.2, 2, ',', ' ') }} DH</td>
-                    <td class="label">TVA (20%)</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) - (($demande->montant ?? 0) / 1.2), 2, ',', ' ') }} DH</td>
-                </tr>
-                <tr>
-                    <td class="label" style="background-color: #d4edda; font-weight: bold;">Montant TTC</td>
-                    <td class="value monetary-field" style="background-color: #d4edda; font-weight: bold; font-size: 12px;">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</td>
-                    <td class="label">Mode de Paiement</td>
-                    <td class="value">Virement bancaire</td>
-                </tr>
-            </table>
-        </div>
 
 
+
+        {{--  <div class="signature-section">
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="title">Signature du Client</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Prénom: _______________</div>
+                </div>
+                <div class="signature-box">
+                    <div class="title">Signature du Prestataire</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Fonction: _______________</div>
+                </div>
+            </div>
+        </div>  --}}
     </div>
 </body>
 </html>

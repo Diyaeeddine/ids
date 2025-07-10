@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture - {{ $demande->titre }}</title>
+    <title>Bon de Commande - {{ $demande->titre }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -133,10 +133,10 @@
             color: #856404;
         }
 
-        .monetary-field {
-            text-align: right;
+        .date-field {
+            background-color: #d1ecf1;
             font-weight: 600;
-            color: #28a745;
+            color: #0c5460;
         }
 
         .checkbox-section {
@@ -160,8 +160,7 @@
         .checkbox.checked {
             background-color: #2c3e50;
         }
-
-        .titre-global {
+                .titre-global {
             background-color: #e8f5e8;
 
             padding: 10px;
@@ -178,8 +177,9 @@
 
         .signature-section {
             margin-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            background-color: #f8f9fa;
         }
 
         .signature-row {
@@ -193,7 +193,7 @@
             text-align: center;
             border: 1px solid #e0e0e0;
             padding: 8px;
-            background-color: #f8f9fa;
+            background-color: white;
         }
 
         .signature-box .title {
@@ -210,7 +210,7 @@
             margin-bottom: 4px;
         }
 
-        .date-field {
+        .date-field-signature {
             font-size: 8px;
             text-align: center;
             color: #666;
@@ -222,24 +222,84 @@
             clear: both;
         }
 
-        /* Styles spécifiques pour la facture */
-        .facture-info {
+        /* Styles spécifiques pour le bon de commande */
+        .bon-commande-info {
             background-color: #e8f5e8;
             border-left: 4px solid #28a745;
             padding: 10px;
             margin-bottom: 15px;
         }
 
-        .facture-info h2 {
+        .bon-commande-info h2 {
             margin: 0 0 5px 0;
             color: #155724;
             font-size: 14px;
         }
 
-        .facture-info p {
+        .bon-commande-info p {
             margin: 0;
             font-size: 10px;
             color: #155724;
+        }
+
+        /* Table des articles/produits */
+        .articles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .articles-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .articles-table td {
+            border: 1px solid #e0e0e0;
+            padding: 6px 8px;
+            font-size: 10px;
+        }
+
+        .articles-table .quantity {
+            text-align: center;
+            width: 10%;
+        }
+
+        .articles-table .price {
+            text-align: right;
+            width: 15%;
+        }
+
+        .articles-table .total {
+            text-align: right;
+            width: 15%;
+            font-weight: 600;
+        }
+
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            margin-top: 10px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 10px;
+        }
+
+        .total-row.final {
+            font-weight: 600;
+            font-size: 12px;
+            border-top: 2px solid #2c3e50;
+            padding-top: 5px;
+            margin-top: 10px;
         }
 
         /* Optimisation pour l'impression */
@@ -290,9 +350,8 @@
 <body>
     <div class="container">
         <div class="titre-global">
-            <h3>Facture</h3>
+            <h3>Bon de commande</h3>
         </div>
-
 
 
         <div class="form-section">
@@ -301,17 +360,17 @@
                     <td class="label">N° Demande</td>
                     <td class="value highlight-field">{{ $demande->id }}</td>
                     <td class="label">Date de Création</td>
-                    <td class="value">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
+                    <td class="value date-field">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Titre</td>
                     <td class="value full-width" colspan="3">{{ $demande->titre ?? 'Non spécifié' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Montant (DH)</td>
-                    <td class="value monetary-field">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }}</td>
-                    <td class="label">Date de Facturation</td>
-                    <td class="value">{{ now()->format('d/m/Y') }}</td>
+                    <td class="label">Montant Total (DH)</td>
+                    <td class="value highlight-field">{{ $demande->montant ? number_format($demande->montant, 2, ',', ' ') : 'Non spécifié' }}</td>
+                    <td class="label">Date du Bon</td>
+                    <td class="value date-field">{{ now()->format('d/m/Y') }}</td>
                 </tr>
                 <tr>
                     <td class="label">Type Économique</td>
@@ -324,11 +383,11 @@
             </table>
         </div>
 
-        @if(!empty($factureChamps))
+        @if(!empty($bonCommandeChamps))
         <div class="form-section">
             <table class="form-table">
                 @php $counter = 0; @endphp
-                @foreach($factureChamps as $key => $champ)
+                @foreach($bonCommandeChamps as $key => $champ)
                     @if(isset($champ['value']) && $champ['value'] !== null && $champ['value'] !== '')
                         @if($counter % 2 == 0)
                             <tr>
@@ -338,9 +397,9 @@
                                     @if(is_array($champ['value']))
                                         {{ implode(', ', $champ['value']) }}
                                     @elseif(is_numeric($champ['value']) && (strpos($key, 'montant') !== false || strpos($key, 'prix') !== false || strpos($key, 'cout') !== false))
-                                        <span class="monetary-field">{{ number_format($champ['value'], 2, ',', ' ') }} DH</span>
+                                        {{ number_format($champ['value'], 2, ',', ' ') }} DH
                                     @elseif(preg_match('/\d{4}-\d{2}-\d{2}/', $champ['value']))
-                                        {{ date('d/m/Y', strtotime($champ['value'])) }}
+                                        <span class="date-field">{{ date('d/m/Y', strtotime($champ['value'])) }}</span>
                                     @else
                                         {{ $champ['value'] }}
                                     @endif
@@ -359,24 +418,67 @@
         </div>
         @endif
 
+        @if(isset($articles) && !empty($articles))
         <div class="form-section">
-            <table class="form-table">
-                <tr>
-                    <td class="label">Montant HT</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) / 1.2, 2, ',', ' ') }} DH</td>
-                    <td class="label">TVA (20%)</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) - (($demande->montant ?? 0) / 1.2), 2, ',', ' ') }} DH</td>
-                </tr>
-                <tr>
-                    <td class="label" style="background-color: #d4edda; font-weight: bold;">Montant TTC</td>
-                    <td class="value monetary-field" style="background-color: #d4edda; font-weight: bold; font-size: 12px;">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</td>
-                    <td class="label">Mode de Paiement</td>
-                    <td class="value">Virement bancaire</td>
-                </tr>
+            <div class="section-title">Articles Commandés</div>
+            <table class="articles-table">
+                <thead>
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Référence</th>
+                        <th class="quantity">Quantité</th>
+                        <th class="price">Prix Unitaire</th>
+                        <th class="total">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($articles as $article)
+                    <tr>
+                        <td>{{ $article['designation'] ?? 'Non spécifié' }}</td>
+                        <td>{{ $article['reference'] ?? '-' }}</td>
+                        <td class="quantity">{{ $article['quantite'] ?? 1 }}</td>
+                        <td class="price">{{ number_format($article['prix_unitaire'] ?? 0, 2, ',', ' ') }} DH</td>
+                        <td class="total">{{ number_format(($article['quantite'] ?? 1) * ($article['prix_unitaire'] ?? 0), 2, ',', ' ') }} DH</td>
+                    </tr>
+                    @endforeach
+                </tbody>
             </table>
         </div>
+        @endif
 
+        <!-- Section Totaux -->
+        <div class="total-section">
+            <div class="total-row">
+                <span>Sous-total HT:</span>
+                <span>{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</span>
+            </div>
+            <div class="total-row">
+                <span>TVA (20%):</span>
+                <span>{{ number_format(($demande->montant ?? 0) * 0.20, 2, ',', ' ') }} DH</span>
+            </div>
+            <div class="total-row final">
+                <span>Total TTC:</span>
+                <span>{{ number_format(($demande->montant ?? 0) * 1.20, 2, ',', ' ') }} DH</span>
+            </div>
+        </div>
 
+        <!-- Section Signatures -->
+        <div class="signature-section">
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="title">Signature du Demandeur</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Prénom: _______________</div>
+                </div>
+                <div class="signature-box">
+                    <div class="title">Signature du Fournisseur</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Fonction: _______________</div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

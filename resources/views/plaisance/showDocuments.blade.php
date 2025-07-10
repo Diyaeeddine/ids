@@ -8,7 +8,7 @@
 <div class="py-6">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        {{--  <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
@@ -49,7 +49,7 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </div>  --}}
 
         @php
             $typesFormulaires = [];
@@ -122,149 +122,244 @@
             ];
         @endphp
 
-        @if(!empty($typesFormulaires) && $demandeUser && $demandeUser->etape == 'acceptee')
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                            📄 Documents générés
-                        </h3>
-                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                            {{ count($typesFormulaires) }} document(s) disponible(s)
-                        </span>
-                    </div>
+@if(!empty($typesFormulaires) && $demandeUser && $demandeUser->etape == 'acceptee'&& $demande->type_economique == 'produit')
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    📄 Documents générés
+                </h3>
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                    {{ count($typesFormulaires) }} document(s) disponible(s)
+                </span>
+            </div>
 
-                    <div class="grid gap-3">
-                        @foreach($typesFormulaires as $typeForm)
-                            @if(isset($documentsConfig[$typeForm]))
-                                @php
-                                    $config = $documentsConfig[$typeForm];
-                                @endphp
-                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div class="flex items-center">
-                                        <span class="text-2xl mr-3">{{ $config['icon'] }}</span>
-                                        <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-200">
-                                                {{ $config['title'] }}
-                                            </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $config['description'] }}
-                                            </div>
-                                        </div>
+            <div class="grid gap-3">
+                @foreach($typesFormulaires as $typeForm)
+                    @if(isset($documentsConfig[$typeForm]))
+                        @php
+                            $config = $documentsConfig[$typeForm];
+                        @endphp
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">{{ $config['icon'] }}</span>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-200">
+                                        {{ $config['title'] }}
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <a href="{{ route('voir.fichier', ['filename' => $config['filename']]) }}"
-                                           target="_blank"
-                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                            Voir
-                                        </a>
-                                        <a href="{{ route('plaisance.imprimer.fichier', ['filename' => $config['filename']]) }}"
-                                           target="_blank"
-                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H9.5a2 2 0 01-2-2V5a2 2 0 012-2h5.5a2 2 0 002 2v2a2 2 0 002 2h2a2 2 0 002 2v4a2 2 0 01-2 2h-2m-6-4h6m-6 4h6"></path>
-                                            </svg>
-                                            Imprimer
-                                        </a>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $config['description'] }}
                                     </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                @if($typeForm === 'contrat')
+                                    <!-- Bouton pour voir le contrat généré -->
+                                    <a href="{{ route('plaisance.contrat.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger le contrat -->
+                                    <a href="{{ route('plaisance.contrat.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @elseif($typeForm === 'facture')
+                                    <!-- Bouton pour voir la facture générée -->
+                                    <a href="{{ route('plaisance.facture.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger la facture -->
+                                    <a href="{{ route('plaisance.facture.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @elseif($typeForm === 'recu_p')
+                                    <!-- Bouton pour voir le reçu de paiement généré -->
+                                    <a href="{{ route('plaisance.recu_paiement.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger le reçu de paiement -->
+                                    <a href="{{ route('plaisance.recu_paiement.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @else
+                                    <!-- Boutons pour autres types de documents -->
+                                    <a href="{{ route('voir.fichier', ['filename' => $config['filename']]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        Voir
+                                    </a>
+                                    <a href="{{ route('plaisance.imprimer.fichier', ['filename' => $config['filename']]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        Imprimer
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
-        @endif
+        </div>
+    </div>
+@endif
 
-        @if(empty($typesFormulaires) && $demandeUser && $demandeUser->etape == 'acceptee')
-            @if($demande->type_economique == 'produit')
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                🏷 Documents liés au produit
-                            </h3>
-                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">
-                                Type économique : Produit
-                            </span>
-                        </div>
+@if(!empty($typesFormulaires) && $demandeUser && $demandeUser->etape == 'acceptee' && $demande->type_economique == 'charge')
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    💼 Documents générés pour la charge
+                </h3>
+                <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-orange-900 dark:text-orange-300">
+                    {{ count($typesFormulaires) }} document(s) disponible(s)
+                </span>
+            </div>
 
-                        <div class="grid gap-3">
-                            @foreach(['contrat', 'facture', 'recu_p'] as $typeDoc)
-                                @if(isset($documentsConfig[$typeDoc]))
-                                    @php $config = $documentsConfig[$typeDoc]; @endphp
-                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                        <div class="flex items-center">
-                                            <span class="text-2xl mr-3">{{ $config['icon'] }}</span>
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ $config['title'] }}</div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $config['description'] }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('voir.fichier', ['filename' => $config['filename']]) }}" target="_blank"
-                                               class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-purple-700 bg-purple-100 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                                Voir
-                                            </a>
-                                            <a href="{{ route('imprimer.fichier', ['filename' => $config['filename']]) }}" target="_blank"
-                                               class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                                Imprimer
-                                            </a>
-                                        </div>
+            <div class="grid gap-3">
+                @foreach($typesFormulaires as $typeForm)
+                    @if(isset($documentsConfig[$typeForm]))
+                        @php
+                            $config = $documentsConfig[$typeForm];
+                        @endphp
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">{{ $config['icon'] }}</span>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-200">
+                                        {{ $config['title'] }}
                                     </div>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if($demande->type_economique == 'charge')
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                💼 Documents liés à la charge
-                            </h3>
-                            <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-orange-900 dark:text-orange-300">
-                                Type économique : Charge
-                            </span>
-                        </div>
-
-                        <div class="grid gap-3">
-                            @foreach(['bon_commande', 'marche'] as $typeDoc)
-                                @if(isset($documentsConfig[$typeDoc]))
-                                    @php $config = $documentsConfig[$typeDoc]; @endphp
-                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                        <div class="flex items-center">
-                                            <span class="text-2xl mr-3">{{ $config['icon'] }}</span>
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ $config['title'] }}</div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $config['description'] }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('voir.fichier', ['filename' => $config['filename']]) }}" target="_blank"
-                                               class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                                                Voir
-                                            </a>
-                                            <a href="{{ route('imprimer.fichier', ['filename' => $config['filename']]) }}" target="_blank"
-                                               class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                                                Imprimer
-                                            </a>
-                                        </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $config['description'] }}
                                     </div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                @if($typeForm === 'contrat')
+                                    <!-- Bouton pour voir le contrat généré -->
+                                    <a href="{{ route('plaisance.contrat.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger le contrat -->
+                                    <a href="{{ route('plaisance.contrat.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @elseif($typeForm === 'bon_commande')
+                                    <!-- Bouton pour voir le bon de commande généré -->
+                                    <a href="{{ route('plaisance.bon_commande.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger le bon de commande -->
+                                    <a href="{{ route('plaisance.bon_commande.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @elseif($typeForm === 'marche')
+                                    <!-- Bouton pour voir le marché généré -->
+                                    <a href="{{ route('plaisance.marche.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger le marché -->
+                                    <a href="{{ route('plaisance.marche.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @elseif($typeForm === 'prestation')
+                                    <!-- Bouton pour voir la prestation générée -->
+                                    <a href="{{ route('plaisance.prestation.imprimer', ['demandeId' => $demande->id]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton pour télécharger la prestation -->
+                                    <a href="{{ route('plaisance.prestation.telecharger', ['demandeId' => $demande->id]) }}"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Télécharger
+                                    </a>
+                                @else
+                                    <!-- Boutons pour autres types de documents -->
+                                    <a href="{{ route('voir.fichier', ['filename' => $config['filename']]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-100 hover:bg-{{ $config['color'] }}-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        Voir
+                                    </a>
+                                    <a href="{{ route('plaisance.imprimer.fichier', ['filename' => $config['filename']]) }}"
+                                       target="_blank"
+                                       class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-{{ $config['color'] }}-700 bg-{{ $config['color'] }}-50 hover:bg-{{ $config['color'] }}-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $config['color'] }}-500">
+                                        Imprimer
+                                    </a>
                                 @endif
-                            @endforeach
+                            </div>
                         </div>
-                    </div>
-                </div>
-            @endif
-        @endif
-
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
         @if((!$demandeUser || $demandeUser->etape != 'acceptee') && empty($typesFormulaires))
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -274,7 +369,7 @@
                             Les documents générés seront disponibles une fois que votre demande sera acceptée.
                         </p>
                     </div>
-                </div>  
+                </div>
             </div>
         @endif
 

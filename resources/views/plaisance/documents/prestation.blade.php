@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture - {{ $demande->titre }}</title>
+    <title>Prestation de Service - {{ $demande->titre }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -75,7 +75,7 @@
         .status-badge {
             display: inline-block;
             padding: 2px 6px;
-            background-color: #28a745;
+            background-color: #6f42c1;
             color: #fff;
             font-size: 8px;
             font-weight: bold;
@@ -133,10 +133,22 @@
             color: #856404;
         }
 
-        .monetary-field {
-            text-align: right;
+        .date-field {
+            background-color: #d1ecf1;
             font-weight: 600;
-            color: #28a745;
+            color: #0c5460;
+        }
+
+        .montant-field {
+            background-color: #e2d1f3;
+            font-weight: 600;
+            color: #6f42c1;
+        }
+
+        .service-field {
+            background-color: #f8d7da;
+            font-weight: 600;
+            color: #721c24;
         }
 
         .checkbox-section {
@@ -160,8 +172,7 @@
         .checkbox.checked {
             background-color: #2c3e50;
         }
-
-        .titre-global {
+                .titre-global {
             background-color: #e8f5e8;
 
             padding: 10px;
@@ -178,8 +189,9 @@
 
         .signature-section {
             margin-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            background-color: #f8f9fa;
         }
 
         .signature-row {
@@ -193,7 +205,7 @@
             text-align: center;
             border: 1px solid #e0e0e0;
             padding: 8px;
-            background-color: #f8f9fa;
+            background-color: white;
         }
 
         .signature-box .title {
@@ -210,7 +222,7 @@
             margin-bottom: 4px;
         }
 
-        .date-field {
+        .date-field-signature {
             font-size: 8px;
             text-align: center;
             color: #666;
@@ -222,24 +234,24 @@
             clear: both;
         }
 
-        /* Styles spécifiques pour la facture */
-        .facture-info {
-            background-color: #e8f5e8;
-            border-left: 4px solid #28a745;
+        /* Styles spécifiques pour la prestation */
+        .prestation-info {
+            background-color: #f3e5f5;
+            border-left: 4px solid #6f42c1;
             padding: 10px;
             margin-bottom: 15px;
         }
 
-        .facture-info h2 {
+        .prestation-info h2 {
             margin: 0 0 5px 0;
-            color: #155724;
+            color: #4a2c5a;
             font-size: 14px;
         }
 
-        .facture-info p {
+        .prestation-info p {
             margin: 0;
             font-size: 10px;
-            color: #155724;
+            color: #4a2c5a;
         }
 
         /* Optimisation pour l'impression */
@@ -290,7 +302,7 @@
 <body>
     <div class="container">
         <div class="titre-global">
-            <h3>Facture</h3>
+            <h3>Prestation</h3>
         </div>
 
 
@@ -301,17 +313,17 @@
                     <td class="label">N° Demande</td>
                     <td class="value highlight-field">{{ $demande->id }}</td>
                     <td class="label">Date de Création</td>
-                    <td class="value">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
+                    <td class="value date-field">{{ $demande->created_at ? $demande->created_at->format('d/m/Y H:i') : 'Non disponible' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Titre</td>
+                    <td class="label">Description de la Prestation</td>
                     <td class="value full-width" colspan="3">{{ $demande->titre ?? 'Non spécifié' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Montant (DH)</td>
-                    <td class="value monetary-field">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }}</td>
-                    <td class="label">Date de Facturation</td>
-                    <td class="value">{{ now()->format('d/m/Y') }}</td>
+                    <td class="label">Tarif de la Prestation (DH)</td>
+                    <td class="value montant-field">{{ $demande->montant ? number_format($demande->montant, 2, ',', ' ') : 'Non spécifié' }}</td>
+                    <td class="label">Date de la Prestation</td>
+                    <td class="value date-field">{{ now()->format('d/m/Y') }}</td>
                 </tr>
                 <tr>
                     <td class="label">Type Économique</td>
@@ -324,11 +336,11 @@
             </table>
         </div>
 
-        @if(!empty($factureChamps))
+        @if(!empty($prestationChamps))
         <div class="form-section">
             <table class="form-table">
                 @php $counter = 0; @endphp
-                @foreach($factureChamps as $key => $champ)
+                @foreach($prestationChamps as $key => $champ)
                     @if(isset($champ['value']) && $champ['value'] !== null && $champ['value'] !== '')
                         @if($counter % 2 == 0)
                             <tr>
@@ -337,10 +349,14 @@
                                 <td class="value">
                                     @if(is_array($champ['value']))
                                         {{ implode(', ', $champ['value']) }}
-                                    @elseif(is_numeric($champ['value']) && (strpos($key, 'montant') !== false || strpos($key, 'prix') !== false || strpos($key, 'cout') !== false))
-                                        <span class="monetary-field">{{ number_format($champ['value'], 2, ',', ' ') }} DH</span>
+                                    @elseif(is_numeric($champ['value']) && (strpos($key, 'montant') !== false || strpos($key, 'prix') !== false || strpos($key, 'cout') !== false || strpos($key, 'tarif') !== false || strpos($key, 'honoraire') !== false))
+                                        <span class="montant-field">{{ number_format($champ['value'], 2, ',', ' ') }} DH</span>
                                     @elseif(preg_match('/\d{4}-\d{2}-\d{2}/', $champ['value']))
-                                        {{ date('d/m/Y', strtotime($champ['value'])) }}
+                                        <span class="date-field">{{ date('d/m/Y', strtotime($champ['value'])) }}</span>
+                                    @elseif(strpos($key, 'duree') !== false || strpos($key, 'delai') !== false || strpos($key, 'periode') !== false)
+                                        <span class="highlight-field">{{ $champ['value'] }}</span>
+                                    @elseif(strpos($key, 'service') !== false || strpos($key, 'prestation') !== false || strpos($key, 'mission') !== false)
+                                        <span class="service-field">{{ $champ['value'] }}</span>
                                     @else
                                         {{ $champ['value'] }}
                                     @endif
@@ -359,24 +375,22 @@
         </div>
         @endif
 
-        <div class="form-section">
-            <table class="form-table">
-                <tr>
-                    <td class="label">Montant HT</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) / 1.2, 2, ',', ' ') }} DH</td>
-                    <td class="label">TVA (20%)</td>
-                    <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) - (($demande->montant ?? 0) / 1.2), 2, ',', ' ') }} DH</td>
-                </tr>
-                <tr>
-                    <td class="label" style="background-color: #d4edda; font-weight: bold;">Montant TTC</td>
-                    <td class="value monetary-field" style="background-color: #d4edda; font-weight: bold; font-size: 12px;">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</td>
-                    <td class="label">Mode de Paiement</td>
-                    <td class="value">Virement bancaire</td>
-                </tr>
-            </table>
+        <div class="signature-section">
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="title">Signature du Client</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Prénom: _______________</div>
+                </div>
+                <div class="signature-box">
+                    <div class="title">Signature du Prestataire</div>
+                    <div class="signature-line"></div>
+                    <div class="date-field-signature">Date: _______________</div>
+                    <div class="date-field-signature">Nom et Fonction: _______________</div>
+                </div>
+            </div>
         </div>
-
-
     </div>
 </body>
 </html>

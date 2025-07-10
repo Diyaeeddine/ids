@@ -107,6 +107,55 @@ Route::middleware(['auth', 'verified', 'role:plaisance'])->group(function () {
         ]);
     })->name('plaisance.imprimer.fichier');
     Route::get('/plaisance/demandes/{demandeId}/imprimer', [PlaisanceController::class, 'imprimer'])->name('plaisance.imprimer');
+
+
+    // hadou dial facture
+
+Route::get('facture/imprimer/{demandeId}', [PlaisanceController::class, 'imprimerFacture'])
+->name('plaisance.facture.imprimer');
+Route::get('facture/telecharger/{demandeId}', [PlaisanceController::class, 'telechargerFacture'])
+->name('plaisance.facture.telecharger');
+Route::get('/plaisance/demandes/{demandeId}/contrat/imprimer', [PlaisanceController::class, 'imprimerContrat'])->name('plaisance.contrat.imprimer');
+Route::get('/plaisance/demandes/{demandeId}/contrat/telecharger', [PlaisanceController::class, 'telechargerContrat'])->name('plaisance.contrat.telecharger');
+
+// hadou dial le reçu de paiement
+Route::get('recu-paiement/imprimer/{demandeId}', [PlaisanceController::class, 'imprimerRecuPaiement'])
+->name('plaisance.recu_paiement.imprimer');
+Route::get('recu-paiement/telecharger/{demandeId}', [PlaisanceController::class, 'telechargerRecuPaiement'])
+->name('plaisance.recu_paiement.telecharger');
+Route::get('recu-paiement/show/{demandeId}', [PlaisanceController::class, 'showRecuPaiement'])
+->name('plaisance.recu_paiement.show');
+
+// hadou dial lbon de commande
+
+Route::get('bon-commande/imprimer/{demandeId}', [PlaisanceController::class, 'imprimerBonCommande'])
+->name('plaisance.bon_commande.imprimer');
+Route::get('bon-commande/telecharger/{demandeId}', [PlaisanceController::class, 'telechargerBonCommande'])
+->name('plaisance.bon_commande.telecharger');
+Route::get('bon-commande/show/{demandeId}', [PlaisanceController::class, 'showBonCommande'])
+->name('plaisance.bon_commande.show');
+
+// hadou dial marche
+
+Route::get('marche/imprimer/{demandeId}', [PlaisanceController::class, 'imprimerMarche'])
+->name('plaisance.marche.imprimer');
+Route::get('marche/telecharger/{demandeId}', [PlaisanceController::class, 'telechargerMarche'])
+->name('plaisance.marche.telecharger');
+Route::get('marche/show/{demandeId}', [PlaisanceController::class, 'showMarche'])
+->name('plaisance.marche.show');
+
+// hadou dial prestation
+
+// Routes pour les prestations
+Route::get('prestation/imprimer/{demandeId}', [PlaisanceController::class, 'imprimerPrestation'])
+->name('plaisance.prestation.imprimer');
+Route::get('prestation/telecharger/{demandeId}', [PlaisanceController::class, 'telechargerPrestation'])
+->name('plaisance.prestation.telecharger');
+Route::get('prestation/show/{demandeId}', [PlaisanceController::class, 'showPrestation'])
+->name('plaisance.prestation.show');
+
+
+
 }); 
 
 Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {

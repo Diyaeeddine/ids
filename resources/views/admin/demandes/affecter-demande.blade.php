@@ -30,7 +30,7 @@
                     <!-- Sidebar - Liste des demandes -->
                     <div class="w-full md:w-1/4 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
                         <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ __('Formulaires') }}</h2>
-                        
+
                         <nav class="space-y-1">
                             @php
                                 $demandesList = $demandes ?? \App\Models\Demande::with('users')->latest()->get();
@@ -71,15 +71,15 @@
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
                                     {{ $selectedDemande->titre }}
                                 </h2>
-                                <span class="px-2 py-1 text-xs rounded-full {{ 
-                                    $selectedDemande->statut === 'en_attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 
-                                    ($selectedDemande->statut === 'affecte' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
-                                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200') 
+                                <span class="px-2 py-1 text-xs rounded-full {{
+                                    $selectedDemande->statut === 'en_attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                    ($selectedDemande->statut === 'affecte' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200')
                                 }}">
-                                    {{ 
-                                        $selectedDemande->statut === 'en_attente' ? 'En attente' : 
-                                        ($selectedDemande->statut === 'affecte' ? 'Affecté' : 
-                                        ($selectedDemande->statut === 'partiellement_affecte' ? 'Partiellement affecté' : 'Traité')) 
+                                    {{
+                                        $selectedDemande->statut === 'en_attente' ? 'En attente' :
+                                        ($selectedDemande->statut === 'affecte' ? 'Affecté' :
+                                        ($selectedDemande->statut === 'partiellement_affecte' ? 'Partiellement affecté' : 'Traité'))
                                     }}
                                 </span>
                             </div>
@@ -102,7 +102,7 @@
 
                             <form method="POST" action="{{ route('demande.affecterChamps', $selectedDemande->id) }}" id="affectation-form">
                                 @csrf
-                                
+
                                 <!-- Section d'affectation -->
                                 <div class="bg-white dark:bg-gray-700 p-6 rounded-lg border border-gray-200 dark:border-gray-600 mb-6">
                                     <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">
@@ -110,7 +110,7 @@
                                     </h3>
 
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                      
+
                                         <div>
                                             <label for="user_id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Le service :
@@ -122,7 +122,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    
+
                                         <div>
                                             <label for="type_form" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 le type de demande :
@@ -158,14 +158,16 @@
                                     <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600">
                                         <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
                                             Champs du formulaire
-
                                         </h3>
                                     </div>
-                                    
+
                                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                                         <thead class="bg-gray-50 dark:bg-gray-800">
                                             <tr>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16">
+                                                    <input type="checkbox"
+                                                           id="select-all"
+                                                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                                 </th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Clé</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valeur actuelle</th>
@@ -177,10 +179,10 @@
                                         @foreach($selectedDemande->champs as $key => $champ)
                                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors champ-row">
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    <input type="checkbox" 
-                                                           name="champs_selected[]" 
-                                                           value="{{ $key }}" 
-                                                           class="champ-checkbox rounded border-gray-300 text-indigo-600">
+                                                    <input type="checkbox"
+                                                           name="champs_selected[]"
+                                                           value="{{ $key }}"
+                                                           class="champ-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-200">
@@ -214,14 +216,14 @@
                                                             $user = \App\Models\User::find($champ['user_id']);
                                                         }
                                                     @endphp
-                                        
+
                                                     @if($user)
                                                         {{ $user->name }}
                                                     @endif
-                                                </td>              
+                                                </td>
                                             </tr>
                                         @endforeach
-                                        
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -232,7 +234,7 @@
                                     </button>
                                 </div>
                             </form>
-                            
+
                         @else
                             <div class="flex flex-col items-center justify-center h-96 text-center">
                                 <svg class="w-16 h-16 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,32 +254,55 @@
         document.addEventListener('DOMContentLoaded', function() {
             const userSelect = document.getElementById('user_id');
             const champCheckboxes = document.querySelectorAll('.champ-checkbox');
+            const selectAllCheckbox = document.getElementById('select-all');
             const submitBtn = document.getElementById('submit-btn');
             const champRows = document.querySelectorAll('.champ-row');
-    
+
             function updateUI() {
                 const selectedCheckboxes = document.querySelectorAll('.champ-checkbox:checked');
                 const userSelected = userSelect.value !== '';
-    
+
                 submitBtn.disabled = !(selectedCheckboxes.length > 0 && userSelected);
+
+                // Mise à jour du checkbox "Sélectionner tout"
+                if (selectedCheckboxes.length === champCheckboxes.length) {
+                    selectAllCheckbox.checked = true;
+                    selectAllCheckbox.indeterminate = false;
+                } else if (selectedCheckboxes.length > 0) {
+                    selectAllCheckbox.checked = false;
+                    selectAllCheckbox.indeterminate = true;
+                } else {
+                    selectAllCheckbox.checked = false;
+                    selectAllCheckbox.indeterminate = false;
+                }
             }
-            
+
+            // Gestion du click sur "Sélectionner tout"
+            selectAllCheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                champCheckboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateUI();
+            });
+
             champRows.forEach(row => {
                 row.addEventListener('click', function (e) {
                     if (e.target.tagName.toLowerCase() === 'input') return;
-    
+
                     const checkbox = row.querySelector('.champ-checkbox');
                     checkbox.checked = !checkbox.checked;
                     updateUI();
                 });
             });
-    
+
             champCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateUI);
             });
+
             userSelect.addEventListener('change', updateUI);
             updateUI();
         });
     </script>
-    
-</x-app-layout>
+
+</x-app-layout>     

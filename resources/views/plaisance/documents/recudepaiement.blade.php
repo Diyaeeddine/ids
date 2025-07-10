@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture - {{ $demande->titre }}</title>
+    <title>Reçu de Paiement - {{ $demande->titre }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,7 +25,7 @@
         .header {
             text-align: center;
             margin-bottom: 15px;
-            border-bottom: 2px solid #2c3e50;
+            border-bottom: 2px solid #8e44ad;
             padding-bottom: 10px;
             position: relative;
         }
@@ -34,7 +34,7 @@
             margin: 0;
             font-size: 20px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #8e44ad;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -50,7 +50,7 @@
             top: 0;
             right: 0;
             width: 120px;
-            border: 1px solid #2c3e50;
+            border: 1px solid #8e44ad;
             padding: 8px;
             background-color: #f8f9fa;
             text-align: center;
@@ -60,7 +60,7 @@
             font-weight: 600;
             font-size: 9px;
             margin-bottom: 3px;
-            color: #2c3e50;
+            color: #8e44ad;
         }
 
         .reference-box .ref-value {
@@ -89,7 +89,7 @@
         }
 
         .section-title {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
             color: white;
             padding: 6px 12px;
             font-weight: 600;
@@ -114,7 +114,7 @@
             font-weight: 600;
             width: 22%;
             font-size: 10px;
-            color: #2c3e50;
+            color: #8e44ad;
         }
 
         .form-table .value {
@@ -128,9 +128,9 @@
         }
 
         .highlight-field {
-            background-color: #fff3cd;
+            background-color: #f3e5f5;
             font-weight: 600;
-            color: #856404;
+            color: #7b1fa2;
         }
 
         .monetary-field {
@@ -158,22 +158,7 @@
         }
 
         .checkbox.checked {
-            background-color: #2c3e50;
-        }
-
-        .titre-global {
-            background-color: #e8f5e8;
-
-            padding: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .titre-global h3 {
-            margin: 0;
-            color: #155724;
-            font-size: 14px;
-            font-weight: bold;
+            background-color: #8e44ad;
         }
 
         .signature-section {
@@ -200,7 +185,7 @@
             font-weight: 600;
             font-size: 9px;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: #8e44ad;
             text-transform: uppercase;
         }
 
@@ -222,24 +207,47 @@
             clear: both;
         }
 
-        /* Styles spécifiques pour la facture */
-        .facture-info {
-            background-color: #e8f5e8;
-            border-left: 4px solid #28a745;
+
+        /* Styles spécifiques pour le reçu de paiement */
+        .recu-info {
+            background-color: #f3e5f5;
+            border-left: 4px solid #8e44ad;
             padding: 10px;
             margin-bottom: 15px;
         }
 
-        .facture-info h2 {
+        .recu-info h2 {
             margin: 0 0 5px 0;
-            color: #155724;
+            color: #6a1b9a;
             font-size: 14px;
         }
 
-        .facture-info p {
+        .recu-info p {
             margin: 0;
             font-size: 10px;
+            color: #6a1b9a;
+        }
+
+        .titre-global {
+            background-color: #e8f5e8;
+
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .titre-global h3 {
+            margin: 0;
             color: #155724;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .payment-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 5px;
         }
 
         /* Optimisation pour l'impression */
@@ -289,11 +297,11 @@
 </head>
 <body>
     <div class="container">
+
+
         <div class="titre-global">
-            <h3>Facture</h3>
+            <h3>PAIEMENT REÇU</h3>
         </div>
-
-
 
         <div class="form-section">
             <table class="form-table">
@@ -308,12 +316,6 @@
                     <td class="value full-width" colspan="3">{{ $demande->titre ?? 'Non spécifié' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Montant (DH)</td>
-                    <td class="value monetary-field">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }}</td>
-                    <td class="label">Date de Facturation</td>
-                    <td class="value">{{ now()->format('d/m/Y') }}</td>
-                </tr>
-                <tr>
                     <td class="label">Type Économique</td>
                     <td class="value">{{ ucfirst($demande->type_economique ?? 'Non spécifié') }}</td>
                     <td class="label">Statut</td>
@@ -324,11 +326,11 @@
             </table>
         </div>
 
-        @if(!empty($factureChamps))
+        @if(!empty($recuPaiementChamps))
         <div class="form-section">
             <table class="form-table">
                 @php $counter = 0; @endphp
-                @foreach($factureChamps as $key => $champ)
+                @foreach($recuPaiementChamps as $key => $champ)
                     @if(isset($champ['value']) && $champ['value'] !== null && $champ['value'] !== '')
                         @if($counter % 2 == 0)
                             <tr>
@@ -368,13 +370,35 @@
                     <td class="value monetary-field">{{ number_format(($demande->montant ?? 0) - (($demande->montant ?? 0) / 1.2), 2, ',', ' ') }} DH</td>
                 </tr>
                 <tr>
-                    <td class="label" style="background-color: #d4edda; font-weight: bold;">Montant TTC</td>
-                    <td class="value monetary-field" style="background-color: #d4edda; font-weight: bold; font-size: 12px;">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</td>
+                    <td class="label" style="background-color: #e8f5e8; font-weight: bold;">Montant Payé</td>
+                    <td class="value monetary-field" style="background-color: #e8f5e8; font-weight: bold; font-size: 12px;">{{ number_format($demande->montant ?? 0, 2, ',', ' ') }} DH</td>
                     <td class="label">Mode de Paiement</td>
                     <td class="value">Virement bancaire</td>
                 </tr>
+                <tr>
+                    <td class="label">Date de Paiement</td>
+                    <td class="value">{{ now()->format('d/m/Y') }}</td>
+                    <td class="label">Référence Paiement</td>
+                    <td class="value">{{ $metadata['numero_recu'] ?? 'N/A' }}</td>
+                </tr>
             </table>
         </div>
+
+<div class="signature-section">
+    <div class="signature-row">
+        <div class="signature-box">
+            <div class="title">Signature du Payeur</div>
+            <div class="signature-line"></div>
+            <div class="date-field">Date : {{ now()->format('d/m/Y') }}</div>
+        </div>
+        <div class="signature-box">
+            <div class="title">Signature du Bénéficiaire</div>
+            <div class="signature-line"></div>
+            <div class="date-field">Date : {{ now()->format('d/m/Y') }}</div>
+        </div>
+    </div>
+</div>
+
 
 
     </div>
