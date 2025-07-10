@@ -5,8 +5,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;  
-use Illuminate\Validation\Rules\Password;  
-use Illuminate\Auth\Events\Registered;  
+use Illuminate\Validation\Rules\Password; 
+use App\Models\OrderP;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Response;
+use PDF;  
 
 class AdminController extends Controller
 {
@@ -112,4 +115,66 @@ class AdminController extends Controller
         return redirect()->route('acce.index')->with('success', 'Profil créé avec succès');
 
     }
+
+
+    public function traiterOP(){
+
+        $op_attente_traiter = OrderP::where('is_accepted', false)->get();
+        return view('admin.demandes.verifier-op',compact('op_attente_traiter'));
+    
+    }
+
+    public function telechargerPDFOP($id)
+    {
+        $op = OrderP::findOrFail($id);
+    
+        $pdf = PDF::loadView('admin.pdf.ordre-paiement', [
+            'op' => $op,
+            'date_generation' => now()->format('d/m/Y H:i:s'),
+        ]);
+    
+        return $pdf->download('OP_' . $op->id . '_' . $op->reference . '.pdf');
+    }
+    
+    public function detailsOP($id)
+{
+    $op = OrderP::findOrFail($id);
+    return view('admin.partials.details-op', compact('op'));
 }
+
+public function accepterOP(Request $request, $id)
+{
+    $op = OrderP::findOrFail($id);
+
+    if ($op->is_accepted || $op->is_rejected) {
+        return redirect()->back()->with('error', 'Cet ordre de paiement a déjà été traité.');
+    }
+
+    $op->update([
+        'is_accepted' => true,
+        'updated_at' => now(),
+    ]);
+
+    return redirect()->back()->with('success', 'Ordre de paiement accepté avec succès.');
+}
+
+public function refuserOP(Request $request, $id)
+{
+    $op = OrderP::findOrFail($id);
+
+    if ($op->is_accepted || $op->is_rejected) {
+        return redirect()->back()->with('error', 'Cet ordre de paiement a déjà été traité.');
+    }
+
+    $op->update([
+        'is_accepted' => false,
+        'updated_at' => now(),
+        // 'motif_refus' => $request->input('motif_refus', 'Aucun motif spécifié'),
+    ]);
+
+    return redirect()->back()->with('success', 'Ordre de paiement refusé avec succès.');
+}
+
+}
+
+

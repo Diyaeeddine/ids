@@ -36,4 +36,10 @@ class OrderP extends Model
 {
     return $this->hasOne(OrderV::class, 'id_op');
 }
+
+public function facture()
+{
+    return $this->belongsTo(Facture::class, 'id_facture');
+}
+
 }

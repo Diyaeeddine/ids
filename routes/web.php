@@ -9,6 +9,7 @@ use App\Http\Controllers\PlaisanceController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TresorierController;
 use Illuminate\Support\Facades\Route;
 
@@ -175,9 +176,11 @@ Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
     Route::patch('tresorier/OV/update/{id}', [TresorierController::class, 'ovUpdate'])->name('tresorier.ov.update');
     Route::delete('/ordre-paiement/{id}', [TresorierController::class, 'destroy'])->name('ordre-paiement.destroy');
     Route::patch('/ordre-paiement/{id}', [TresorierController::class, 'update'])->name('ordre-paiement.update');
+    Route::get('/op/{id}', [TresorierController::class, 'show'])->name('op.show');
 });
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+
     Route::view('admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
     Route::get('admin/contrats', [ContratController::class, 'indexAdmin'])->name('admin.contrats.index');
     Route::post('admin/contrats/{id}/importer', [ContratController::class, 'importerContrat'])->name('admin.contrats.importer');
@@ -194,6 +197,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('admin/demandes/{id}/{user}/accepter', [DemandeController::class, 'accepter'])->name('admin.demandes.accepter');
     Route::post('admin/demandes/{id}/{user}/refuser', [DemandeController::class, 'refuser'])->name('admin.demandes.refuser');
     Route::get('admin/demandes/afficher/{demande}/{user}', [DemandeController::class, 'afficher'])->name('demandes.afficher-demande');
+    Route::get('admin/demandes/afficher/{demande}/{user}/voir', [DemandeController::class, 'voir'])->name('demandes.voir-demande');
     Route::get('admin/demandes/affecter/{id?}', [DemandeController::class, 'affecterPage'])->name('demandes.affecter');
     Route::post('admin/demandes/affecter/{id}', [DemandeController::class, 'affecterUsers'])->name('demandes.affecterUsers');
     Route::post('admin/demandes/affecter/{id}', [DemandeController::class, 'affecterChamps'])->name('demande.affecterChamps');
@@ -234,6 +238,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::get('admin/budgetaire/tables-budgetaires/{id}/edit', [BudgetTableController::class, 'edit'])->name('budget-tables.edit');
         Route::post('admin/budgetaire/tables-budgetaires/{id}/update', [BudgetTableController::class, 'updateEntries'])->name('budget-tables.update.entries');
     });
+
+    Route::get('admin/demandes/accueil-decision/op', [AdminController::class, 'traiterOP'])->name('admin.demandes.traiterOP');
+    Route::get('admin/demandes/accueil-decision/op/pdf/{id}', [AdminController::class, 'telechargerPDFOP'])->name('admin.op.pdf');
+    Route::get('admin/demandes/accueil-decision/op/details/{id}', [AdminController::class, 'detailsOP'])->name('admin.op.details');
+    Route::post('admin/demandes/accueil-decision/op/accepter/{id}', [AdminController::class, 'accepterOP'])->name('admin.op.accepter');
+    Route::post('admin/demandes/accueil-decision/op/refuser/{id}', [AdminController::class, 'refuserOP'])->name('admin.op.refuser');
 });
 
     Route::middleware(['auth', 'verified'])->group(function () {

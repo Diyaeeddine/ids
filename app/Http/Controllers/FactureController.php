@@ -66,6 +66,7 @@ class FactureController extends Controller
                 'date_facture' => $validated['date_facture'], 'date_echeance' => $validated['date_echeance'],
                 'total_ht' => $validated['total_ht'], 'taxe_regionale' => $validated['taxe_regionale'],
                 'total_tva' => $validated['total_tva'], 'total_ttc' => $validated['total_ttc'],
+                'montant_paye' => $validated['total_ttc'],
             ]);
             foreach ($validated['items'] as $item) {
                 FactureItem::create([

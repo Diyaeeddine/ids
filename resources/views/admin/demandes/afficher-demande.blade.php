@@ -84,42 +84,60 @@
 
                     {{-- Champs filtered for this user --}}
                     <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            {{ __('Champs remplis par l\'utilisateur') }}
-                        </h3>
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                            @php
-                                $userChamps = collect($demandeUser->demande->champs ?? [])
-                                    ->filter(fn($champ) => isset($champ['user_id']) && $champ['user_id'] == $demandeUser->user->id);
-                            @endphp
+                        @if($demande_dynamique)
 
-                            @if($userChamps->isNotEmpty())
-                                <dl class="space-y-4">
-                                    @foreach ($userChamps as $key => $champ)
-                                        @if(is_array($champ) && isset($champ['value']))
-                                            <div
-                                                class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0">
-                                                <dt
-                                                    class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                                                    {{ ucfirst(str_replace('_', ' ', $key)) }}
-                                                </dt>
-                                                <dd class="text-sm text-gray-900 dark:text-gray-100">
-                                                    @if (empty($champ['value']))
-                                                        <span
-                                                            class="italic text-gray-500 dark:text-gray-400">{{ __('Non rempli') }}</span>
-                                                    @else
-                                                        {{ $champ['value'] }}
-                                                    @endif
-                                                </dd>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </dl>
-                            @else
-                                <p
-                                    class="text-gray-500 dark:text-gray-400 italic">{{ __('Aucun champ rempli par cet utilisateur.') }}</p>
-                            @endif
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                {{ __('Champs remplis par l\'utilisateur') }}
+                            </h3>
+                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                @php
+                                    $userChamps = collect($demandeUser->demande->champs ?? [])
+                                        ->filter(fn($champ) => isset($champ['user_id']) && $champ['user_id'] == $demandeUser->user->id);
+                                @endphp
+                                @if($userChamps->isNotEmpty())
+                                    <dl class="space-y-4">
+                                        @foreach ($userChamps as $key => $champ)
+                                            @if(is_array($champ) && isset($champ['value']))
+                                                <div
+                                                    class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                                                    <dt
+                                                        class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                                        {{ ucfirst(str_replace('_', ' ', $key)) }}
+                                                    </dt>
+                                                    <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                                        @if (empty($champ['value']))
+                                                            <span
+                                                                class="italic text-gray-500 dark:text-gray-400">{{ __('Non rempli') }}</span>
+                                                        @else
+                                                            {{ $champ['value'] }}
+                                                        @endif
+                                                    </dd>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </dl>
+                                @else
+                                    <p
+                                        class="text-gray-500 dark:text-gray-400 italic">{{ __('Aucun champ rempli par cet utilisateur.') }}</p>
+                                @endif
+                            </div>
+                        @elseif($demande_statique)
+
+                        <div class="flex flex-col items-start space-y-2">
+                            <a href="{{ route('demandes.voir-demande', [$demandeUser->demande->id, $demandeUser->user->id]) }}">
+                                <button class="flex items-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-md shadow hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-transform">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.386a1 1 0 01-1.414 1.415l-4.387-4.387zM10 16a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
+                                    </svg>
+                                    Voir la demande
+                                </button>
+                            </a>
+                            <span class="text-xs text-red-500 italic">En train de développer ce bouton</span>
                         </div>
+                             
+
+                        
+                        @endif
                     </div>
 
                     {{-- Accept / Refuse Buttons --}}

@@ -21,6 +21,8 @@ class NotificationController extends Controller
                 return [
                     'id' => $notif->id,
                     'titre' => $notif->titre,
+                    'type' => $notif->type,
+                    'source_user_id' => $notif->source_user_id,
                     'temps' => $notif->created_at->diffForHumans(),
                     'demande_id' => $notif->demande_id,
                     'contrat_id' => $notif->contrat_id, 
@@ -77,6 +79,7 @@ public function generateNotifications()
                     'user_id' => $currentUser->id,
                     'demande_id' => $demande->id,
                     'type' => 'remplir_demande',
+                    'source_user_id' => Auth::id(),
                     'titre' => 'Nouvelle demande à remplir',
                     'is_read' => false,
                 ]);

@@ -110,36 +110,61 @@ public function showRemplir($id)
 }
 
 
-    public function remplir(Request $request, $id)
-    {
+public function remplir(Request $request, $id)
+{
     $user = Auth::user();
     $demande = Demande::findOrFail($id);
     $userId = $user->id;
-
     $values = $request->input('values', []);
 
-    if ($request->hasFile('files')) {
-        $request->validate([
-            'files.*' => 'file|max:10240', 
-        ]);
+    // Utiliser le temps écoulé depuis le paramètre de requête ou calculer
+    $tempsEcouleFromRequest = $request->input('temps_ecoule');
+
+    if ($tempsEcouleFromRequest && $tempsEcouleFromRequest !== 'N/A') {
+        // Utiliser le temps écoulé passé en paramètre
+        $tempsEcoule = $tempsEcouleFromRequest;
+        $tempsEcouleMinutes = $this->parseTempsEcoule($tempsEcouleFromRequest);
+    } else {
+        // Calculer le temps écoulé comme avant (fallback)
+        $updated_at = $demande->updated_at;
+        $now = now();
+        $diffInMinutes = round($updated_at->diffInMinutes($now));
+
+        if ($diffInMinutes < 60) {
+            $tempsEcoule = $diffInMinutes . ' min';
+            $tempsEcouleMinutes = $diffInMinutes;
+        } elseif ($diffInMinutes < 1440) {
+            $hours = floor($diffInMinutes / 60);
+            $minutes = $diffInMinutes % 60;
+            $tempsEcoule = $hours . 'h ' . $minutes . 'min';
+            $tempsEcouleMinutes = $diffInMinutes;
+        } else {
+            $days = floor($diffInMinutes / 1440);
+            $hours = floor(($diffInMinutes % 1440) / 60);
+            $tempsEcoule = $days . 'j ' . $hours . 'h';
+            $tempsEcouleMinutes = $diffInMinutes;
+        }
     }
 
+    // Mettre à jour les champs avec les valeurs soumises
     $champs = $demande->champs ?? [];
-
     foreach ($values as $key => $value) {
         if (isset($champs[$key]) && is_array($champs[$key]) && ((string)($champs[$key]['user_id'] ?? '') === (string)$userId)) {
             $champs[$key]['value'] = $value;
         }
-        
     }
+
     $demande->champs = $champs;
+    $demande->temps_ecoule = $tempsEcoule;
+    $demande->temps_ecoule_minutes = $tempsEcouleMinutes;
     $demande->save();
+
+    // Sauvegarder les fichiers si présents
     if ($request->hasFile('files')) {
         foreach ($request->file('files') as $file) {
             $originalName = $file->getClientOriginalName();
-            $fileName = time() . '_' . $userId . '_' . $originalName;
+            $fileName = time() . '' . $userId . '' . $originalName;
             $filePath = $file->storeAs('demandes', $fileName, 'public');
-
             DB::table('demande_files')->insert([
                 'demande_id' => $demande->id,
                 'user_id' => $userId,
@@ -153,33 +178,76 @@ public function showRemplir($id)
         }
     }
 
+    // Mettre à jour l'état de la demande en fonction de la validation des champs
     $userChamps = array_filter($champs, function ($champ) use ($userId) {
         return is_array($champ) && isset($champ['user_id']) && $champ['user_id'] === $userId;
     });
+
     $allFilled = collect($userChamps)->every(fn($champ) => !is_null($champ['value']) && trim($champ['value']) !== '');
 
     if ($allFilled) {
         $user->demandes()->updateExistingPivot($demande->id, [
             'is_filled' => true,
-            // 'isyourturn' => false,
-            'duree' => $request->input('temps_ecoule'),
-            'etape'=>'en_attente_validation',
+            'duree' => $tempsEcoule,
+            'etape' => 'en_attente_validation',
         ]);
-
     } else {
         $user->demandes()->updateExistingPivot($demande->id, [
             'is_filled' => false,
         ]);
     }
+
+    // Notifier l'utilisateur pour la validation
     Notification::create([
         'user_id' => 1,
         'demande_id' => $id,
-        'type'=>'verifier_demande',
+        'type' => 'verifier_demande',
         'titre' => 'vous avez des champs a reviser',
         'is_read' => false,
     ]);
 
     return redirect()->route('plaisance.demandes')->with('success', 'Formulaire soumis avec succès.');
+}  
+
+// Méthode pour parser le temps écoulé depuis le paramètre
+private function parseTempsEcoule($tempsEcoule)
+{
+    if (!$tempsEcoule) return 0;
+
+    $minutes = 0;
+
+    // Parser format "3 min"
+    if (preg_match('/(\d+)\s*min/', $tempsEcoule, $matches)) {
+        $minutes += (int)$matches[1];
+    }
+
+    // Parser format "2h 30min"
+    if (preg_match('/(\d+)h/', $tempsEcoule, $matches)) {
+        $minutes += (int)$matches[1] * 60;
+    }
+
+    // Parser format "1j 2h"
+    if (preg_match('/(\d+)j/', $tempsEcoule, $matches)) {
+        $minutes += (int)$matches[1] * 1440;
+    }
+
+    return $minutes;
+}
+
+// Méthode pour formater le temps écoulé
+private function formatTempsEcoule($minutes)
+{
+    if ($minutes < 60) {
+        return $minutes . ' min';
+    } elseif ($minutes < 1440) {
+        $hours = floor($minutes / 60);
+        $remainingMinutes = $minutes % 60;
+        return $hours . 'h ' . $remainingMinutes . 'min';
+    } else {
+        $days = floor($minutes / 1440);
+        $hours = floor(($minutes % 1440) / 60);
+        return $days . 'j ' . $hours . 'h';
+    }
 }
 
 public function getAlerts()

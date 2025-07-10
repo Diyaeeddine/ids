@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
                         'notifications.is_read',
                         'notifications.created_at',
                         'notifications.demande_id',
+                        'notifications.type',
                         'notifications.contrat_id',
                         'notifications.user_id',
                         'notifications.source_user_id',
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
                         return [
                             'id' => $notif->id,
                             'titre' => $notif->titre,
+                            'type' => $notif->type,
                             'commentaire' => $notif->commentaire ?? 'Aucun commentaire disponible.',
                             'temps' => $notif->created_at->diffForHumans(),
                             'demande_id' => $notif->demande_id,
@@ -67,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
                 $adminNotifications = Notification::select(
                         'notifications.id',
                         'notifications.titre',
+                        'notifications.type',
                         'notifications.commentaire',
                         'notifications.is_read',
                         'notifications.created_at',
@@ -85,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
                         return [
                             'id' => $notif->id,
                             'titre' => $notif->titre,
+                            'type' => $notif->type,
                             'commentaire' => $notif->commentaire ?? 'Aucun commentaire disponible.',
                             'temps' => $notif->created_at ? $notif->created_at->diffForHumans() : 'Date inconnue',
                             'demande_id' => $notif->demande_id,

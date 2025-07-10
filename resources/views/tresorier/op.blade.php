@@ -1,5 +1,6 @@
 <title>Tableau de bord - Bouregreg Marina</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <x-app-layout>
@@ -110,55 +111,60 @@
                                         <td class="px-6 py-4">{{ $order->reference }}</td>
                                         <td class="px-6 py-4">{{ $order->entite_ordonnatrice ?? '—' }}</td>
                                         <td class="px-6 py-4">{{ $order->id_facture ?? '—' }}</td>
-                                        <td class="px-6 py-4">{{ number_format($order->montant_chiffres, 2, ',', ' ') }}
-                                            MAD</td>
+                                        <td class="px-6 py-4">{{ number_format($order->montant_chiffres, 2, ',', ' ') }} MAD</td>
                                         <td class="px-6 py-4">{{ ucfirst($order->mode_paiement) ?? '—' }}</td>
                                         <td class="px-6 py-4">
                                             {{ $order->date_paiment ? \Carbon\Carbon::parse($order->date_paiment)->format('d/m/Y') : '—' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             @if ($order->is_accepted)
-                                                <span
-                                                    class="bg-green-100 text-green-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+                                                <span class="bg-green-100 text-green-800 text-sm font-semibold px-2.5 py-0.5 rounded">
                                                     Accepté
                                                 </span>
                                             @else
-                                                <span
-                                                    class="bg-red-100 text-red-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+                                                <span class="bg-red-100 text-red-800 text-sm font-semibold px-2.5 py-0.5 rounded">
                                                     En cours
                                                 </span>
                                             @endif
                                         </td>
-
                                         <td class="px-6 py-4 space-x-2 flex">
 
-                                            <form action="{{ route('ordre-paiement.valider', $order->id) }}"
-                                                method="POST" onsubmit="return confirm('Marquer comme validé?')">
-                                                @csrf
-                                                @method('PATCH')
+                                            <!-- Show Details Button -->
+                                            <a href="{{ route('op.show', $order->id) }}" 
+                                            class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded text-sm font-medium transition-colors flex items-center space-x-1"
+                                            title="Voir détails">
+                                                <i class="fas fa-eye"></i>
+                                                <span>Détails</span>
+                                            </a>
 
-                                            </form>
-
-                                            <button onclick='openEditModal(@json($order))'
-                                                class="text-blue-600 hover:text-blue-900" title="Modifier">
-                                                ✏️
+                                            <!-- Edit Button -->
+                                            <button onclick='openEditModal(@json($order))' 
+                                                    class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-sm transition-colors flex items-center space-x-1" 
+                                                    title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                                <span>Modifier</span>
                                             </button>
 
-                                            <form action="{{ route('ordre-paiement.destroy', $order->id) }}"
-                                                method="POST" onsubmit="return confirm('Supprimer cet ordre ?')">
+                                            <!-- Delete Form -->
+                                            <form action="{{ route('ordre-paiement.destroy', $order->id) }}" 
+                                                method="POST" 
+                                                onsubmit="return confirm('Supprimer cet ordre ?')"
+                                                class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" title="Supprimer"
-                                                    class="text-red-600 hover:text-red-900">
-                                                    🗑️
+                                                <button type="submit"
+                                                        class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-sm transition-colors flex items-center space-x-1"
+                                                        title="Supprimer">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                    <span>Supprimer</span>
                                                 </button>
                                             </form>
+
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4 text-gray-500">Aucun ordre trouvé.
-                                        </td>
+                                        <td colspan="8" class="text-center py-4 text-gray-500">Aucun ordre trouvé.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -176,7 +182,7 @@
             <div class="bg-white rounded-lg p-6 w-full max-w-2xl shadow-2xl relative">
                 <button onclick="closeEditModal()"
                     class="absolute top-2 right-2 text-gray-500 hover:text-black text-lg">
-                    ✖️
+                    ✖
                 </button>
                 <h2 class="text-xl font-bold mb-4">Modifier l'ordre de paiement</h2>
 
@@ -241,7 +247,7 @@
             document.getElementById('edit_payment_method').value = order.mode_paiement ?? '';
             document.getElementById('edit_due_date').value = order.date_paiment ?? '';
             document.getElementById('edit_notes').value = order.observations ?? '';
-            document.getElementById('editForm').action = `/ordre-paiement/${order.id}`;
+            document.getElementById('editForm').action = /ordre-paiement/${order.id};
         }
 
         function closeEditModal() {

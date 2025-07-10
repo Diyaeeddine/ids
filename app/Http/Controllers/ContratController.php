@@ -148,7 +148,7 @@ class ContratController extends Controller
                 'demande_id'=>$demande->id,						
                 'user_id' => Auth::id(),
                 'etape'=>'en_attente_validation',
-                'is_filled' => false,
+                'is_filled' => true,
                 'IsYourTurn' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

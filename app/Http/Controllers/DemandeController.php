@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Demande;
 use App\Models\DemandeUser;
+use App\Models\OrderP;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
@@ -57,14 +58,6 @@ class DemandeController extends Controller
              'titre' => $request->input('titre'),
              'type_economique' => $request->input('type_economique'),
              'champs' => $champs,
-         ]);
-     
-         Notification::create([
-             'user_id' => null,
-             'demande_id' => $demande->id,
-             'titre' => $demande->titre ?? 'Nouvelle demande',
-             'is_read' => false,
-             'read_at' => null,
          ]);
      
          if (session()->has('selected_imputation')) {
@@ -213,6 +206,8 @@ public function affecterChamps(Request $request, $demandeId)
         Notification::create([
             'user_id' => $userId,
             'demande_id' => $demandeId,
+            'type'=>'remplir_demande',
+            'source_user_id' => Auth()->id(),
             'titre' => 'Nouvelle demande à remplir',
             'is_read' => false,
         ]);
@@ -312,7 +307,9 @@ public function showRemplir($id)
     Notification::create([
         'user_id' => 1,
         'demande_id' => $id,
+        'type'=>'verifier_demande',
         'titre' => 'vous avez des champs a reviser',
+        'source_user_id' => Auth()->id(),
         'is_read' => false,
     ]);
 
@@ -390,7 +387,7 @@ public function showDecision()
 {
     $demandes = DemandeUser::with(['demande', 'user'])
         ->where('is_filled', true)
-        ->where('isyourturn', true)
+        ->where('isyourturn', false)
         ->where('etape', 'en_attente_validation')
         ->orderByDesc('updated_at')
         ->get();
@@ -400,14 +397,28 @@ public function showDecision()
 
 public function accueilDecision()
 {
-    $demandes = DemandeUser::with(['demande', 'user'])
-        ->where('is_filled', true)
-        ->where('isyourturn', true)
-        ->where('etape', 'en_attente_validation')
-        ->orderByDesc('updated_at')
-        ->get();
+    $demandes_total = Demande::count();
 
-    return view('admin.demandes.accueil-decision', compact('demandes'));
+    $demandes_traiter = Demande::whereHas('demandeUsers', function ($query) {
+        $query->where('etape', '!=', 'acceptee');
+    }, '=', 0)->count();
+
+    $demandes_attente_traiter = Demande::whereHas('demandeUsers', function ($query) {
+        $query->where('etape', '!=', 'acceptee');
+    })->count();
+    
+    $op_total = OrderP::count();
+    $op_attente_traiter = OrderP::where('is_accepted', false)->count();
+    $op_traiter = OrderP::where('is_accepted', true)->count();
+
+    return view('admin.demandes.accueil-decision', compact(
+        'demandes_total',
+        'demandes_traiter',
+        'demandes_attente_traiter',
+        'op_total',
+        'op_attente_traiter',
+        'op_traiter'
+    ));
 }
 
 public function showChamps(Request $request)
@@ -438,17 +449,17 @@ public function showChamps(Request $request)
 
 public function afficher($demande_id, $user_id)
 {
-    $demandeUser = DemandeUser::with(['demande', 'user'])
-        ->where('demande_id', $demande_id)
-        ->where('user_id', $user_id)
-        ->firstOrFail();   
-    $userChamps = collect($demandeUser->demande->champs ?? [])
-        ->filter(fn($champ) => isset($champ['user_id']) && $champ['user_id'] == $user_id);
+    $demandeUser = DemandeUser::with(['demande', 'user'])->where('demande_id', $demande_id)->where('user_id', $user_id)->firstOrFail();   
+    $userChamps = collect($demandeUser->demande->champs ?? [])->filter(fn($champ) => isset($champ['user_id']) && $champ['user_id'] == $user_id);
+    $demande_dynamique = Demande::where('id', $demande_id)->whereNotNull('champs')->whereNull('contrat_id')->exists();
+    $demande_statique = Demande::where('id', $demande_id)->whereNotNull('contrat_id')->whereNull('champs')->exists();    
+    
+    return view('admin.demandes.afficher-demande', compact( 'demandeUser', 'userChamps','demande_statique', 'demande_dynamique')
+    );
+}
+public function voir($demande_id, $user_id){
 
-    return view('admin.demandes.afficher-demande', [
-        'demandeUser' => $demandeUser,
-        'userChamps' => $userChamps,
-    ]);
+        return view('admin.demandes._invoice_template');
 }
 
 public function accepter($demande_id, $user_id)
@@ -476,6 +487,8 @@ public function accepter($demande_id, $user_id)
             Notification::create([
                 'user_id' => $nextUser->user_id,
                 'demande_id' => $demande_id,
+                'type'=>'demande_acceptee',
+                'source_user_id' => Auth()->id(),
                 'titre' => 'Nouvelle demande à remplir',
                 'is_read' => false,
             ]);
@@ -509,6 +522,8 @@ public function refuser(Request $request, $demande_id, $user_id)
         'user_id' => $user_id,
         'source_user_id' => $user_id,
         'demande_id' => $demande_id,
+        'type' => 'demande_refusee',
+        'source_user_id' => Auth()->id(),
         'titre' => "Votre demande {$demande_titre} a été refusée",
         'commentaire' => $commentaire,
         'is_read' => false,

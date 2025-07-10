@@ -127,7 +127,7 @@
                                             <label for="type_form" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 le type de demande :
                                             </label>
-                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
+                                            <select name="type_form" id="type_form" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 " required>
                                                 <option value="">-- Sélectionner le type --</option>
                                                 <option value="contrat">Contrat</option>
                                                 <option value="facture">Facture</option>
@@ -253,6 +253,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const userSelect = document.getElementById('user_id');
+            const typeFormSelect = document.getElementById('type_form');
             const champCheckboxes = document.querySelectorAll('.champ-checkbox');
             const selectAllCheckbox = document.getElementById('select-all');
             const submitBtn = document.getElementById('submit-btn');
@@ -261,8 +262,9 @@
             function updateUI() {
                 const selectedCheckboxes = document.querySelectorAll('.champ-checkbox:checked');
                 const userSelected = userSelect.value !== '';
+                const typeFormSelected = typeFormSelect.value !== '';
 
-                submitBtn.disabled = !(selectedCheckboxes.length > 0 && userSelected);
+                submitBtn.disabled = !(selectedCheckboxes.length > 0 && userSelected && typeFormSelected);
 
                 // Mise à jour du checkbox "Sélectionner tout"
                 if (selectedCheckboxes.length === champCheckboxes.length) {
@@ -301,6 +303,8 @@
             });
 
             userSelect.addEventListener('change', updateUI);
+            updateUI();
+            typeFormSelect.addEventListener('change', updateUI);
             updateUI();
         });
     </script>

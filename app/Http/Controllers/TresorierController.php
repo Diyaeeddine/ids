@@ -88,45 +88,46 @@ class TresorierController extends Controller
     }
 
 
-public function createOP()
-{
-
-    $factureIdsUtilisees = OrderP::pluck('id_facture')->toArray();
-
-    $factures = Facture::whereNotIn('factures.id', $factureIdsUtilisees)
-    ->join('contrats', 'factures.contrat_id', '=', 'contrats.id')
-    ->join('demandes', 'demandes.contrat_id', '=', 'contrats.id')
-    ->join('demande_user', function($join) {
-        $join->on('demande_user.demande_id', '=', 'demandes.id')
-             ->where('demande_user.etape', '=', 'acceptee'); 
-    })
-    ->select('factures.*') 
-    ->get();
-    $factureData = [];
-
-    foreach ($factures as $facture) {
-        $items = FactureItem::where('facture_id', $facture->id)->get();
-
-        $contrat = Contrat::find($facture->contrat_id);
-        $demandeNom = $contrat && $contrat->demandeur ? $contrat->demandeur->nom : 'N/A';
-
-        $factureData[] = [
-            'id' => $facture->id,
-            'numero' => $facture->numero_facture ?? 'Facture #' . $facture->id,
-            'demande_nom' => $demandeNom,
-            'montant_paye' => $facture->montant_paye,
-            'items' => $items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'description' => $item->description,
-                    'montant_ht' => $item->montant_ht,
-                ];
-            }),
-        ];
+    public function createOP()
+    {
+    
+        $factureIdsUtilisees = OrderP::pluck('id_facture')->toArray();
+    
+        $factures = Facture::whereNotIn('factures.id', $factureIdsUtilisees)
+        ->join('contrats', 'factures.contrat_id', '=', 'contrats.id')
+        ->join('demandes', 'demandes.contrat_id', '=', 'contrats.id')
+        ->join('demande_user', function($join) {
+            $join->on('demande_user.demande_id', '=', 'demandes.id')
+                 ->where('demande_user.etape', '=', 'acceptee'); 
+        })
+        ->select('factures.*') 
+        ->get();
+        $factureData = [];
+    
+        foreach ($factures as $facture) {
+            $items = FactureItem::where('facture_id', $facture->id)->get();
+    
+            $contrat = Contrat::find($facture->contrat_id);
+            $demandeNom = $contrat && $contrat->demandeur ? $contrat->demandeur->nom : 'N/A';
+    
+            $factureData[] = [
+                'id' => $facture->id,
+                'numero' => $facture->numero_facture ?? 'Facture #' . $facture->id,
+                'demande_nom' => $demandeNom,
+                'montant_paye' => $facture->montant_paye,
+                'items' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'description' => $item->description,
+                        'montant_ht' => $item->montant_ht,
+                    ];
+                }),
+            ];
+        }
+    
+        return view('tresorier.create-OP', compact('factureData'));
     }
 
-    return view('tresorier.create-OP', compact('factureData'));
-}
 public function destroy($id)
 {
     $order = OrderP::findOrFail($id);
@@ -142,19 +143,60 @@ public function update(Request $request, $id)
         'payment_method' => 'required|string',
         'due_date' => 'required|date',
         'notes' => 'nullable|string',
+        'marche_bc' => 'nullable|string',
+        'fournisseur' => 'nullable|string',
+        'periode_facturation' => 'nullable|string',
+        'pieces_justificatives' => 'nullable|string',
+        'montant_lettres' => 'nullable|string',
+        'date_mise_paiement' => 'nullable|date',
+        'visa_controle' => 'nullable|string',
+        'imputation_comptable' => 'nullable|string',
+        'metier' => 'nullable|string',
+        'section_analytique' => 'nullable|string',
+        'produit' => 'nullable|string',
+        'extension_analytique' => 'nullable|string',
+    
     ]);
 
     $order = OrderP::findOrFail($id);
-    $order->update([
-        'description_operation' => $validated['description'],
-        'montant_chiffres' => $validated['amount'],
-        'mode_paiement' => $validated['payment_method'],
-        'date_paiment' => $validated['due_date'],
-        'observations' => $validated['notes'],
-        'updated_at' => now(),
-    ]);
+$order->update([
+    'description_operation' => $validated['description'],
+    'montant_chiffres' => $validated['amount'],
+    'mode_paiement' => $validated['payment_method'],
+    'date_paiment' => $validated['due_date'],
+    'observations' => $validated['notes'],
+    'marche_bc' => $validated['marche_bc'] ?? null,
+    'fournisseur' => $validated['fournisseur'] ?? null,
+    'periode_facturation' => $validated['periode_facturation'] ?? null,
+    'pieces_justificatives' => $validated['pieces_justificatives'] ?? null,
+    'montant_lettres' => $validated['montant_lettres'] ?? null,
+    'date_mise_paiement' => $validated['date_mise_paiement'] ?? null,
+    'visa_controle' => $validated['visa_controle'] ?? null,
+    'imputation_comptable' => $validated['imputation_comptable'] ?? null,
+    'metier' => $validated['metier'] ?? null,
+    'section_analytique' => $validated['section_analytique'] ?? null,
+    'produit' => $validated['produit'] ?? null,
+    'extension_analytique' => $validated['extension_analytique'] ?? null,
+    'updated_at' => now(),
+]);
+
 
     return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement mis à jour avec succès.');
+}
+
+public function show($id)
+{
+    $order = OrderP::with([
+        'facture' => function($query) {
+            $query->with([
+                'contrat' => function($query) {
+                    $query->with(['demandeur', 'demande']);
+                }
+            ]);
+        }
+    ])->findOrFail($id);
+
+    return view('tresorier.show-op', compact('order'));
 }
 
 
@@ -167,6 +209,19 @@ public function store(Request $request)
         'payment_method' => 'required|string',
         'due_date' => 'required|date',
         'notes' => 'nullable|string',
+        'marche_bc' => 'nullable|string',
+        'fournisseur' => 'nullable|string',
+        'periode_facturation' => 'nullable|string',
+        'pieces_justificatives' => 'nullable|string',
+        'montant_lettres' => 'nullable|string',
+        'date_mise_paiement' => 'nullable|date',
+        'visa_controle' => 'nullable|string',
+        'imputation_comptable' => 'nullable|string',
+        'metier' => 'nullable|string',
+        'section_analytique' => 'nullable|string',
+        'produit' => 'nullable|string',
+        'extension_analytique' => 'nullable|string',
+    
     ]);
 
     $facture = Facture::with('contrat.demandeur', 'contrat.demande')->find($validated['invoice_id']);
@@ -176,23 +231,37 @@ public function store(Request $request)
     }
     
     DB::table('order_p')->insert([
-        'id_facture' => $validated['invoice_id'],
-        'reference' => $facture->numero_facture,
-        'entite_ordonnatrice' => $facture->contrat->demandeur->nom,
-        'description_operation' => $validated['description'],
-        'montant_chiffres' => $validated['amount'],
-        'mode_paiement' => $validated['payment_method'],
-        'date_paiment' => $validated['due_date'],
-        'observations' => $validated['notes'] ?? null,
-        'created_at' => now(),
-        'updated_at' => now(),
+            'id_facture' => $validated['invoice_id'],
+            'reference' => $facture->numero_facture,
+            'entite_ordonnatrice' => $facture->contrat->demandeur->nom,
+            'description_operation' => $validated['description'],
+            'montant_chiffres' => $validated['amount'],
+            'mode_paiement' => $validated['payment_method'],
+            'date_paiment' => $validated['due_date'],
+            'observations' => $validated['notes'] ?? null,
+            'marche_bc' => $validated['marche_bc'] ?? null,
+            'fournisseur' => $validated['fournisseur'] ?? null,
+            'periode_facturation' => $validated['periode_facturation'] ?? null,
+            'pieces_justificatives' => $validated['pieces_justificatives'] ?? null,
+            'montant_lettres' => $validated['montant_lettres'] ?? null,
+            'date_mise_paiement' => $validated['date_mise_paiement'] ?? null,
+            'visa_controle' => $validated['visa_controle'] ?? null,
+            'imputation_comptable' => $validated['imputation_comptable'] ?? null,
+            'metier' => $validated['metier'] ?? null,
+            'section_analytique' => $validated['section_analytique'] ?? null,
+            'produit' => $validated['produit'] ?? null,
+            'extension_analytique' => $validated['extension_analytique'] ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+
     ]);
     
     foreach (User::role('admin')->get() as $admin) {
         DB::table('notifications')->insert([
             'user_id' => $admin->id,
             'demande_id' => $facture->contrat->demande->id,
-            'type' => 'remplir_champs',
+            'contrat_id' => $facture->contrat->id,
+            'type' => 'verifier_op',
             'titre' => 'Nouveau OP à vérifier',
             'source_user_id' => Auth()->id(),
             'is_read' => false,
@@ -204,6 +273,11 @@ public function store(Request $request)
 
     return redirect()->route('tresorier.op')->with('success', 'Ordre de paiement créé avec succès.');
 }
+
+
+
+
+
 
     public function createOV()
     {
@@ -221,6 +295,7 @@ public function store(Request $request)
 
         return redirect()->route('tresorier.op')->with('success', 'Le statut de l\'ordre de paiement a été réinitialisé.');
     }
+
     public function userDemandesSearch(Request $request)
 {
     $searchUser = $request->get('search_user');
@@ -244,6 +319,7 @@ public function store(Request $request)
     if ($typeEconomique && $typeEconomique !== 'all') {
         $query->whereHas('demande', function($q) use ($typeEconomique) {
             $q->where('type_economique', $typeEconomique);
+
         });
     }
 
@@ -272,6 +348,7 @@ public function store(Request $request)
         'typeEconomique'
     ));
 }
+
 
 public function OV(Request $request)
 {
@@ -391,6 +468,8 @@ public function OV(Request $request)
             return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement.');
         }
     }
+
+
 
     public function ovShow($id)
         {

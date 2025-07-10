@@ -36,11 +36,11 @@
                                     @foreach ($champs as $index => $champ)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {{ $index }} 
+                                            {{ $index }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input required
-                                                type="text" 
+                                                type="text"
                                                 value="{{ $champ['value'] ?? '' }}"
                                                 name="values[{{ $index }}]"
                                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
@@ -48,12 +48,12 @@
                                         </td>
                                     </tr>
                                     @endforeach
-                                    
-                                    
+
+
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         @if($champs->count() > 0)
                         <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                             <div class="flex flex-col w-full sm:w-auto">
@@ -64,17 +64,17 @@
                                     Max 10MB par fichier
                                 </span>
                                 <div class="relative">
-                                    <input 
+                                    <input
                                         name="files[]"
-                                        class="block w-full text-sm text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:cursor-pointer border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 hover:border-indigo-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" 
-                                        id="multiple_files" 
-                                        type="file" 
+                                        class="block w-full text-sm text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:cursor-pointer border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 hover:border-indigo-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+                                        id="multiple_files"
+                                        type="file"
                                         multiple
                                     >
                                 </div>
-                            </div> 
-                            
-                            <button 
+                            </div>
+
+                            <button
                                 type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-indigo-600 dark:bg-indigo-500 border border-transparent rounded-md font-medium text-sm text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 min-w-[120px] justify-center"
                             >

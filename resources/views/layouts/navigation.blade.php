@@ -97,7 +97,7 @@
               <x-nav-link :href="route('dashboard')" :active="request()->routeIs('admin.dashboard')">{{ __('Accueil') }}</x-nav-link>
               <x-nav-link :href="route('demande.add-demande')" :active="request()->routeIs('demande.add-demande')">{{ __('Création') }}</x-nav-link>
               <x-nav-link :href="route('demandes.affecter')" :active="request()->routeIs('demandes.affecter')">{{ __('Afféctation') }}</x-nav-link>
-              <x-nav-link :href="route('admin.demandes')" :active="request()->routeIs('demande.add-demand') || request()->routeIs('admin.demandes') || request()->routeIs('demande') || request()->routeIs('admin.demande.user.uploads') || request()->routeIs('admin.demandes.decision') || request()->routeIs('demandes.afficher-demande')">{{ __('Demandes') }}</x-nav-link>
+              <x-nav-link :href="route('admin.demandes')" :active="request()->routeIs('demande.add-demand') || request()->routeIs('admin.demandes') || request()->routeIs('demande') || request()->routeIs('admin.demande.user.uploads') || request()->routeIs('admin.demandes.decision') || request()->routeIs('demandes.afficher-demande') || request()->routeIs('admin.demandes.accueil-decision') || request()->routeIs('admin.demandes.decision') || request()->routeIs('admin.demandes.showChamps') || request()->routeIs('admin.demandes.traiterOP')">{{ __('Demandes') }}</x-nav-link>
               <x-nav-link :href="route('admin.contrats.index')" :active="request()->routeIs('admin.contrats.index')">{{ __('Contrats') }}</x-nav-link>
               <x-nav-link :href="route('budget-tables.create')" :active="request()->routeIs('budget-tables.create')">{{ __('Création Table Budgétaire') }}</x-nav-link>
               <x-nav-link href="{{ route('budget-tables.index') }}" :active="request()->routeIs('budget-tables.index') || request()->routeIs('budget-tables.show')">{{ __('Tables Budgétaires') }}</x-nav-link>
@@ -362,32 +362,38 @@
           return notification.commentaire && notification.commentaire.trim() !== '' && notification.commentaire !== 'Aucun commentaire disponible.';
         },
 
-          navigateToDetail(notification) {
-      if (!notification.demande_id) {
+        navigateToDetail(notification) {
+    if (!notification.demande_id) {
         console.error('demande_id manquant dans la notification');
         return;
-      }
+    }
 
-      const userId = notification.user_affecte_id || notification.source_user_id || notification.user_id;
-      if (!userId) {
+    const userId = notification.user_affecte_id || notification.source_user_id || notification.user_id;
+    if (!userId) {
         console.error('Aucun user_id disponible pour la navigation');
         return;
-      }
-
-      const userRole = "{{ auth()->user()->getRoleNames()->first() }}";
-
-      let url = '';
-      if (userRole === 'admin') {
-        
-        url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
-      } else if (userRole === 'plaisance') {
-        url = `/plaisance/demande/remplir/${notification.demande_id}`;
-      } else {
-        url = `/user/demande/remplir/${notification.demande_id}`;
-      }
-
-      window.location.href = url;
     }
+
+    const userRole = "{{ auth()->user()->getRoleNames()->first() }}";
+    let url = '';
+
+    if (userRole === 'admin') {
+        if (notification.type === 'verifier_op') {
+            url = `/admin/demandes/accueil-decision/op`;
+        } else {
+            url = `/admin/demandes/afficher/${notification.demande_id}/${userId}`;
+    
+        }
+    } else if (userRole === 'plaisance') {
+        url = `/plaisance/demande/remplir/${notification.demande_id}`;
+    } else {
+        url = `/user/demande/remplir/${notification.demande_id}`;
+    }
+
+    console.log('TYPE: ', notification.type);
+    window.location.href = url;
+}
+
 
     }
     }
