@@ -14,7 +14,6 @@ use App\Http\Controllers\TresorierController;
 use Illuminate\Support\Facades\Route;
 
 
-
 Route::get('/', function () {
     return redirect('/login');
 })->name('admin.login');
@@ -177,6 +176,8 @@ Route::middleware(['auth', 'verified', 'role:tresorier'])->group(function () {
     Route::delete('/ordre-paiement/{id}', [TresorierController::class, 'destroy'])->name('ordre-paiement.destroy');
     Route::patch('/ordre-paiement/{id}', [TresorierController::class, 'update'])->name('ordre-paiement.update');
     Route::get('/op/{id}', [TresorierController::class, 'show'])->name('op.show');
+    Route::get('/ordre-virement/{id}/pdf', [TresorierController::class, 'downloadPdf'])->name('ov.download.pdf');
+
 });
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {

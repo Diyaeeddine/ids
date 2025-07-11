@@ -11,6 +11,7 @@ use App\Models\Facture;
 use App\Models\User;
 use App\Models\FactureItem;
 use App\Models\Contrat;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 
@@ -529,5 +530,14 @@ public function OV(Request $request)
             ], 500);
         }
     }
+
+            public function downloadPdf($id)
+        {
+            $ordre = OrderV::findOrFail($id);
+
+            $pdf = Pdf::loadView('tresorier.ov_pdf', compact('ordre'));
+
+            return $pdf->download("ordre-virement-{$ordre->id}.pdf");
+        }
 
 }

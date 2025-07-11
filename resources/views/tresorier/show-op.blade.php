@@ -19,15 +19,24 @@
                         <i class="fas fa-file-invoice-dollar"></i>
                         Détails de l'Ordre de Paiement
                     </h3>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger" onclick="generatePDF()">
-                            <i class="fas fa-file-pdf"></i> Générer PDF
-                        </button>
-                        <a href="{{ route('tresorier.op') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Retour
-                        </a>
-                        <!--  -->
-                    </div>
+                    <!-- Button Group aligned to right -->
+<div class="flex justify-end space-x-3 pt-4">
+    <!-- Générer PDF Button -->
+    <button type="button"
+        onclick="generatePDF()"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition duration-200">
+        Générer PDF
+        <i class="fas fa-file-pdf"></i>
+    </button>
+
+    <!-- Retour Button -->
+    <a href="{{ route('tresorier.op') }}"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow transition duration-200">
+        Retour
+        <i class="fas fa-arrow-left"></i>
+    </a>
+</div>
+
                 </div>
                 
                 <div class="card-body" id="op-content">
