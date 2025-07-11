@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {{-- <link href="https://cdn.tailwindcss.com" rel="stylesheet"> --}}
+
     <title>Login - Marina Bouregreg</title>
     <style>
         * {
@@ -13,15 +16,129 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        :root {
+            /* Light theme colors */
+            --bg-primary: #f8fafc;
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-accent: #2c5f8a;
+            --border-color: #e5e7eb;
+            --border-focus: #2c5f8a;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-bg-focus: rgba(255, 255, 255, 1);
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --backdrop-blur: blur(10px);
+            
+            /* Marina background colors */
+            --marina-bg-start: rgb(176, 214, 242);
+            --marina-bg-mid1: #e8d4b8;
+            --marina-bg-mid2: rgb(230, 192, 127);
+            --marina-bg-mid3: #9bb5d1;
+            --marina-bg-end: #7ea8cc;
+            
+            /* Water colors */
+            --water-start: #7ea8cc;
+            --water-mid: #6b96c0;
+            --water-end: #5a87b5;
+            
+            /* Element colors */
+            --cloud-color: rgba(255, 255, 255, 0.6);
+            --mountain-back: linear-gradient(45deg, #a8c8e1 0%, #b8d0e8 100%);
+            --mountain-mid: linear-gradient(45deg, #8fb8d9 0%, #a5c6dd 100%);
+            --mountain-front: linear-gradient(45deg, #7ea8cc 0%, #8fb4d1 100%);
+            --castle-color: linear-gradient(135deg, #d4b896 0%, #c9ad88 100%);
+            --castle-top: linear-gradient(135deg, #e6d4b8 0%, #d4b896 100%);
+            --boat-hull: linear-gradient(135deg, #2c5f8a 0%, #1e4a6b 100%);
+            --boat-sail: #1e4a6b;
+        }
+
+        [data-theme="dark"] {
+            /* This will be used only for manual override if needed */
+            --bg-primary: #0f172a;
+            --bg-secondary: rgba(30, 41, 59, 0.95);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-accent: #60a5fa;
+            --border-color: #334155;
+            --border-focus: #60a5fa;
+            --input-bg: rgba(51, 65, 85, 0.8);
+            --input-bg-focus: rgba(51, 65, 85, 1);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            
+            /* Marina background colors - darker */
+            --marina-bg-start: rgb(30, 58, 84);
+            --marina-bg-mid1: #2d3748;
+            --marina-bg-mid2: rgb(45, 55, 72);
+            --marina-bg-mid3: #2a4365;
+            --marina-bg-end: #1a365d;
+            
+            /* Water colors - darker */
+            --water-start: #1a365d;
+            --water-mid: #2c5282;
+            --water-end: #2a4365;
+            
+            /* Element colors - darker */
+            --cloud-color: rgba(148, 163, 184, 0.3);
+            --mountain-back: linear-gradient(45deg, #334155 0%, #475569 100%);
+            --mountain-mid: linear-gradient(45deg, #1e293b 0%, #334155 100%);
+            --mountain-front: linear-gradient(45deg, #0f172a 0%, #1e293b 100%);
+            --castle-color: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            --castle-top: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            --boat-hull: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            --boat-sail: #3b82f6;
+        }
+
         body {
-        overflow: hidden;
-        height: 100vh;
-        position: relative;
-        background-image: url("{{ asset('build/assets/images/bouregreg.jpg') }}");
-        background-size: cover; 
-        background-position: center;
-        background-repeat: no-repeat;
-    }
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+            background-image: url("{{ asset('build/assets/images/bouregreg.jpg') }}");
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: var(--bg-primary);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Auto theme detection based on system preference */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Dark theme colors */
+                --bg-primary: #0f172a;
+                --bg-secondary: rgba(30, 41, 59, 0.95);
+                --text-primary: #f8fafc;
+                --text-secondary: #94a3b8;
+                --text-accent: #60a5fa;
+                --border-color: #334155;
+                --border-focus: #60a5fa;
+                --input-bg: rgba(51, 65, 85, 0.8);
+                --input-bg-focus: rgba(51, 65, 85, 1);
+                --shadow-color: rgba(0, 0, 0, 0.5);
+                
+                /* Marina background colors - darker */
+                --marina-bg-start: rgb(30, 58, 84);
+                --marina-bg-mid1: #2d3748;
+                --marina-bg-mid2: rgb(45, 55, 72);
+                --marina-bg-mid3: #2a4365;
+                --marina-bg-end: #1a365d;
+                
+                /* Water colors - darker */
+                --water-start: #1a365d;
+                --water-mid: #2c5282;
+                --water-end: #2a4365;
+                
+                /* Element colors - darker */
+                --cloud-color: rgba(148, 163, 184, 0.3);
+                --mountain-back: linear-gradient(45deg, #334155 0%, #475569 100%);
+                --mountain-mid: linear-gradient(45deg, #1e293b 0%, #334155 100%);
+                --mountain-front: linear-gradient(45deg, #0f172a 0%, #1e293b 100%);
+                --castle-color: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+                --castle-top: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+                --boat-hull: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+                --boat-sail: #3b82f6;
+            }
+        }
 
         .marina-background {
             position: fixed;
@@ -31,28 +148,35 @@
             height: 100vh;
             z-index: -1;
             background: linear-gradient(180deg, 
-rgb(176, 214, 242) 0%, 
-                #e8d4b8 30%, 
-rgb(230, 192, 127) 50%, 
-                #9bb5d1 70%, 
-                #7ea8cc 100%);
+                var(--marina-bg-start) 0%, 
+                var(--marina-bg-mid1) 30%, 
+                var(--marina-bg-mid2) 50%, 
+                var(--marina-bg-mid3) 70%, 
+                var(--marina-bg-end) 100%);
+            transition: all 0.3s ease;
         }
 
+        /* Theme Toggle Button - Hidden since we use system preference */
+        .theme-toggle {
+            display: none;
+        }
 
         /* Clouds */
         .cloud {
             position: absolute;
-            background: rgba(255, 255, 255, 0.6);
+            background: var(--cloud-color);
             border-radius: 50px;
             opacity: 0.7;
             animation: float 25s ease-in-out infinite;
+            transition: background 0.3s ease;
         }
 
         .cloud:before {
             content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.6);
+            background: var(--cloud-color);
             border-radius: 50px;
+            transition: background 0.3s ease;
         }
 
         .cloud1 {
@@ -104,12 +228,13 @@ rgb(230, 192, 127) 50%,
         .mountain {
             position: absolute;
             bottom: 40%;
+            transition: all 0.3s ease;
         }
 
         .mountain-back {
             width: 100%;
             height: 200px;
-            background: linear-gradient(45deg, #a8c8e1 0%, #b8d0e8 100%);
+            background: var(--mountain-back);
             clip-path: polygon(0% 100%, 20% 60%, 35% 80%, 50% 40%, 65% 70%, 80% 50%, 100% 100%);
             opacity: 0.4;
             z-index: 1;
@@ -118,7 +243,7 @@ rgb(230, 192, 127) 50%,
         .mountain-mid {
             width: 100%;
             height: 250px;
-            background: linear-gradient(45deg, #8fb8d9 0%, #a5c6dd 100%);
+            background: var(--mountain-mid);
             clip-path: polygon(0% 100%, 15% 70%, 30% 45%, 45% 75%, 60% 35%, 75% 65%, 90% 45%, 100% 100%);
             opacity: 0.6;
             z-index: 2;
@@ -127,7 +252,7 @@ rgb(230, 192, 127) 50%,
         .mountain-front {
             width: 100%;
             height: 180px;
-            background: linear-gradient(45deg, #7ea8cc 0%, #8fb4d1 100%);
+            background: var(--mountain-front);
             clip-path: polygon(0% 100%, 25% 55%, 40% 80%, 55% 30%, 70% 60%, 85% 40%, 100% 100%);
             opacity: 0.5;
             z-index: 3;
@@ -143,9 +268,10 @@ rgb(230, 192, 127) 50%,
         }
 
         .tower {
-            background: linear-gradient(135deg, #d4b896 0%, #c9ad88 100%);
+            background: var(--castle-color);
             position: absolute;
             border-radius: 8px 8px 0 0;
+            transition: background 0.3s ease;
         }
 
         .tower1 {
@@ -168,8 +294,9 @@ rgb(230, 192, 127) 50%,
             transform: translateX(-50%);
             width: 20px;
             height: 25px;
-            background: linear-gradient(135deg, #e6d4b8 0%, #d4b896 100%);
+            background: var(--castle-top);
             border-radius: 50% 50% 0 0;
+            transition: background 0.3s ease;
         }
 
         /* Water */
@@ -178,9 +305,10 @@ rgb(230, 192, 127) 50%,
             bottom: 0;
             width: 100%;
             height: 45%;
-            background: linear-gradient(180deg, #7ea8cc 0%, #6b96c0 50%, #5a87b5 100%);
+            background: linear-gradient(180deg, var(--water-start) 0%, var(--water-mid) 50%, var(--water-end) 100%);
             z-index: 5;
             opacity: 0.8;
+            transition: background 0.3s ease;
         }
 
         /* Water waves */
@@ -213,9 +341,10 @@ rgb(230, 192, 127) 50%,
         .boat-hull {
             width: 60px;
             height: 20px;
-            background: linear-gradient(135deg, #2c5f8a 0%, #1e4a6b 100%);
+            background: var(--boat-hull);
             border-radius: 0 0 30px 30px;
             position: relative;
+            transition: background 0.3s ease;
         }
 
         .mast {
@@ -235,8 +364,9 @@ rgb(230, 192, 127) 50%,
             height: 0;
             border-left: 18px solid transparent;
             border-right: 18px solid transparent;
-            border-bottom: 45px solid #1e4a6b;
+            border-bottom: 45px solid var(--boat-sail);
             animation: sail-flutter 4s ease-in-out infinite;
+            transition: border-bottom-color 0.3s ease;
         }
 
         /* Main Content Container */
@@ -251,46 +381,29 @@ rgb(230, 192, 127) 50%,
         }
 
         .login-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);          
-    -webkit-backdrop-filter: blur(10px); 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
-    padding: 3rem;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    position: relative;
-}
-
-
+            background: var(--bg-secondary);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px var(--shadow-color);
+            position: relative;
+            transition: all 0.3s ease;
+        }
 
         .login-header {
             text-align: center;
             margin-bottom: 2.5rem;
         }
 
-        .marina-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c5f8a;
-            letter-spacing: 4px;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .marina-subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #4a7ba7;
-            letter-spacing: 6px;
-            margin-bottom: 1rem;
-        }
-
-        .login-subtitle {
-            color: #6b7280;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
+        .marina-logo {
+            width: 150px;
+            max-width: 80%;
+            margin: 0 auto;
+            height: auto;
         }
 
         /* Form Styles */
@@ -302,25 +415,45 @@ rgb(230, 192, 127) 50%,
             display: block;
             font-size: 0.875rem;
             font-weight: 500;
-            color: #374151;
+            color: var(--text-primary);
             margin-bottom: 0.375rem;
+            transition: color 0.3s ease;
         }
 
         .form-input {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 0.95rem;
-            transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #2c5f8a;
-            box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.1);
-            background: rgba(255, 255, 255, 1);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            background: var(--input-bg-focus);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password-icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password-icon:hover {
+            color: var(--text-accent);
         }
 
         .error-message {
@@ -338,17 +471,18 @@ rgb(230, 192, 127) 50%,
         .remember-me input {
             margin-right: 0.5rem;
             border-radius: 4px;
+            accent-color: var(--text-accent);
         }
 
         .remember-me label {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: var(--text-secondary);
             cursor: pointer;
+            transition: color 0.3s ease;
         }
 
         .form-footer {
             display: flex;
-            items-center: space-between;
             justify-content: space-between;
             align-items: center;
             margin-top: 1.5rem;
@@ -357,20 +491,20 @@ rgb(230, 192, 127) 50%,
         }
 
         .forgot-password {
-            color: #2c5f8a;
+            color: var(--text-accent);
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .forgot-password:hover {
-            color: #1e4a6b;
             text-decoration: underline;
+            opacity: 0.8;
         }
 
         .login-button {
-            background: linear-gradient(135deg, #2c5f8a 0%, #1e4a6b 100%);
+            background: linear-gradient(135deg, var(--text-accent) 0%, #1e40af 100%);
             color: white;
             border: none;
             padding: 0.75rem 2rem;
@@ -378,14 +512,13 @@ rgb(230, 192, 127) 50%,
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             min-width: 120px;
         }
 
         .login-button:hover {
-            background: linear-gradient(135deg, #1e4a6b 0%, #2c5f8a 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(44, 95, 138, 0.3);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
         }
 
         .login-button:active {
@@ -401,6 +534,14 @@ rgb(230, 192, 127) 50%,
             border-radius: 8px;
             margin-bottom: 1.5rem;
             font-size: 0.875rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .status-message {
+                background: rgba(34, 197, 94, 0.2);
+                border-color: rgba(34, 197, 94, 0.3);
+                color: #22c55e;
+            }
         }
 
         /* Animations */
@@ -452,6 +593,13 @@ rgb(230, 192, 127) 50%,
             .login-button {
                 width: 100%;
             }
+
+            .theme-toggle {
+                width: 45px;
+                height: 45px;
+                top: 15px;
+                right: 15px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -460,34 +608,36 @@ rgb(230, 192, 127) 50%,
                 transform: scale(0.7);
             }
         }
-
-        .marina-logo {
+.logo-light {
     display: block;
-    margin: 0 auto 1.5rem auto;
-    width: 150px;
-    max-width: 80%;
-    height: auto;
 }
 
-        .password-wrapper {
-        position: relative;
-    }
-    .toggle-password-icon {
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #9ca3af;
-    }
-    .dark .toggle-password-icon {
-        color: #6b7280;
-    }
+.logo-dark {
+    display: none;
+}
 
-        
+@media (prefers-color-scheme: dark) {
+    .logo-light {
+        display: none;
+    }
+    
+    .logo-dark {
+        display: block;
+    }
+}
+
+[data-theme="dark"] .logo-light {
+    display: none;
+}
+
+[data-theme="dark"] .logo-dark {
+    display: block;
+}
     </style>
 </head>
 <body>
+
+
     <div class="marina-background">
         <div class="cloud cloud1"></div>
         <div class="cloud cloud2"></div>
@@ -520,14 +670,16 @@ rgb(230, 192, 127) 50%,
 
     <div class="login-container">
         <div class="login-card">
-            <div class="login-header">
-                <img src="{{ asset('build/assets/images/marina-logo-black.png') }}" 
-     class="marina-logo mx-auto mb-6 w-32 sm:w-40 md:w-48 lg:w-56 h-auto" 
-     alt="Marina Logo"/>
+<!-- Remplacez cette section -->
+<div class="login-header">
+    <img src="{{ asset('build/assets/images/marina-logo-black.png') }}"
+         class="marina-logo logo-light"
+         alt="Marina Logo">
 
-            </div>
-
-
+    <img src="{{ asset('build/assets/images/marina-logo-white.png') }}"
+         class="marina-logo logo-dark"
+         alt="Marina Logo (Dark)">
+</div>
 
             @if (session('status'))
                 <div class="status-message">
@@ -555,11 +707,17 @@ rgb(230, 192, 127) 50%,
 
                 <div class="form-group">
                     <label for="password" class="form-label">{{ __('Password') }}</label>
-                    <input id="password" class="form-input" type="password" name="password" required autocomplete="current-password"/>
-
-                           <span id="togglePassword" class="toggle-password-icon">
-                        <i class="fas fa-eye"></i>
-                    </span>
+                    <div class="password-wrapper">
+                        <input id="password" 
+                               class="form-input" 
+                               type="password" 
+                               name="password" 
+                               required 
+                               autocomplete="current-password"/>
+                        <span id="togglePassword" class="toggle-password-icon">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
                     @error('password')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -586,26 +744,27 @@ rgb(230, 192, 127) 50%,
             </form>
         </div>
     </div>
-    
-</body>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-        const eyeIcon = togglePassword.querySelector('i');
 
-        togglePassword.addEventListener('click', function (e) {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+    <script>
+        // Password toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+            const eyeIcon = togglePassword.querySelector('i');
 
-            if (type === 'password') {
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            } else {
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            }
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                if (type === 'password') {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                } else {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                }
+            });
         });
-    });
-</script>
+    </script>
+</body>
 </html>

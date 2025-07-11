@@ -185,13 +185,24 @@
               </template>
 
               <template x-for="(notif, index) in visibleNotifications" :key="notif.id">
-                <div class="border-b border-gray-100 last:border-b-0">
-                  <div class="flex items-center justify-between px-4 py-3 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-200" :class="{ 'opacity-0 max-h-0 overflow-hidden p-0': notif.read, 'cursor-pointer': hasCommentaire(notif), 'bg-blue-25': notif.showCommentaire }" x-bind.style="notif.read ? 'height:0;padding:0;margin:0;' : ''" @click="hasCommentaire(notif) ? toggleCommentaire(index) : navigateToDetail(notif)">
-                    <div class="flex-1 pr-3">
-                      <div class="flex items-center">
-                        <p class="text-sm font-medium text-gray-800 leading-relaxed">
-                          <span x-text="notif.titre ?? 'Sans objet'"></span>
-                        </p>
+                <div class="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                  <div 
+                      class="flex items-center justify-between px-4 py-3 transition-all duration-200 
+                             hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 
+                             dark:hover:from-gray-800 dark:hover:to-blue-900/10"
+                      :class="{
+                          'opacity-0 max-h-0 overflow-hidden p-0': notif.read,
+                          'cursor-pointer': hasCommentaire(notif),
+                          'bg-blue-50 dark:bg-blue-900/20': notif.showCommentaire
+                      }"
+                      x-bind:style="notif.read ? 'height: 0; padding: 0; margin: 0;' : ''"
+                      @click="hasCommentaire(notif) ? toggleCommentaire(index) : navigateToDetail(notif)"
+                  >
+                      <div class="flex-1 pr-3">
+                          <div class="flex items-center">
+                              <p class="text-sm font-medium text-gray-800 dark:text-gray-100 leading-relaxed">
+                                  <span x-text="notif.titre ?? 'Sans objet'"></span>
+                              </p>
                         <template x-if="hasCommentaire(notif)">
                           <div class="flex items-center ml-2">
                             <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">

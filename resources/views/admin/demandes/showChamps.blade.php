@@ -105,7 +105,7 @@
                         $currentStatus = $statusConfig[$etape] ?? $statusConfig['en_cours_remplissage'];
                     @endphp
                     
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden hover:bg-slate-200 animation shadow-sm sm:rounded-lg border-l-4 {{ $currentStatus['borderClass'] }}">
+                    <div class="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm sm:rounded-lg border-l-4 {{ $currentStatus['borderClass'] }}">
                         <div class="p-6 ">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-center space-x-4">

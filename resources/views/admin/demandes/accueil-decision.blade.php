@@ -29,9 +29,10 @@
                                 </svg>
                                 Demandes
                             </h3>
-                            <span class="bg-white/20 text-white rounded-full px-3 py-1 text-gray-500 dark:text-gray-400">
-                                Total généré: {{$demandes_total ?? 'N/A'}}
+                            <span class="rounded-full px-3 py-1 text-sm font-medium bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
+                                Total généré : {{ $demandes_total ?? 'N/A' }}
                             </span>
+                            
                         </div>
                     </div>      
                     <div class="text-center py-12 bg-blue-50 dark:bg-blue-900/20">
@@ -64,9 +65,10 @@
                                 </svg>
                                 Ordres de Paiement (OP)
                             </h3>                            
-                            <span class="bg-white/20 text-white rounded-full px-3 py-1 text-gray-500 dark:text-gray-400">
-                                Total généré: {{$op_total ?? 'N/A'}}
+                            <span class="rounded-full px-3 py-1 text-sm font-medium bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
+                                Total généré : {{ $op_total ?? 'N/A' }}
                             </span>
+                            
                         </div>
                     </div>
                     <div class="text-center py-12 bg-green-50 dark:bg-green-900/20">
